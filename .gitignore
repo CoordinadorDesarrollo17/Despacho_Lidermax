@@ -1,0 +1,19 @@
+# Visual Studio
+.vs/
+
+# Build folders
+bin/
+obj/
+
+# User files
+*.user
+*.suo
+
+# Cache
+*.cache
+
+# Logs
+*.log
+
+# VS Code (si lo usas)
+.vscode/
