@@ -1,0 +1,120 @@
+﻿@using X.PagedList
+@model IPagedList<HojasRutaDto>
+
+
+@{
+    ViewData["Title"] = "Listado Hojas de Ruta";
+}
+<div class="card shadow-sm mb-4">
+    <div class="card-header header-gradient text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold">MÓDULO GESTIÓN DE HOJAS DE RUTA</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row mb-3 gy-2">
+
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <label class="mb-0 fw-semibold">Mostrar</label>
+
+                    <select id="pageSize" class="form-select form-select-sm w-auto">
+                        @foreach (var size in new[] { 1,5, 10, 20, 40, 60, 80, 100 })
+                        {
+                            <option value="@size" selected="@(size == 10)">@size</option>
+                        }
+                    </select>
+
+                    <span class="text-nowrap">registros por página</span>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="d-flex justify-content-start justify-content-md-end gap-2">
+                    <input type="text"
+                           id="txtBuscar"
+                           class="form-control form-control-sm w-100 w-md-auto"
+                           style="max-width: 300px;"
+                           placeholder="Buscar:" autocomplete="off" />
+
+                    <button id="btnExportarExcel" class="btn btn-success btn-sm">
+                        <i class="bi bi-file-earmark-excel"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="tablaHojaRuta">
+            <partial name="_TablaHojasRuta" model="Model" />
+        </div>
+
+       
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const txtBuscar = document.getElementById("txtBuscar");
+        const cboPageSize = document.getElementById("pageSize");
+        const tablaHojaRuta = document.getElementById("tablaHojaRuta");
+
+        function cargarTabla(page = 1) { //numero de pagina por default
+
+            const params = new URLSearchParams({ //parametros
+                   "Buscar": txtBuscar.value,
+                   "Paginacion.Page": page,
+                   "Paginacion.PageSize": cboPageSize.value
+                  
+             });
+
+            let url = `@Url.Action("ListadoHojasRuta")?${params.toString()}`; //accion del controlador , pasamos parametros
+
+            fetch(url, { //fetch que lanza la accion
+                headers:  {
+                    "X-Requested-With": "XMLHttpRequest" //nos dice si es una peticion AJAX
+                  }
+                })
+                .then(r => r.text())
+                .then(html => {
+                tablaHojaRuta.innerHTML = html;
+
+               
+            });
+
+        }
+        //lanzamos eventos de los <select>
+        cboPageSize.addEventListener("change", () => cargarTabla(1));
+
+        //Agregamos evento para que el usuario de enter
+        agregarEventosBusqueda(txtBuscar);
+
+          //funcion para agregar evento enter
+        function agregarEventosBusqueda(input) {
+            if (!input) return;
+
+            // Cuando presiona Enter
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    cargarTabla(1);
+                }
+            });
+
+            // Cuando borra todo el contenido
+            input.addEventListener("input", function () {
+                if (input.value.trim() === "") {
+                    cargarTabla(1);
+                }
+            });
+        }
+
+
+           document.getElementById("btnExportarExcel").addEventListener("click", function () {
+            const query = txtBuscar.value;
+            const url = `@Url.Action("ExportarExcel", "HojasRuta")?Buscar=${encodeURIComponent(query)}`;
+            window.location.href = url;
+        });
+    </script>
+}

@@ -1,0 +1,228 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+.header-gradient {
+    background-color: #E06100;
+}
+/* TABLAS */
+.table thead th {
+    background-color: #fff;
+    color: #E06100;
+    font-weight: bold;
+}
+
+
+
+@media (min-width: 768px) {
+
+    th, td {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 768px) {
+
+    
+    th, td {
+        white-space: normal !important;
+    }
+
+    table thead {
+        display: none;
+    }
+
+    table, tbody, tr, td {
+        display: block;
+        width: 100%;
+    }
+
+    tr {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        column-gap: .75rem;
+        row-gap: .25rem;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: .75rem;
+        background: #fff;
+        box-sizing: border-box;
+        align-items: start;
+    }
+
+    td:empty::after {
+        content: "";
+    }
+
+    td {
+        display: contents;
+        min-width: 0;
+    }
+
+        td::before {
+            content: attr(data-label);
+            font-weight: bold;
+            color: #E06100;
+            grid-column: 1;
+            text-align: left;
+            justify-self: start;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        td > *, td {
+            grid-column: 2;
+            text-align: right;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            hyphens: auto;
+            min-width: 0;
+        }
+
+            td[data-label="Acciones"]::before {
+                grid-column: 1;
+                text-align: left;
+            }
+
+            td[data-label="Acciones"] .actions {
+                grid-column: 2;
+                display: flex;
+                justify-content: center;
+                gap: .5rem;
+                padding: .35rem .5rem;
+                background: #f1f4ff;
+                border-radius: 6px;
+                border: 1px solid #d6dcff;
+            }
+
+                td[data-label="Acciones"] .actions .btn {
+                    margin-right: 0;
+                }
+
+
+            /* TD de EstadoHR */
+            td[data-label="EstadoHR"] {
+                display: block; 
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                margin-bottom: 0.25rem;
+                text-align:left;
+            }
+
+                td[data-label="EstadoHR"]::before {
+                    content: ""; 
+                    display: none; 
+                }
+
+                td[data-label="EstadoHR"][data-estado="CREADO"] {
+                    background-color: #dc3545;
+                    color: #fff;
+                    font-weight: bold;
+                }
+
+                td[data-label="EstadoHR"][data-estado="RECOGIDO PARCIAL"] {
+                    background-color: #fd7e14;
+                    color: #fff;
+                    font-weight: bold;
+                }
+
+                td[data-label="EstadoHR"][data-estado="RECOGIDO"] {
+                    background-color: #28a745;
+                    color: #fff;
+                    font-weight: bold;
+                }
+
+    /* CHECK MOBILE*/
+            td.ticket-select {
+                display: block !important;
+                grid-column: 1 / -1;
+                text-align: right;
+                margin-bottom: .25rem;
+            }
+
+    .ticket-select {
+ 
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid #d6dcff;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .ticket-select::before {
+            content: "" !important;
+        }
+
+        .ticket-select::after {
+            content: "Seleccionar";
+            font-weight: 600;
+            color: #21359e;
+        }
+
+        tr.ticket-selected {
+            background: #e7f1ff !important;
+            border-color: #9ec5fe;
+            box-shadow: 0 0 0 1px #9ec5fe;
+        }
+
+
+
+}
+
+
+/* PAGINACION */
+.paginacion {
+    display: flex;
+    justify-content: end;
+}
+
+@media (max-width: 576px) {
+    .pagination li:first-child,
+    .pagination li:last-child {
+        display: none;
+    }
+
+
+    .paginacion {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+
+/* menu home */
+.hover-bg-light:hover {
+    background-color: #f8f9fa;
+}

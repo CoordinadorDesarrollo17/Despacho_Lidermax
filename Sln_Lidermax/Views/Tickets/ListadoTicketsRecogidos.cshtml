@@ -1,0 +1,365 @@
+﻿@using Sln_Lidermax.Dtos
+@using X.PagedList
+@model IPagedList<TicketsDto>
+
+
+@{
+    ViewData["Title"] = "Listado de Tickets Recogidos";
+}
+<div class="card shadow-sm mb-4">
+    <div class="card-header header-gradient text-white d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0 fw-bold">
+            TICKETS RECOGIDOS
+        </h5>
+
+    
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-3 gy-2">
+
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <label class="mb-0 fw-semibold">Mostrar</label>
+
+                    <select id="pageSize" class="form-select form-select-sm w-auto">
+                        @foreach (var size in new[] { 1,5, 10, 20, 40, 60, 80, 100 })
+                        {
+                            <option value="@size" selected="@(size == 10)">@size</option>
+                        }
+                    </select>
+
+                    <span class="text-nowrap">registros por página</span>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="d-flex justify-content-start justify-content-md-end gap-2">
+                    <input type="text"
+                           id="txtBuscar"
+                           class="form-control form-control-sm w-100 w-md-auto"
+                           style="max-width: 300px;"
+                           placeholder="Buscar:" autocomplete="off" />
+
+                    <button id="btnExportarExcel" class="btn btn-success btn-sm">
+                        <i class="bi bi-file-earmark-excel"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="tablaTicketsRecogidos">
+            <partial name="_TablaTicketsRecogidos" model="Model" />
+        </div>
+
+
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalFecha" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Fecha Despacho</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="datetime-local" class="form-control" id="fechaDespacho" />             
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnRegistrarFecha">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalImagen" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir Imágenes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label>Imagen 1: Comprobande de pago</label>
+                <input type="file" class="form-control mb-2" id="img1" accept="image/*" />
+                <label>Imagen 2: Pedido</label>
+                <input type="file" class="form-control" id="img2" accept="image/*" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnRegistrarImagen">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        const txtBuscar = document.getElementById("txtBuscar");
+        const cboPageSize = document.getElementById("pageSize");
+        const tablaTicketsRecogidos = document.getElementById("tablaTicketsRecogidos");
+
+        function cargarTabla(page = 1) { //numero de pagina por default
+
+            const params = new URLSearchParams({ //parametros
+                   "Buscar": txtBuscar.value,
+                   "Paginacion.Page": page,
+                   "Paginacion.PageSize": cboPageSize.value
+                
+             });
+
+            let url = `@Url.Action("ListadoTicketsRecogidos")?${params.toString()}`; //accion del controlador , pasamos parametros
+
+            fetch(url, { //fetch que lanza la accion
+                headers:  {
+                    "X-Requested-With": "XMLHttpRequest" //nos dice si es una peticion AJAX
+                  }
+                })
+                .then(r => r.text())
+                .then(html => {
+                tablaTicketsRecogidos.innerHTML = html;
+
+
+            });
+
+        }
+        //lanzamos eventos de los <select>
+        cboPageSize.addEventListener("change", () => cargarTabla(1));
+
+        //Agregamos evento para que el usuario de enter
+        agregarEventosBusqueda(txtBuscar);
+
+          //funcion para agregar evento enter
+        function agregarEventosBusqueda(input) {
+            if (!input) return;
+
+            // Cuando presiona Enter
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    cargarTabla(1);
+                }
+            });
+
+            // Cuando borra todo el contenido
+            input.addEventListener("input", function () {
+                if (input.value.trim() === "") {
+                    cargarTabla(1);
+                }
+            });
+        }
+
+
+        //MODALES
+        document.addEventListener("DOMContentLoaded", function() {
+            // Modal imágenes
+            document.querySelectorAll(".btn-imagen").forEach(btn => {
+                btn.addEventListener("click", function() {
+                    document.getElementById("img1").value = "";
+                    document.getElementById("img2").value = "";
+                });
+            });
+
+        });
+
+         let docEntryTicketSeleccionado = 0;
+         let docNumTicketSeleccionado = 0;
+        // Cuando se abre el modal
+        $(document).on("click", ".btn-fecha", function () {
+            docEntryTicketSeleccionado = $(this).data("docentryticket");
+        });
+        $(document).on("click", ".btn-imagen", function () {
+            docNumTicketSeleccionado = $(this).data("docnumticket");
+            docEntryTicketSeleccionado = $(this).data("docentryticket");
+            docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+        });
+
+        // Registrar fecha
+        $("#btnRegistrarFecha").click(function () {
+            let fecha = $("#fechaDespacho").val();
+            if (!fecha) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Fecha requerida',
+                    text: 'Seleccione una fecha de despacho'
+                });
+                return;
+            }
+            $.ajax({
+                url: '/Tickets/ActualizarFechaDespacho',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    docEntryTicket: docEntryTicketSeleccionado,
+                    fechaDespacho: fecha              
+                }),
+                beforeSend: function () {
+                    Swal.fire({
+                        title: 'Guardando...',
+                        text: 'Registrando fecha de despacho',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function (resp) {
+                    if (resp.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Registrado',
+                            text: 'Fecha registrada correctamente',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo registrar la fecha'
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error del servidor',
+                        text: 'Ocurrió un problema al procesar la solicitud'
+                    });
+                }
+            });
+        });
+
+
+        $("#btnRegistrarImagen").click(function () {
+
+            let img1 = $("#img1")[0].files[0];
+            let img2 = $("#img2")[0].files[0];
+
+            if (!img1 || !img2) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Imágenes requeridas",
+                    text: "Debe seleccionar ambas imágenes"
+                });
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("DocEntryTicket", docEntryTicketSeleccionado);
+            formData.append("Img1", img1);
+            formData.append("Img2", img2);
+            formData.append("DocNumTicket",docNumTicketSeleccionado);
+            formData.append("DocEntryHojaRuta",docEntryHojaRutaSeleccionado);
+
+            $.ajax({
+                url: '/Tickets/SubirImagenes',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+
+                beforeSend: function () {
+                    Swal.fire({
+                        title: "Subiendo imágenes...",
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function (resp) {
+                    if (resp.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Imágenes registradas",
+                            text: "El ticket fue marcado como ENVIADO"
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: resp.message || "No se pudieron guardar las imágenes"
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error del servidor"
+                    });
+                }
+            });
+        });
+
+
+
+               $(document).on('click', '.btn-anular', function () {
+
+            let docEntryTicket = $(this).data('docentryticket');
+            let docEntryHojaRuta = $(this).data('docentryhojaruta');
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción marcará el ticket como DEVOLUCIÓN",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, devolver',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: '/Tickets/DevolverTicket',
+                        type: 'POST',
+                        data: JSON.stringify({
+                    docEntryTicket: docEntryTicket,
+                    docEntryHojaRuta: docEntryHojaRuta
+                }),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Devuelto correctamente',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        location.reload(); 
+                                    });
+
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'No se pudo devolver'
+                                    });
+                                }
+                            },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en la solicitud'
+                            });
+                        }
+                    });
+
+                }
+            });
+        });
+
+
+
+          document.getElementById("btnExportarExcel").addEventListener("click", function () {
+            const query = txtBuscar.value;
+            const url = `@Url.Action("ExportarExcelTicketsHojaRuta", "Tickets")?Buscar=${encodeURIComponent(query)}&esHojaRuta=false`;
+            window.location.href = url;
+        });
+    </script>
+}

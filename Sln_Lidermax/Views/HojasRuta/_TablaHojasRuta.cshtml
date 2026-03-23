@@ -1,0 +1,93 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<HojasRutaDto>
+
+
+    <style>
+        .estado-creado {
+        color: #fff !important;
+        background-color: #dc3545 !important;
+            font-weight: bold;
+        }
+
+        .estado-recogido-parcial {
+        color: #fff !important;
+        background-color: #fd7e14 !important;
+        font-weight: bold ;
+        }
+
+        .estado-recogido {
+        color: #fff !important;
+        background-color: #28a745 !important;
+            font-weight: bold;
+        }
+    </style>
+
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle text-nowrap">
+        <thead class="table-header">
+            <tr>
+                <th>Nro Hoja Ruta</th>
+                <th>Tipo Ruta</th>
+                <th>Tiempo Pactado</th>
+                <th>Nro Cajas</th>
+                <th>Estado</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td data-label="DocNum">@u?.DocNum</td>
+                    <td data-label="TipoRuta">@u?.TipoRuta</td>
+                    <td data-label="TiempoPac">@u?.TiempoPac</td>
+                    <td data-label="Cajas">@u?.Cajas</td>
+
+                    <td data-label="EstadoHR"
+                        class="@(u?.Estado == "CREADO" ? "estado-creado" :
+                                     u?.Estado == "RECOGIDO PARCIAL" ? "estado-recogido-parcial" :
+                                     u?.Estado == "RECOGIDO" ? "estado-recogido" : "")">
+                    @u?.Estado
+                </td>
+
+                    <td data-label="Acciones" class="text-center">
+                        <div class="actions">
+                        <a asp-controller="Tickets"
+                           asp-action="ListadoTickets"
+                           asp-route-docEntryHojaRuta="@u?.DocEntry"
+                           asp-route-docNumHojaRuta="@u?.DocNum"
+                           class="btn btn-warning btn-sm">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-2 gap-2">
+
+    <small class="text-muted text-center text-md-start text-md-nowrap flex-shrink-0">
+        Mostrando @Model.FirstItemOnPage a @Model.LastItemOnPage de @Model.TotalItemCount registros
+    </small>
+
+    <div class="w-100 w-md-auto paginacion">
+        @Html.PagedListPager(Model, page => "javascript:cargarTabla(" + page + ")",
+        new PagedListRenderOptions
+        {
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            UlElementClasses = new[] { "pagination", "mb-0" },
+            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+            DisplayLinkToLastPage = PagedListDisplayMode.Always,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+            MaximumPageNumbersToDisplay = 5
+        })
+    </div>
+</div>

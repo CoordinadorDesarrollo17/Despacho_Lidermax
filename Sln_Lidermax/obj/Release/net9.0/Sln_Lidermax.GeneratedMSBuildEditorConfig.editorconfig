@@ -1,0 +1,81 @@
+is_global = true
+build_property.TargetFramework = net9.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Sln_Lidermax
+build_property.RootNamespace = Sln_Lidermax
+build_property.ProjectDir = C:\Users\TI-3\source\repos\Sln_Lidermax\Sln_Lidermax\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\TI-3\source\repos\Sln_Lidermax\Sln_Lidermax
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Auth/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Auth/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxfTGF5b3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/HojasRuta/ListadoHojasRuta.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9qYXNSdXRhXExpc3RhZG9Ib2phc1J1dGEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/HojasRuta/_TablaHojasRuta.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9qYXNSdXRhXF9UYWJsYUhvamFzUnV0YS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Tickets/ListadoTickets.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGlja2V0c1xMaXN0YWRvVGlja2V0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Tickets/ListadoTicketsRecogidos.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGlja2V0c1xMaXN0YWRvVGlja2V0c1JlY29naWRvcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Tickets/_TablaTickets.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGlja2V0c1xfVGFibGFUaWNrZXRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Tickets/_TablaTicketsRecogidos.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGlja2V0c1xfVGFibGFUaWNrZXRzUmVjb2dpZG9zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TI-3/source/repos/Sln_Lidermax/Sln_Lidermax/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-qzgy2wqvkd

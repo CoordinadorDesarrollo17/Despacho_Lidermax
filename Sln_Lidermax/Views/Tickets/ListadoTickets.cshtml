@@ -1,0 +1,303 @@
+﻿@using Sln_Lidermax.Dtos
+@using X.PagedList
+@model IPagedList<TicketsDto>
+
+
+@{
+    ViewData["Title"] = "Listado de Tickets";
+}
+<div class="card shadow-sm mb-4">
+    <div class="card-header header-gradient text-white d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0 fw-bold">
+            TICKETS DE LA HOJA DE RUTA: @ViewBag.DocNumHojaRuta
+        </h5>
+
+        <a asp-controller="HojasRuta"
+           asp-action="ListadoHojasRuta"
+           class="btn btn-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row mb-3 gy-2">
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <label class="mb-0 fw-semibold">Mostrar</label>
+
+                    <select id="pageSize" class="form-select form-select-sm w-auto">
+                        @foreach (var size in new[] { 1,5, 10, 20, 40, 60, 80, 100 })
+                        {
+                            <option value="@size" selected="@(size == 10)">@size</option>
+                        }
+                    </select>
+
+                    <span class="text-nowrap">registros por página</span>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-md-6">
+
+                <!-- Contenedor de input + botones -->
+                <div class="d-flex justify-content-start justify-content-md-end align-items-center gap-1 flex-wrap">
+
+                    <input type="text"
+                           id="txtBuscar"
+                           class="form-control form-control-sm"
+                           placeholder="Buscar:"
+                           autocomplete="off"
+                           style="max-width:210px;" />
+
+                    <button id="btnRecoger" class="btn btn-primary btn-sm" type="button">
+                        <i class="bi bi-box-seam"></i> Recoger
+                    </button>
+
+                    <button id="btnExportarExcel" class="btn btn-success btn-sm" type="button"
+                            title="Exportar a Excel" aria-label="Exportar a Excel">
+                        <i class="bi bi-file-earmark-excel"></i>
+                    </button>
+
+                </div>
+
+                <!-- Checkbox SOLO mobile -->
+                <div class="d-flex align-items-center d-md-none mt-2">
+                    <input type="checkbox" id="checkAllMobile" class="form-check-input me-2">
+                    <label for="checkAllMobile" class="small fw-semibold mb-0">
+                        Seleccionar todos
+                    </label>
+                </div>
+
+            </div>
+
+            
+        </div>
+
+        <div id="tablaTickets">
+            <partial name="_TablaTickets" model="Model" />
+        </div>
+
+
+    </div>
+</div>
+
+<input type="hidden" id="docEntryHojaRuta" value="@ViewBag.DocEntryHojaRuta" />
+<input type="hidden" id="docNumHojaRuta" value="@ViewBag.DocNumHojaRuta" />
+
+@section Scripts {
+    <script>
+        const txtBuscar = document.getElementById("txtBuscar");
+        const cboPageSize = document.getElementById("pageSize");
+        const tablaTickets = document.getElementById("tablaTickets");
+
+        const docEntryHojaRuta = document.getElementById("docEntryHojaRuta");
+        const docNumHojaRuta = document.getElementById("docNumHojaRuta");
+       
+        function cargarTabla(page = 1) { //numero de pagina por default
+
+            const params = new URLSearchParams({ //parametros
+                   "Buscar": txtBuscar.value,
+                   "Paginacion.Page": page,
+                   "Paginacion.PageSize": cboPageSize.value,
+                   "DocEntryHojaRuta": docEntryHojaRuta.value,
+                   "DocNumHojaRuta": docNumHojaRuta.value
+
+             });
+
+            let url = `@Url.Action("ListadoTickets")?${params.toString()}`; //accion del controlador , pasamos parametros
+
+            fetch(url, { //fetch que lanza la accion
+                headers:  {
+                    "X-Requested-With": "XMLHttpRequest" //nos dice si es una peticion AJAX
+                  }
+                })
+                .then(r => r.text())
+                .then(html => {
+                tablaTickets.innerHTML = html;
+    
+
+            });
+
+        }
+        //lanzamos eventos de los <select>
+        cboPageSize.addEventListener("change", () => cargarTabla(1));
+
+        //Agregamos evento para que el usuario de enter
+        agregarEventosBusqueda(txtBuscar);
+
+          //funcion para agregar evento enter
+        function agregarEventosBusqueda(input) {
+            if (!input) return;
+
+            // Cuando presiona Enter
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    cargarTabla(1);
+                }
+            });
+
+            // Cuando borra todo el contenido
+            input.addEventListener("input", function () {
+                if (input.value.trim() === "") {
+                    cargarTabla(1);
+                }
+            });
+        }
+
+        //Para poder seleccionar las filas (checkbox)
+        document.addEventListener("change", function (e) {
+
+            if (e.target.classList.contains("check-ticket")) {
+
+                const fila = e.target.closest("tr");
+
+                if (e.target.checked) {
+                    fila.classList.add("ticket-selected");
+                } else {
+                    fila.classList.remove("ticket-selected");
+                }
+
+            }
+
+            if (e.target.id === "checkAll" || e.target.id === "checkAllMobile") {
+
+                const checks = document.querySelectorAll(".check-ticket");
+
+                checks.forEach(c => {
+                    if (!c.disabled) {
+                        c.checked = e.target.checked;
+
+                        const fila = c.closest("tr");
+
+                        if (e.target.checked) {
+                            fila.classList.add("ticket-selected");
+                        } else {
+                            fila.classList.remove("ticket-selected");
+                        }
+                    }
+                });
+
+            }
+
+        });
+
+        //boton recoger, solo los seleccionados
+         const btnRecoger = document.getElementById("btnRecoger");
+
+        btnRecoger.addEventListener("click", function () {
+
+            const seleccionados = [];
+
+            const checks = tablaTickets.querySelectorAll(".check-ticket:checked");
+
+            checks.forEach(c => {
+                seleccionados.push({
+                    docEntryTicket: parseInt(c.value),
+                    docEntryHojaRuta: parseInt(c.dataset.docentryhojaruta)
+                });
+            });
+
+            if (seleccionados.length === 0) {
+               Swal.fire({
+                    icon: "warning",
+                    title: "Sin selección",
+                    text: "Debe seleccionar al menos un ticket",
+                    confirmButtonText: "Entendido",
+                    confirmButtonColor: "#0d6efd"
+                });
+
+                return;
+            }
+
+            enviarTickets(seleccionados);
+
+        });
+
+        //mandamos al controlador
+                function enviarTickets(docEntries) {
+
+            Swal.fire({
+                title: "¿Recoger tickets?",
+                text: "¿Está seguro de recoger los tickets seleccionados?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Sí, recoger",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#0d6efd",
+                cancelButtonColor: "#6c757d"
+            }).then((result) => {
+
+                if (!result.isConfirmed) return;
+
+                $.ajax({
+                    url: '/Tickets/RecogerTickets',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                       tickets: docEntries
+                    }),
+                    beforeSend: function () {
+
+                        Swal.fire({
+                            title: "Procesando...",
+                            text: "Registrando tickets recogidos",
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                    },
+                    success: function (data) {
+
+                        if (data.success) {
+
+                            Swal.fire({
+                                icon: "success",
+                                title: "Tickets recogidos",
+                                text: "Los tickets fueron procesados correctamente",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+
+                            cargarTabla();
+
+                        } else {
+
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: data.mensaje || "Ocurrió un problema al recoger los tickets"
+                            });
+
+                        }
+
+                    },
+                    error: function () {
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error del servidor",
+                            text: "No se pudo realizar la solicitud"
+                        });
+
+                    }
+                });
+
+            });
+
+        }
+
+          document.getElementById("btnExportarExcel").addEventListener("click", function () {
+            const buscar = txtBuscar.value;
+            const docNum = docNumHojaRuta.value;
+            const docEntry = docEntryHojaRuta.value;
+            const url = `@Url.Action("ExportarExcelTicketsHojaRuta", "Tickets")?Buscar=${encodeURIComponent(buscar)}&DocNumHojaRuta=${encodeURIComponent(docNum)}&DocEntryHojaRuta=${encodeURIComponent(docEntry)}&esHojaRuta=true`;
+            window.location.href = url;
+        });
+    </script>
+}
