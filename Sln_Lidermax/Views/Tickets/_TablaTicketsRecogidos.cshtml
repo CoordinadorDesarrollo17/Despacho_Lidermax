@@ -8,20 +8,14 @@
     <table class="table table-hover align-middle text-nowrap">
         <thead class="table-header">
             <tr>           
-                <th>Nro Ticket</th>
-                <th>Guia Remisión</th>
-                <th>Cod. Cliente</th>
-                <th>Razón Social</th>
-                <th>Dirección Envio</th>
+                <th>Nro Ticket</th>  
+                <th>Fecha Recojo</th>
+                <th>Razón Social</th>   
                 <th>Destino</th>
-                <th>Empresa Transporte</th>
-                <th>Distrito Transporte</th>
+                <th>Empresa Transporte</th>          
                 <th>Modo Envio</th>
                 <th>Cajas</th>
-                <th>Peso</th>
-                <th>Contacto</th>
-                <th>Telefono</th>
-                <th>Fecha Recojo</th>
+                <th>Peso</th>           
                 <th>Fecha Despacho</th>
                 <th>Estado</th>
                 <th class="text-center">Acciones</th>
@@ -32,30 +26,39 @@
             @foreach (var u in Model)
             {
                 <tr>                 
-                    <td data-label="DocNum">@u?.DocNumTicket</td>
-                    <td data-label="GuiaRemision">@u?.GuiaRemision</td>
-                    <td data-label="CardCode">@u?.CardCode</td>
-                    <td data-label="CardName">@u?.CardName</td>
-                    <td data-label="Direccion1">@u?.Direccion1</td>
-                    <td data-label="Direccion2">@u?.Direccion2</td>
+                    <td data-label="NroTicket">@u?.DocNumTicket</td>
+                    <td data-label="FechaRecojo" class="text-end">@u?.FechaRecojo?.ToString("dd/MM/yyyy")</td>
+                    <td data-label="RazonSocial">@u?.CardName</td>
+                    <td data-label="Destino">@u?.Direccion2</td>
                     <td data-label="Agencia">@u?.Agencia</td>
-                    <td data-label="distritoTransporte">@u?.DistritoTransporte</td>
                     <td data-label="ModoEnvio">@u?.ModoEnvio</td>
                     <td data-label="Cajas" class="text-end">@u?.Cajas?.ToString("N2")</td>
-                    <td data-label="Peso" class="text-end">@u?.Peso?.ToString("N2")</td>
-                    <td data-label="Contacto">@u?.Contacto</td>
-                    <td data-label="Telefono">@u?.Telefono</td>
-                    <td data-label="FechaRecojo" class="text-end">@u?.FechaRecojo?.ToString("dd/MM/yyyy")</td>
+                    <td data-label="Peso" class="text-end">@u?.Peso?.ToString("N2")</td>      
                     <td data-label="FechaDespacho" class="text-end">@u?.FechaDespacho?.ToString("dd/MM/yyyy")</td>
                     <td data-label="Estado">@u?.Estado</td>
                     <td data-label="Acciones" class="text-center">
                         <div class="actions">
-                            <button class="btn btn-sm btn-primary btn-fecha"
+                            <a asp-controller="Tickets"
+                               asp-action="DetalleTicket"
+                               asp-route-id="@u.DocEntryTicket"
+                               class="btn btn-sm btn-info"
+                               title="Ver detalle">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <button class="btn btn-sm btn-primary btn-guiaTransportista"
+                                    data-docentryticket="@u.DocEntryTicket"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalGuiaTransportista"
+                                    title="@(u?.GuiaTransportista != null ? "La guia transportista ya fue registrada" : "Registrar guia transportista")"
+                                    @(u?.Estado == "DEVOLUCION" || u?.GuiaTransportista != null ? "disabled" : "")>
+                                <i class="bi bi-file-earmark-text"></i>
+                            </button>
+                            <button class="btn btn-sm btn-success btn-fecha"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalFecha"
                                     title="@(u?.FechaDespacho != null ? "La fecha de despacho ya fue registrada" : "Registrar fecha despacho")"
-                                    @(u?.FechaDespacho != null ? "disabled" : "")>
+                                    @(u?.Estado == "DEVOLUCION" || u?.FechaDespacho != null || u?.GuiaTransportista == null ? "disabled" : "")>
                                 <i class="bi bi-calendar-check"></i>
                             </button>
 
@@ -65,19 +68,26 @@
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modalImagen"
-                                    title="@(u?.Estado == "ENVIADO" ? "Las imagenes ya fueron registradas" : "Registrar imagenes")"
-                                    @(u?.Estado == "ENVIADO" || u?.FechaDespacho == null ? "disabled" : "")>
+                                    title="Registrar imagenes"
+                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" || u?.FechaDespacho == null ? "disabled" : "")>
                                 <i class="bi bi-image"></i>
                             </button>
-
+                            <button type="button"
+                                    class="btn btn-sm btn-dark btn-entregar"
+                                    data-docentryticket="@u.DocEntryTicket"
+                                    data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                    title="Entregar ticket"
+                                    @(u?.Estado != "ENVIADO" ? "disabled" : "")>
+                                <i class="bi bi-check-circle"></i>
+                            </button>
                             <button type="button"
                                     class="btn btn-sm btn-danger btn-anular"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
                                     title="@(u?.Estado == "ENVIADO" ? "" : "Devolución")"
-                                    @(u?.Estado == "ENVIADO" ? "disabled" : "")>
+                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>
                                 <i class="bi bi-x-circle"></i>
-                            </button>
+                            </button>      
                         </div>
                     </td>
                 </tr>

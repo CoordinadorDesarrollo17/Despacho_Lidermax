@@ -1,0 +1,133 @@
+﻿@using Sln_Lidermax.Dtos
+@model TicketsDto
+
+<div class="container mt-4">
+    <h3 class="mb-4">Detalle del Ticket</h3>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <!-- Nro Ticket -->
+                <div class="col-md-4">
+                    <label class="form-label">Nro Ticket</label>
+                    <input type="text" class="form-control" value="@Model.DocNumTicket" readonly />
+                </div>
+
+                <!-- Guía Remisión -->
+                <div class="col-md-4">
+                    <label class="form-label">Guía Remisión</label>
+                    <input type="text" class="form-control" value="@Model.GuiaRemision" readonly />
+                </div>
+
+                <!-- Cod Cliente -->
+                <div class="col-md-4">
+                    <label class="form-label">Cod. Cliente</label>
+                    <input type="text" class="form-control" value="@Model.CardCode" readonly />
+                </div>
+
+                <!-- Razón Social -->
+                <div class="col-md-6">
+                    <label class="form-label">Razón Social</label>
+                    <input type="text" class="form-control" value="@Model.CardName" readonly />
+                </div>
+
+                <!-- Dirección Envío -->
+                <div class="col-md-6">
+                    <label class="form-label">Dirección Envío</label>
+                    <input type="text" class="form-control" value="@Model.Direccion1" readonly />
+                </div>
+
+                <!-- Destino -->
+                <div class="col-md-4">
+                    <label class="form-label">Destino</label>
+                    <input type="text" class="form-control" value="@Model.Direccion2" readonly />
+                </div>
+
+                <!-- Empresa Transporte -->
+                <div class="col-md-4">
+                    <label class="form-label">Empresa Transporte</label>
+                    <input type="text" class="form-control" value="@Model.Agencia" readonly />
+                </div>
+
+                <!-- Distrito Transporte -->
+                <div class="col-md-4">
+                    <label class="form-label">Distrito Transporte</label>
+                    <input type="text" class="form-control" value="@Model.DistritoTransporte" readonly />
+                </div>
+
+                <!-- Modo Envío -->
+                <div class="col-md-4">
+                    <label class="form-label">Modo Envío</label>
+                    <input type="text" class="form-control" value="@Model.ModoEnvio" readonly />
+                </div>
+
+                <!-- Cajas -->
+                <div class="col-md-4">
+                    <label class="form-label">Cajas</label>
+                    <input type="text" class="form-control text-end" value="@Model.Cajas?.ToString("N2")" readonly />
+                </div>
+
+                <!-- Peso -->
+                <div class="col-md-4">
+                    <label class="form-label">Peso</label>
+                    <input type="text" class="form-control text-end" value="@Model.Peso?.ToString("N2")" readonly />
+                </div>
+
+                <!-- Contacto -->
+                <div class="col-md-4">
+                    <label class="form-label">Contacto</label>
+                    <input type="text" class="form-control" value="@Model.Contacto" readonly />
+                </div>
+
+                <!-- Teléfono -->
+                <div class="col-md-4">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" value="@Model.Telefono" readonly />
+                </div>
+
+                <!-- Guia Transportista -->
+                <div class="col-md-4">
+                    <label class="form-label">Guia Transportista</label>
+                    <input type="text" class="form-control" value="@Model.GuiaTransportista" readonly />
+                </div>
+                <!-- Fecha Recojo -->
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Recojo</label>
+                    <input type="text" class="form-control" value="@Model.FechaRecojo?.ToString("dd/MM/yyyy")" readonly />
+                </div>
+
+                <!-- Fecha Despacho -->
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Despacho</label>
+                    <input type="text" class="form-control" value="@Model.FechaDespacho?.ToString("dd/MM/yyyy")" readonly />
+                </div>
+                <!-- Fecha Entrega -->
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Entrega</label>
+                    <input type="text" class="form-control" value="@Model.FechaEntrega?.ToString("dd/MM/yyyy")" readonly />
+                </div>
+
+                <!-- Fecha Devolucion -->
+                <div class="col-md-4">
+                    <label class="form-label">Fecha Devolucion</label>
+                    <input type="text" class="form-control" value="@Model.FechaDevolucion?.ToString("dd/MM/yyyy")" readonly />
+                </div>
+                <!-- Estado -->
+                <div class="col-md-4">
+                    <label class="form-label">Estado</label>
+                    <input type="text" class="form-control fw-bold" value="@Model.Estado" readonly />
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="ListadoTicketsRecogidos" asp-controller="Tickets" class="btn btn-secondary">
+            Volver
+        </a>
+    </div>
+</div>

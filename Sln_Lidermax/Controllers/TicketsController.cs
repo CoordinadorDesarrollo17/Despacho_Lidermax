@@ -1,5 +1,7 @@
 ﻿using Azure.Core;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sln_Lidermax.Dtos;
@@ -56,7 +58,20 @@ namespace Sln_Lidermax.Controllers
             try
             {
                 var result = await ticketsService.ActualizarFechaDespacho(model);
+                return Json(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, mensaje = ex.Message });
+            }
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> ActualizarGuiaTransportista([FromBody] TicketsDto model)
+        {
+            try
+            {
+                var result = await ticketsService.ActualizarGuiaTransportista(model);
                 return Json(new { success = result });
             }
             catch (Exception ex)
@@ -66,6 +81,26 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> DetalleTicket(int id)
+        {
+            var model = new FiltrosTicketsDto
+            {
+                DocEntryTicket = id
+            };
+
+            var lista = await ticketsService.ListadoTicketsRecogidos(model);
+
+            var ticket = lista.FirstOrDefault(); 
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            return View(ticket);
+        }
+
+
         public async Task<IActionResult> ListadoTicketsRecogidos(FiltrosTicketsDto model)
         {   
             var listaTicketsRecogidos = await ticketsService.ListadoTicketsRecogidos(model);
@@ -76,6 +111,21 @@ namespace Sln_Lidermax.Controllers
             }
 
             return View(listaTicketsRecogidos);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EntregarTicket([FromBody] TicketSeleccionadoDto model)
+        {
+            try
+            {
+                var result = ticketsService.EntregarTicket(model);
+
+                return Json(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -197,7 +247,30 @@ namespace Sln_Lidermax.Controllers
             );
         }
 
+        [HttpGet]
+        public IActionResult ObtenerImagenes(int docNum)
+        {
+            try
+            {
+                var lista = ticketsService.ObtenerImagenesLidermax(docNum);
+
+                return Ok(new
+                {
+                    success = true,
+                    images = lista
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
 
 
+        
     }
 }

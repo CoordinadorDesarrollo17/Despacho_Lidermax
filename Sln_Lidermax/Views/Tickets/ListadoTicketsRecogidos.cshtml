@@ -17,23 +17,43 @@
     </div>
 
     <div class="card-body">
-        <div class="row mb-3 gy-2">
+        <div class="card mb-3 border">
+            <div class="card-header bg-light fw-semibold">
+                Filtros
+            </div>
+            <div class="card-body">
+                <div class="row gy-2">
+                    <div class="col-12 col-md-2">
+                        <label class="form-label">Fecha despacho</label>
+                        <input type="date" id="filtroFechaDespacho" class="form-control form-control-sm">
+                    </div>
 
+                    <div class="col-12 col-md-2">
+                        <label class="form-label">Estado</label>
+                        <select id="filtroEstado" class="form-select form-select-sm">
+                            <option value="">Seleccione</option>
+                            <option value="RECOGIDO">RECOGIDO</option>
+                            <option value="ENVIADO">ENVIADO</option>
+                            <option value="DEVOLUCION">DEVOLUCION</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="row mb-3 gy-2">
             <div class="col-12 col-md-6">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <label class="mb-0 fw-semibold">Mostrar</label>
-
                     <select id="pageSize" class="form-select form-select-sm w-auto">
                         @foreach (var size in new[] { 1,5, 10, 20, 40, 60, 80, 100 })
                         {
                             <option value="@size" selected="@(size == 10)">@size</option>
                         }
                     </select>
-
                     <span class="text-nowrap">registros por página</span>
                 </div>
             </div>
-
             <div class="col-12 col-md-6">
                 <div class="d-flex justify-content-start justify-content-md-end gap-2">
                     <input type="text"
@@ -41,7 +61,6 @@
                            class="form-control form-control-sm w-100 w-md-auto"
                            style="max-width: 300px;"
                            placeholder="Buscar:" autocomplete="off" />
-
                     <button id="btnExportarExcel" class="btn btn-success btn-sm">
                         <i class="bi bi-file-earmark-excel"></i>
                     </button>
@@ -50,7 +69,7 @@
 
         </div>
 
-
+      
         <div id="tablaTicketsRecogidos">
             <partial name="_TablaTicketsRecogidos" model="Model" />
         </div>
@@ -59,6 +78,23 @@
     </div>
 </div>
 
+
+<div class="modal fade" id="modalGuiaTransportista" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Guia Transportista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="guiaTransportista" autocomplete="off"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnRegistrarGuiaTransportista">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="modalFecha" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -77,18 +113,35 @@
     </div>
 </div>
 <div class="modal fade" id="modalImagen" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Subir Imágenes</h5>
+                <h5 class="modal-title">Imágenes del Ticket</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
-                <label>Imagen 1: Comprobande de pago</label>
-                <input type="file" class="form-control mb-2" id="img1" accept="image/*" />
-                <label>Imagen 2: Pedido</label>
-                <input type="file" class="form-control" id="img2" accept="image/*" />
+
+                <!-- CONTENEDOR DE IMÁGENES EXISTENTES -->
+                <div class="row mb-3" id="contenedorImagenesModal">
+                    <!-- Aquí se cargan imágenes dinámicamente -->
+                </div>
+
+                <hr />
+
+                <!-- SUBIR NUEVAS IMÁGENES -->
+                <h6>Subir nuevas imágenes</h6>
+                <div class="mb-2">
+                    <label class="form-label">Imagen 1: Comprobante de pago</label>
+                    <input type="file" class="form-control" id="img1" accept="image/*" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Imagen 2: Pedido</label>
+                    <input type="file" class="form-control" id="img2" accept="image/*" />
+                </div>
+
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="btnRegistrarImagen">Registrar</button>
             </div>
@@ -101,13 +154,17 @@
         const cboPageSize = document.getElementById("pageSize");
         const tablaTicketsRecogidos = document.getElementById("tablaTicketsRecogidos");
 
+        const filtroFechaDespacho = document.getElementById("filtroFechaDespacho");
+        const filtroEstado = document.getElementById("filtroEstado");
+
         function cargarTabla(page = 1) { //numero de pagina por default
 
             const params = new URLSearchParams({ //parametros
                    "Buscar": txtBuscar.value,
                    "Paginacion.Page": page,
-                   "Paginacion.PageSize": cboPageSize.value
-                
+                   "Paginacion.PageSize": cboPageSize.value,
+                   "FechaDespacho": filtroFechaDespacho.value,
+                   "Estado": filtroEstado.value
              });
 
             let url = `@Url.Action("ListadoTicketsRecogidos")?${params.toString()}`; //accion del controlador , pasamos parametros
@@ -127,6 +184,8 @@
         }
         //lanzamos eventos de los <select>
         cboPageSize.addEventListener("change", () => cargarTabla(1));
+        filtroFechaDespacho.addEventListener("change", () => cargarTabla(1));
+        filtroEstado.addEventListener("change", () => cargarTabla(1));
 
         //Agregamos evento para que el usuario de enter
         agregarEventosBusqueda(txtBuscar);
@@ -167,6 +226,9 @@
          let docEntryTicketSeleccionado = 0;
          let docNumTicketSeleccionado = 0;
         // Cuando se abre el modal
+          $(document).on("click", ".btn-guiaTransportista", function () {
+            docEntryTicketSeleccionado = $(this).data("docentryticket");
+        });
         $(document).on("click", ".btn-fecha", function () {
             docEntryTicketSeleccionado = $(this).data("docentryticket");
         });
@@ -174,6 +236,8 @@
             docNumTicketSeleccionado = $(this).data("docnumticket");
             docEntryTicketSeleccionado = $(this).data("docentryticket");
             docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+
+                cargarImagenesModal(docNumTicketSeleccionado);
         });
 
         // Registrar fecha
@@ -233,7 +297,7 @@
             });
         });
 
-
+        ///registrar imagenes
         $("#btnRegistrarImagen").click(function () {
 
             let img1 = $("#img1")[0].files[0];
@@ -278,7 +342,11 @@
                             title: "Imágenes registradas",
                             text: "El ticket fue marcado como ENVIADO"
                         }).then(() => {
-                            location.reload();
+                           
+                              // cargarImagenesModal(docNumTicketSeleccionado);
+                              // $("#img1").val("");
+                              // $("#img2").val("");
+                                location.reload();
                         });
                     } else {
                         Swal.fire({
@@ -297,9 +365,49 @@
             });
         });
 
+        //CARGAR IMAGENES
+       function cargarImagenesModal(docNum) {
+            const contenedor = document.getElementById("contenedorImagenesModal");
+            contenedor.innerHTML = `
+                <div class="text-center w-100">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2">Cargando imágenes...</p>
+                </div>
+            `;
 
+            fetch(`/Tickets/ObtenerImagenes?docNum=${docNum}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success || data.images.length === 0) {
+                        contenedor.innerHTML = `
+                            <div class="text-muted text-center w-100">
+                                No hay imágenes disponibles
+                            </div>
+                        `;
+                        return;
+                    }
 
-               $(document).on('click', '.btn-anular', function () {
+                    contenedor.innerHTML = "";
+                    data.images.forEach(img => {
+                        contenedor.innerHTML += `
+                            <div class="col-md-6 text-center mb-3">
+                                <div class="fw-semibold mb-2">${img.tipo}</div>
+                                <img src="${img.imagen}" class="img-fluid border rounded shadow-sm" style="max-height:300px;">
+                            </div>
+                        `;
+                    });
+                })
+                .catch(() => {
+                    contenedor.innerHTML = `
+                        <div class="text-danger text-center w-100">
+                            Error al cargar imágenes
+                        </div>
+                    `;
+                });
+        }
+
+        /// cambiar estado a DEVOLUCION
+        $(document).on('click', '.btn-anular', function () {
 
             let docEntryTicket = $(this).data('docentryticket');
             let docEntryHojaRuta = $(this).data('docentryhojaruta');
@@ -354,12 +462,134 @@
             });
         });
 
-
-
-          document.getElementById("btnExportarExcel").addEventListener("click", function () {
+        document.getElementById("btnExportarExcel").addEventListener("click", function () {
             const query = txtBuscar.value;
-            const url = `@Url.Action("ExportarExcelTicketsHojaRuta", "Tickets")?Buscar=${encodeURIComponent(query)}&esHojaRuta=false`;
+            const url = `@Url.Action("ExportarExcelTicketsHojaRuta", "Tickets")?Buscar=${encodeURIComponent(query)}&esHojaRuta=false&FechaDespacho=${filtroFechaDespacho.value}&Estado=${filtroEstado.value}`;
             window.location.href = url;
         });
+
+
+        // Registrar guia transportista
+        $("#btnRegistrarGuiaTransportista").click(function () {
+            let guia = $("#guiaTransportista").val();
+            if (!guia) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Guia transportista requerida',
+                    text: 'Ingrese un valor'
+                });
+                return;
+            }
+            $.ajax({
+                url: '/Tickets/ActualizarGuiaTransportista',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    docEntryTicket: docEntryTicketSeleccionado,
+                    guiaTransportista: guia
+                }),
+                beforeSend: function () {
+                    Swal.fire({
+                        title: 'Guardando...',
+                        text: 'Registrando guia transportista',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function (resp) {
+                    if (resp.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Registrado',
+                            text: 'Guia transportista registrada correctamente',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo registrar la guia transportista'
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error del servidor',
+                        text: 'Ocurrió un problema al procesar la solicitud'
+                    });
+                }
+            });
+        });
+
+
+        ///cambiar estado a ENTREGADO
+                $(document).on('click', '.btn-entregar', function () {
+
+            let docEntryTicket = $(this).data('docentryticket');
+           let docEntryHojaRuta = $(this).data('docentryhojaruta');
+
+            Swal.fire({
+                title: '¿Confirmar entrega?',
+                text: "El ticket será marcado como ENTREGADO",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, entregar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: '/Tickets/EntregarTicket',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            docEntryTicket: docEntryTicket,
+                              docEntryHojaRuta : docEntryHojaRuta
+                        }),
+                        beforeSend: function () {
+                            Swal.fire({
+                                title: 'Procesando...',
+                                text: 'Marcando como entregado',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                        },
+                        success: function (resp) {
+                            if (resp.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Entregado',
+                                    text: 'El ticket fue marcado como ENTREGADO'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: resp.message || 'No se pudo procesar'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error del servidor'
+                            });
+                        }
+                    });
+
+                }
+            });
+        });
+
     </script>
 }

@@ -23,5 +23,10 @@
         public string? DistritoTransporte { get; set; } 
 
         public string? GuiaRemision { get; set; } 
+
+        public string? GuiaTransportista { get; set; }
+
+        public DateTime? FechaDevolucion { get; set; }
+        public DateTime? FechaEntrega { get; set; }
     }
 }

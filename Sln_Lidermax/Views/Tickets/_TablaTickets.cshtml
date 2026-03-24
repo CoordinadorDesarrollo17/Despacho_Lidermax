@@ -39,14 +39,14 @@
                                data-docentryhojaruta="@u?.DocEntryHojaRuta"
                                @(string.IsNullOrEmpty(u?.Estado) ? "" : "disabled")>
                     </td>
-                    <td data-label="DocNum">@u?.DocNumTicket</td>
+                    <td data-label="NroTicket">@u?.DocNumTicket</td>
                     <td data-label="GuiaRemision">@u?.GuiaRemision</td>
-                    <td data-label="CardCode">@u?.CardCode</td>
-                    <td data-label="CardName">@u?.CardName</td>
-                    <td data-label="Direccion1">@u?.Direccion1</td>
-                    <td data-label="Direccion2">@u?.Direccion2</td>
+                    <td data-label="Ruc">@u?.CardCode</td>
+                    <td data-label="RazonSocial">@u?.CardName</td>
+                    <td data-label="DirEnvio">@u?.Direccion1</td>
+                    <td data-label="Destino">@u?.Direccion2</td>
                     <td data-label="Agencia">@u?.Agencia</td>
-                    <td data-label="distritoTransporte">@u?.DistritoTransporte</td>
+                    <td data-label="DistritoTrans.">@u?.DistritoTransporte</td>
                     <td data-label="ModoEnvio">@u?.ModoEnvio</td>
                     <td data-label="Cajas" class="text-end">@u?.Cajas?.ToString("N2")</td>
                     <td data-label="Peso" class="text-end">@u?.Peso?.ToString("N2")</td>

@@ -27,7 +27,7 @@ namespace Sln_Lidermax.Repositories
                                CASE WHEN tk.EnvioAgencia = 'Agencia de transporte' THEN (v3_2.Calle + ' / ' +  v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento) ELSE '' END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
-                               tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision
+                               tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega
                         FROM al.RRU0 AS tr 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
                         LEFT JOIN vt.RTV1 AS v1 ON v1.DocEntry = tk.DocEntry
@@ -37,17 +37,20 @@ namespace Sln_Lidermax.Repositories
                         LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryTicket = tk.DocEntry 
                         WHERE tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
                           AND tr.Estado <> 'LIBERADO' 
-                          AND rfd.Estado IN ('RECOGIDO','ENVIADO') 
+                          AND rfd.Estado <> '' --IN ('RECOGIDO','ENVIADO') 
                           AND CONCAT(CONVERT(VARCHAR(10), rfd.FechaRecojo, 103),CONVERT(VARCHAR(10), rfd.FechaDespacho, 103),rfd.Estado,tk.DistritoEnvio,tr.Guias,v1.TelfPer,v1.NombrePer,tk.DocNum,tk.CardCode,tk.CardName,v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,v3_1.Calle,v3_2.Departamento, v3_2.Provincia,v3_2.Distrito,tk.Agencia,tk.EnvioAgencia) LIKE @Buscar
+                        AND (@DocEntry IS NULL OR tk.DocEntry = @DocEntry)
+                        AND (@Estado IS NULL OR rfd.Estado = @Estado)
+                        AND (@FechaDespacho IS NULL OR CAST(rfd.FechaDespacho AS DATE) = CAST(@FechaDespacho AS DATE))
                         GROUP BY tr.DocEntry,tk.DocEntry,tk.DocNum,tk.CardCode,tk.CardName,
                                  v3_1.Calle,v3_2.Calle, tk.Agencia,tk.EnvioAgencia, tk.Cajas,
                                  rfd.FechaRecojo,rfd.FechaDespacho,rfd.Estado, v1.NombrePer,v1.TelfPer,
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,tk.DistritoEnvio,
-                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias
+                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega
                         ORDER BY rfd.Estado DESC
                     ";
 
-            var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%" });
+            var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryTicket, Estado = model.Estado, FechaDespacho = model.FechaDespacho });
             return result;
         }
 
@@ -117,10 +120,10 @@ namespace Sln_Lidermax.Repositories
 
             var result = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
 
-            sql = "UPDATE [al].[RRU0] SET Estado ='ENVIADO' WHERE DocEntryTicket = @DocEntryTicket ";
+            sql = "UPDATE [al].[RRU0] SET Estado ='RECOGIDO' WHERE DocEntryTicket = @DocEntryTicket ";
             var result1 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
 
-            sql = "UPDATE [vt].[ORTV] SET Estado ='ENVIADO' WHERE DocEntry = @DocEntryTicket ";
+            sql = "UPDATE [vt].[ORTV] SET Estado ='RECOGIDO' WHERE DocEntry = @DocEntryTicket ";
             var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
 
             return result > 0 && result1 > 0 && result2 > 0;
@@ -142,7 +145,22 @@ namespace Sln_Lidermax.Repositories
 
             return result > 0;
         }
+        public async Task<bool> ActualizarGuiaTransportista(TicketsDto model)
+        {
+            using var xCon = new SqlConnection(dapperContext.connectionString);
 
+            var sql = @"UPDATE [tmp].[registro_fecha_despacho]
+                    SET GuiaTransportista = @GuiaTransportista
+                    WHERE DocEntryTicket = @DocEntryTicket";
+
+            var result = await xCon.ExecuteAsync(sql, new
+            {
+                model.DocEntryTicket,
+                model.GuiaTransportista
+            });
+
+            return result > 0;
+        }
         public async Task<bool> ActualizarEstadoEnviado(int docEntryTicket, SqlConnection con, SqlTransaction tx)
         {
             var sql = @"UPDATE [tmp].[registro_fecha_despacho]
@@ -152,15 +170,31 @@ namespace Sln_Lidermax.Repositories
             var result = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
 
 
-            sql = "UPDATE [al].[RRU0] SET Estado ='ENTREGADO' WHERE DocEntryTicket = @DocEntryTicket ";
+            sql = "UPDATE [al].[RRU0] SET Estado ='ENVIADO' WHERE DocEntryTicket = @DocEntryTicket ";
            var result1 =  await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
+
+            sql = "UPDATE [vt].[ORTV] SET Estado ='ENVIADO' WHERE DocEntry = @DocEntryTicket ";
+            var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
+
+            return result > 0 && result1 > 0 && result2 > 0;
+        }
+        public async Task<bool> ActualizarEstadoEntregado(int docEntryTicket, SqlConnection con, SqlTransaction tx)
+        {
+            var sql = @"UPDATE [tmp].[registro_fecha_despacho]
+                SET Estado = 'ENTREGADO', FechaEntrega = GETDATE()
+                WHERE DocEntryTicket = @DocEntryTicket";
+
+            var result = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
+
+
+            sql = "UPDATE [al].[RRU0] SET Estado ='ENTREGADO' WHERE DocEntryTicket = @DocEntryTicket ";
+            var result1 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
 
             sql = "UPDATE [vt].[ORTV] SET Estado ='ENTREGADO' WHERE DocEntry = @DocEntryTicket ";
             var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
 
             return result > 0 && result1 > 0 && result2 > 0;
         }
-
         public async Task<(int TotalTickets, int TicketsObtenidos)> ObtenerConteoTickets(int docEntryHojaRuta, string[] estado, SqlConnection con, SqlTransaction tx)
         {
             var sql = @"
@@ -195,7 +229,7 @@ namespace Sln_Lidermax.Repositories
             sql = "UPDATE [vt].[ORTV] SET Estado ='DEVOLUCION' WHERE DocEntry = @DocEntryTicket ";
             var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket }, tx);
 
-            sql = "UPDATE [tmp].[registro_fecha_despacho] SET Estado ='DEVOLUCION' WHERE DocEntryTicket = @DocEntryTicket ";
+            sql = "UPDATE [tmp].[registro_fecha_despacho] SET Estado ='DEVOLUCION', FechaDevolucion = GETDATE() WHERE DocEntryTicket = @DocEntryTicket ";
             var result3 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket}, tx);
 
             return result1 > 0 && result2 > 0 && result3>0;

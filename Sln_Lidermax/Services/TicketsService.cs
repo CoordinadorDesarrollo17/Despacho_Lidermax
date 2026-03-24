@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Microsoft.Data.SqlClient;
 using Sln_Lidermax.Dtos;
 using Sln_Lidermax.Interfaces;
@@ -72,6 +73,10 @@ namespace Sln_Lidermax.Services
         {
             return await ticketsRepository.ActualizarFechaDespacho(model);
         }
+        public async Task<bool> ActualizarGuiaTransportista(TicketsDto model)
+        {
+            return await ticketsRepository.ActualizarGuiaTransportista(model);
+        }
 
         public async Task<bool> DevolverTicket(TicketSeleccionadoDto model)
         {
@@ -92,6 +97,39 @@ namespace Sln_Lidermax.Services
                 return false;
             }
         }
+        public async Task<bool> EntregarTicket(TicketSeleccionadoDto request)
+        {
+            using SqlConnection con = new SqlConnection(dapperContext.connectionString);
+            await con.OpenAsync();
+            using var tx = con.BeginTransaction();
+            try
+            {
+                var resultTicketEntregado = await ticketsRepository.ActualizarEstadoEntregado(request.DocEntryTicket, con, tx);
+
+                var conteo = await ticketsRepository.ObtenerConteoTickets(request.DocEntryHojaRuta, new[] { "ENTREGADO", "DEVOLUCION" }, con, tx);
+
+                bool resultFinal;
+
+                if (conteo.TotalTickets == conteo.TicketsObtenidos)
+                {
+                    resultFinal = await ticketsRepository.ActualizarEstadoHojaRuta(request.DocEntryHojaRuta, "TERMINADO", con, tx);
+                }
+                else
+                {
+                    resultFinal = resultTicketEntregado;
+                }
+
+                tx.Commit();
+
+                return resultTicketEntregado;
+            }
+            catch
+            {
+                tx.Rollback();
+                return false;
+            }
+        }
+
         public async Task<bool> SubirImagenes(SubirImagenesDto request)
         {
             string rutaBase = @"C:\COBEFARWEBFILES\DespachoLidermax";
@@ -131,22 +169,11 @@ namespace Sln_Lidermax.Services
                    
                 var resultTicketEnviado = await ticketsRepository.ActualizarEstadoEnviado(request.DocEntryTicket, con, tx);
 
-                var conteo = await ticketsRepository.ObtenerConteoTickets(request.DocEntryHojaRuta, new[] { "ENVIADO", "DEVOLUCION" }, con, tx);
-
-                bool resultFinal;
-
-                if (conteo.TotalTickets == conteo.TicketsObtenidos)
-                {
-                    resultFinal = await ticketsRepository.ActualizarEstadoHojaRuta(request.DocEntryHojaRuta, "TERMINADO", con, tx);
-                }
-                else
-                {
-                    resultFinal = resultTicketEnviado;
-                }
+               
 
                 tx.Commit();
 
-                return resultFinal;
+                return resultTicketEnviado;
             }
             catch
             {
@@ -167,6 +194,45 @@ namespace Sln_Lidermax.Services
         public async Task<List<TicketsDto>> ListadoTicketsRecogidosExcel(FiltrosTicketsDto model)
         {
             return await ticketsRepository.ListadoTicketsRecogidosExcel(model);
+        }
+
+        public List<object> ObtenerImagenesLidermax(int docNumTicket)
+        {
+            List<object> arrImg = new List<object>();
+
+            string ruta = @"C:\COBEFARWEBFILES\DespachoLidermax";
+
+            if (Directory.Exists(ruta))
+            {
+                var archivos = Directory.GetFiles(ruta, docNumTicket + "_*");
+
+                foreach (var archivo in archivos)
+                {
+                    string extension = Path.GetExtension(archivo).ToLower();
+
+                    if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
+                    {
+                        byte[] img = File.ReadAllBytes(archivo);
+                        string base64 = Convert.ToBase64String(img);
+                        string ext = extension.Replace(".", "");
+
+                        string nombreArchivo = Path.GetFileNameWithoutExtension(archivo);
+                        string tipo = "Desconocido";
+
+                        if (nombreArchivo.ToLower().Contains("comprobante"))
+                            tipo = "Comprobante";
+                        else if (nombreArchivo.ToLower().Contains("pedido"))
+                            tipo = "Pedido";
+
+                        arrImg.Add(new
+                        {
+                            imagen = $"data:image/{ext};base64,{base64}",
+                            tipo = tipo
+                        });
+                    }
+                }
+            }
+            return arrImg;
         }
     }
 }
