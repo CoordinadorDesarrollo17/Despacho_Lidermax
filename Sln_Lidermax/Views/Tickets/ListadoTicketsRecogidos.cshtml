@@ -96,6 +96,38 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalEntrega" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Fecha Entrega</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="datetime-local" class="form-control" id="fechaEntrega" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnRegistrarFechaEntrega">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalDevolucion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Fecha de Devolucion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="datetime-local" class="form-control" id="fechaDevolucion" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnRegistrarFechaDevolucion">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="modalFecha" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -107,7 +139,7 @@
                 <input type="datetime-local" class="form-control" id="fechaDespacho" />             
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnRegistrarFecha">Registrar</button>
+                <button type="button" class="btn btn-primary" id="btnRegistrarFechaDespacho">Registrar</button>
             </div>
         </div>
     </div>
@@ -225,6 +257,8 @@
 
          let docEntryTicketSeleccionado = 0;
          let docNumTicketSeleccionado = 0;
+          let docEntryHojaRutaSeleccionado = 0;
+
         // Cuando se abre el modal
           $(document).on("click", ".btn-guiaTransportista", function () {
             docEntryTicketSeleccionado = $(this).data("docentryticket");
@@ -237,11 +271,24 @@
             docEntryTicketSeleccionado = $(this).data("docentryticket");
             docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
 
-                cargarImagenesModal(docNumTicketSeleccionado);
+            cargarImagenesModal(docNumTicketSeleccionado);
         });
 
-        // Registrar fecha
-        $("#btnRegistrarFecha").click(function () {
+        $(document).on("click", ".btn-entregar", function () {
+             docEntryTicketSeleccionado = $(this).data("docentryticket");
+             docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+        });
+
+        $(document).on("click", ".btn-anular", function () {
+             docEntryTicketSeleccionado = $(this).data("docentryticket");
+             docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+        });
+
+
+        
+
+        // Registrar fecha despacho
+         $("#btnRegistrarFechaDespacho").click(function () {
             let fecha = $("#fechaDespacho").val();
             if (!fecha) {
                 Swal.fire({
@@ -406,61 +453,6 @@
                 });
         }
 
-        /// cambiar estado a DEVOLUCION
-        $(document).on('click', '.btn-anular', function () {
-
-            let docEntryTicket = $(this).data('docentryticket');
-            let docEntryHojaRuta = $(this).data('docentryhojaruta');
-
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: "Esta acción marcará el ticket como DEVOLUCIÓN",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, devolver',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-
-                if (result.isConfirmed) {
-
-                    $.ajax({
-                        url: '/Tickets/DevolverTicket',
-                        type: 'POST',
-                        data: JSON.stringify({
-                    docEntryTicket: docEntryTicket,
-                    docEntryHojaRuta: docEntryHojaRuta
-                }),
-                        contentType: 'application/json; charset=utf-8',
-                        success: function (data) {
-
-                                if (data.success) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Devuelto correctamente',
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    }).then(() => {
-                                        location.reload(); 
-                                    });
-
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'No se pudo devolver'
-                                    });
-                                }
-                            },
-                        error: function () {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error en la solicitud'
-                            });
-                        }
-                    });
-
-                }
-            });
-        });
 
         document.getElementById("btnExportarExcel").addEventListener("click", function () {
             const query = txtBuscar.value;
@@ -528,68 +520,111 @@
 
 
         ///cambiar estado a ENTREGADO
-                $(document).on('click', '.btn-entregar', function () {
+        $("#btnRegistrarFechaEntrega").click(function () {
 
-            let docEntryTicket = $(this).data('docentryticket');
-           let docEntryHojaRuta = $(this).data('docentryhojaruta');
+            let fecha = $("#fechaEntrega").val();
 
-            Swal.fire({
-                title: '¿Confirmar entrega?',
-                text: "El ticket será marcado como ENTREGADO",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, entregar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
+            if (!fecha) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Fecha requerida',
+                    text: 'Seleccione la fecha de entrega'
+                });
+                return;
+            }
 
-                if (result.isConfirmed) {
-
-                    $.ajax({
-                        url: '/Tickets/EntregarTicket',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            docEntryTicket: docEntryTicket,
-                              docEntryHojaRuta : docEntryHojaRuta
-                        }),
-                        beforeSend: function () {
-                            Swal.fire({
-                                title: 'Procesando...',
-                                text: 'Marcando como entregado',
-                                allowOutsideClick: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-                        },
-                        success: function (resp) {
-                            if (resp.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Entregado',
-                                    text: 'El ticket fue marcado como ENTREGADO'
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: resp.message || 'No se pudo procesar'
-                                });
-                            }
-                        },
-                        error: function () {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error del servidor'
-                            });
-                        }
+            $.ajax({
+                url: '/Tickets/EntregarTicket',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    docEntryTicket: docEntryTicketSeleccionado,
+                    docEntryHojaRuta: docEntryHojaRutaSeleccionado,
+                    fecha: fecha //  IMPORTANTE 
+                }),
+                beforeSend: function () {
+                    Swal.fire({
+                        title: 'Procesando...',
+                        text: 'Registrando entrega',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
                     });
-
+                },
+                success: function (resp) {
+                    if (resp.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Entregado correctamente'
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: resp.message
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error del servidor'
+                    });
                 }
             });
         });
+
+          /// cambiar estado a DEVOLUCION
+         $("#btnRegistrarFechaDevolucion").click(function () {
+
+             let fecha = $("#fechaDevolucion").val();
+
+             if (!fecha) {
+                 Swal.fire({
+                     icon: 'warning',
+                     title: 'Fecha requerida',
+                     text: 'Seleccione la fecha de devolución'
+                 });
+                 return;
+             }
+
+             $.ajax({
+                 url: '/Tickets/DevolverTicket',
+                 type: 'POST',
+                 contentType: 'application/json',
+                 data: JSON.stringify({
+                     docEntryTicket: docEntryTicketSeleccionado,
+                     docEntryHojaRuta: docEntryHojaRutaSeleccionado,
+                     fecha: fecha //  IMPORTANTE
+                 }),
+                 beforeSend: function () {
+                     Swal.fire({
+                         title: 'Procesando...',
+                         text: 'Registrando devolución',
+                         allowOutsideClick: false,
+                         didOpen: () => Swal.showLoading()
+                     });
+                 },
+                 success: function (resp) {
+                     if (resp.success) {
+                         Swal.fire({
+                             icon: 'success',
+                             title: 'Devuelto correctamente'
+                         }).then(() => location.reload());
+                     } else {
+                         Swal.fire({
+                             icon: 'error',
+                             title: 'Error'
+                         });
+                     }
+                 },
+                 error: function () {
+                     Swal.fire({
+                         icon: 'error',
+                         title: 'Error del servidor'
+                     });
+                 }
+             });
+         });
 
     </script>
 }

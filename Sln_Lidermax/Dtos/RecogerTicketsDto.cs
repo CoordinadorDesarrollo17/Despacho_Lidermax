@@ -9,6 +9,8 @@
     {
         public int DocEntryTicket { get; set; }
         public int DocEntryHojaRuta { get; set; }
+
+        public DateTime Fecha { get; set; } 
     }
 
    

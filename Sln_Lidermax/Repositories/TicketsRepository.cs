@@ -4,6 +4,7 @@ using Sln_Lidermax.Interfaces;
 using Sln_Lidermax.Dtos;
 using X.PagedList;
 using X.PagedList.Extensions;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace Sln_Lidermax.Repositories
 {
@@ -178,20 +179,19 @@ namespace Sln_Lidermax.Repositories
 
             return result > 0 && result1 > 0 && result2 > 0;
         }
-        public async Task<bool> ActualizarEstadoEntregado(int docEntryTicket, SqlConnection con, SqlTransaction tx)
+        public async Task<bool> ActualizarEstadoEntregado(TicketSeleccionadoDto model, SqlConnection con, SqlTransaction tx)
         {
             var sql = @"UPDATE [tmp].[registro_fecha_despacho]
-                SET Estado = 'ENTREGADO', FechaEntrega = GETDATE()
+                SET Estado = 'ENTREGADO', FechaEntrega = @FechaEntrega
                 WHERE DocEntryTicket = @DocEntryTicket";
 
-            var result = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
-
+            var result = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket, FechaEntrega = model.Fecha }, tx);
 
             sql = "UPDATE [al].[RRU0] SET Estado ='ENTREGADO' WHERE DocEntryTicket = @DocEntryTicket ";
-            var result1 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
+            var result1 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket }, tx);
 
             sql = "UPDATE [vt].[ORTV] SET Estado ='ENTREGADO' WHERE DocEntry = @DocEntryTicket ";
-            var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
+            var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket }, tx);
 
             return result > 0 && result1 > 0 && result2 > 0;
         }
@@ -229,8 +229,8 @@ namespace Sln_Lidermax.Repositories
             sql = "UPDATE [vt].[ORTV] SET Estado ='DEVOLUCION' WHERE DocEntry = @DocEntryTicket ";
             var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket }, tx);
 
-            sql = "UPDATE [tmp].[registro_fecha_despacho] SET Estado ='DEVOLUCION', FechaDevolucion = GETDATE() WHERE DocEntryTicket = @DocEntryTicket ";
-            var result3 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket}, tx);
+            sql = "UPDATE [tmp].[registro_fecha_despacho] SET Estado ='DEVOLUCION', FechaDevolucion = @FechaDevolucion WHERE DocEntryTicket = @DocEntryTicket ";
+            var result3 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket, FechaDevolucion = model.Fecha}, tx);
 
             return result1 > 0 && result2 > 0 && result3>0;
         }

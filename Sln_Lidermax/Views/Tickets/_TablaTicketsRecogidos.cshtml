@@ -32,7 +32,7 @@
                     <td data-label="Destino">@u?.Direccion2</td>
                     <td data-label="Agencia">@u?.Agencia</td>
                     <td data-label="ModoEnvio">@u?.ModoEnvio</td>
-                    <td data-label="Cajas" class="text-end">@u?.Cajas?.ToString("N2")</td>
+                    <td data-label="Cajas" class="text-end">@u?.Cajas</td>
                     <td data-label="Peso" class="text-end">@u?.Peso?.ToString("N2")</td>      
                     <td data-label="FechaDespacho" class="text-end">@u?.FechaDespacho?.ToString("dd/MM/yyyy")</td>
                     <td data-label="Estado">@u?.Estado</td>
@@ -76,18 +76,21 @@
                                     class="btn btn-sm btn-dark btn-entregar"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
-                                    title="Entregar ticket"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEntrega"
                                     @(u?.Estado != "ENVIADO" ? "disabled" : "")>
                                 <i class="bi bi-check-circle"></i>
                             </button>
+
                             <button type="button"
                                     class="btn btn-sm btn-danger btn-anular"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
-                                    title="@(u?.Estado == "ENVIADO" ? "" : "Devolución")"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDevolucion"
                                     @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>
                                 <i class="bi bi-x-circle"></i>
-                            </button>      
+                            </button>
                         </div>
                     </td>
                 </tr>

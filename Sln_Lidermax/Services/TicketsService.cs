@@ -104,7 +104,7 @@ namespace Sln_Lidermax.Services
             using var tx = con.BeginTransaction();
             try
             {
-                var resultTicketEntregado = await ticketsRepository.ActualizarEstadoEntregado(request.DocEntryTicket, con, tx);
+                var resultTicketEntregado = await ticketsRepository.ActualizarEstadoEntregado(request, con, tx);
 
                 var conteo = await ticketsRepository.ObtenerConteoTickets(request.DocEntryHojaRuta, new[] { "ENTREGADO", "DEVOLUCION" }, con, tx);
 

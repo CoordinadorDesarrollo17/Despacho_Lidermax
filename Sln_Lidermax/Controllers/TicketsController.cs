@@ -114,11 +114,27 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DevolverTicket([FromBody] TicketSeleccionadoDto model)
+        {
+            try
+            {
+                var result = await ticketsService.DevolverTicket(model);
+
+                return Json(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
+        [HttpPost]
         public async Task<IActionResult> EntregarTicket([FromBody] TicketSeleccionadoDto model)
         {
             try
             {
-                var result = ticketsService.EntregarTicket(model);
+                var result = await ticketsService.EntregarTicket(model);
 
                 return Json(new { success = result });
             }
@@ -143,14 +159,7 @@ namespace Sln_Lidermax.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DevolverTicket([FromBody] TicketSeleccionadoDto model)
-        {
-            var result = await ticketsService.DevolverTicket(model);
-
-            return Json(new { success = result });
-        }
-
+  
 
         public async Task<IActionResult> ExportarExcelTicketsHojaRuta(FiltrosTicketsDto model)
         {
