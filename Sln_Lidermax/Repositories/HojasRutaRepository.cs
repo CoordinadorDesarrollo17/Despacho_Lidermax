@@ -31,11 +31,11 @@ namespace Sln_Lidermax.Repositories
                         FROM al.ORRU AS r
                         LEFT JOIN al.RRU0 AS tr ON r.DocEntry = tr.DocEntry 
                         LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket 
-                        WHERE tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') AND 
+                        WHERE (tk.EnvioAgencia LIKE '%Domicilio%' OR tk.EnvioAgencia LIKE '%Agencia%')  AND 
                         CONCAT(r.DocNum,r.TipoRuta,CONVERT(VARCHAR(10), r.TiempoPac, 103),r.Estado) LIKE @Buscar
                         GROUP BY r.DocEntry,r.DocNum, r.TipoRuta, r.TiempoPac ,  r.Estado   
-                        ORDER BY r.Estado 
-                    ";
+                        ORDER BY r.Estado ASC,r.TiempoPac DESC
+                    "; //tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente')
 
             var result = await xCon.QueryAsync<HojasRutaDto>(sql, new { Buscar = "%" + model.Buscar + "%" });
 

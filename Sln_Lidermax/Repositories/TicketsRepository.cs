@@ -25,7 +25,7 @@ namespace Sln_Lidermax.Repositories
                         SELECT TOP 200 tr.DocEntry AS DocEntryHojaRuta, tk.DocEntry AS DocEntryTicket, tk.DocNum AS DocNumTicket,
                                tk.CardCode, tk.CardName,
                                (v3_1.Calle + ' / ' + v3_1.Distrito + ' - ' + v3_1.Provincia + ' - ' + v3_1.Departamento ) AS Direccion1,
-                               CASE WHEN tk.EnvioAgencia = 'Agencia de transporte' THEN (v3_2.Calle + ' / ' +  v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento) ELSE '' END AS Direccion2,
+                               CASE WHEN tk.EnvioAgencia LIKE '%Agencia%' THEN (v3_2.Calle + ' / ' +  v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento) ELSE '' END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
                                tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega
@@ -36,7 +36,7 @@ namespace Sln_Lidermax.Repositories
                         LEFT JOIN vt.RTV3 AS v3_2 ON v3_2.DocEntry = tk.DocEntry AND v3_2.IdDireccion = 2
                         LEFT JOIN vt.RTV6 AS v6 ON v6.DocEntry = tk.DocEntry 
                         LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryTicket = tk.DocEntry 
-                        WHERE tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
+                        WHERE (tk.EnvioAgencia LIKE '%Domicilio%' OR tk.EnvioAgencia LIKE '%Agencia%')
                           AND tr.Estado <> 'LIBERADO' 
                           AND rfd.Estado <> '' --IN ('RECOGIDO','ENVIADO') 
                           AND CONCAT(CONVERT(VARCHAR(10), rfd.FechaRecojo, 103),CONVERT(VARCHAR(10), rfd.FechaDespacho, 103),rfd.Estado,tk.DistritoEnvio,tr.Guias,v1.TelfPer,v1.NombrePer,tk.DocNum,tk.CardCode,tk.CardName,v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,v3_1.Calle,v3_2.Departamento, v3_2.Provincia,v3_2.Distrito,tk.Agencia,tk.EnvioAgencia) LIKE @Buscar
@@ -49,7 +49,7 @@ namespace Sln_Lidermax.Repositories
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,tk.DistritoEnvio,
                                  v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega
                         ORDER BY rfd.Estado DESC
-                    ";
+                    "; // tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
 
             var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryTicket, Estado = model.Estado, FechaDespacho = model.FechaDespacho });
             return result;
@@ -63,7 +63,7 @@ namespace Sln_Lidermax.Repositories
                         SELECT TOP 200 tr.DocEntry AS DocEntryHojaRuta, tk.DocEntry AS DocEntryTicket, tk.DocNum AS DocNumTicket,
                                tk.CardCode, tk.CardName,
                                (v3_1.Calle + ' / ' + v3_1.Distrito + ' - ' + v3_1.Provincia + ' - ' + v3_1.Departamento) AS Direccion1,
-                               CASE WHEN tk.EnvioAgencia = 'Agencia de transporte' THEN (v3_2.Calle + ' / ' + v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento) ELSE '' END AS Direccion2,
+                               CASE WHEN tk.EnvioAgencia LIKE '%Agencia%' THEN (v3_2.Calle + ' / ' + v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento) ELSE '' END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
                                tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision
