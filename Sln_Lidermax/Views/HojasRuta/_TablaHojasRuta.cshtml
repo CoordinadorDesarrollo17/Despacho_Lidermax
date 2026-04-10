@@ -62,6 +62,13 @@
                            class="btn btn-warning btn-sm">
                             <i class="bi bi-eye"></i>
                         </a>
+                            <a asp-controller="HojasRuta"
+                               asp-action="ExportarExcelPorHojaRuta"
+                               asp-route-docEntryHojaRuta="@u?.DocEntry"
+                               asp-route-docNumHojaRuta="@u?.DocNum"
+                               class="btn btn-success btn-sm">
+                                <i class="bi bi-file-earmark-excel"></i>
+                            </a>
                         </div>
                     </td>
                 </tr>

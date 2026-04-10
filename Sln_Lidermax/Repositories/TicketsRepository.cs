@@ -30,13 +30,14 @@ namespace Sln_Lidermax.Repositories
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
                                tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega
                         FROM al.RRU0 AS tr 
+                        LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
                         LEFT JOIN vt.RTV1 AS v1 ON v1.DocEntry = tk.DocEntry
                         LEFT JOIN vt.RTV3 AS v3_1 ON v3_1.DocEntry = tk.DocEntry AND v3_1.IdDireccion = 1
                         LEFT JOIN vt.RTV3 AS v3_2 ON v3_2.DocEntry = tk.DocEntry AND v3_2.IdDireccion = 2
                         LEFT JOIN vt.RTV6 AS v6 ON v6.DocEntry = tk.DocEntry 
                         LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryTicket = tk.DocEntry 
-                        WHERE (tk.EnvioAgencia LIKE '%Domicilio%' OR tk.EnvioAgencia LIKE '%Agencia%')
+                        WHERE r.TransDesc LIKE '%LIDERMAX%'
                           AND tr.Estado <> 'LIBERADO' 
                           AND rfd.Estado <> '' --IN ('RECOGIDO','ENVIADO') 
                           AND CONCAT(CONVERT(VARCHAR(10), rfd.FechaRecojo, 103),CONVERT(VARCHAR(10), rfd.FechaDespacho, 103),rfd.Estado,tk.DistritoEnvio,tr.Guias,v1.TelfPer,v1.NombrePer,tk.DocNum,tk.CardCode,tk.CardName,v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,v3_1.Calle,v3_2.Departamento, v3_2.Provincia,v3_2.Distrito,tk.Agencia,tk.EnvioAgencia) LIKE @Buscar

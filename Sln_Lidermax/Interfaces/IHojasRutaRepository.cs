@@ -7,5 +7,6 @@ namespace Sln_Lidermax.Interfaces
     {
         Task<List<HojasRutaDto>> ListadoHojasRutaExcel(FiltrosHojasRutaDto model);
         Task<IPagedList<HojasRutaDto>> ListadoHojasRutaPaginados(FiltrosHojasRutaDto model);
+        Task<List<ExcelHojaRutaDto>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta);
     }
 }
