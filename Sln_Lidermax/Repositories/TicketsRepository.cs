@@ -25,7 +25,15 @@ namespace Sln_Lidermax.Repositories
                         SELECT TOP 200 tr.DocEntry AS DocEntryHojaRuta, tk.DocEntry AS DocEntryTicket, tk.DocNum AS DocNumTicket,
                                tk.CardCode, tk.CardName,
                                (v3_1.Calle + ' / ' + v3_1.Distrito + ' - ' + v3_1.Provincia + ' - ' + v3_1.Departamento ) AS Direccion1,
-                               CASE WHEN tk.EnvioAgencia LIKE '%Agencia%' THEN (v3_2.Calle + ' / ' +  v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento) ELSE '' END AS Direccion2,
+                               CASE 
+                                    WHEN tk.EnvioAgencia LIKE '%Agencia%' THEN 
+                                        (CASE 
+                                            WHEN v3_2.Calle IS NULL OR v3_2.Calle = '' 
+                                                THEN v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento
+                                            ELSE v3_2.Calle + ' / ' + v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento
+                                         END)
+                                    ELSE '' 
+                                END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
                                tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega
