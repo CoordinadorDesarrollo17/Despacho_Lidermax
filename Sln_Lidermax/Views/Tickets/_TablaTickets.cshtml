@@ -37,6 +37,7 @@
                                class="form-check-input check-ticket"
                                value="@u?.DocEntryTicket"
                                data-docentryhojaruta="@u?.DocEntryHojaRuta"
+                               data-docnumticket="@u?.DocNumTicket"
                                @(string.IsNullOrEmpty(u?.Estado) ? "" : "disabled")>
                     </td>
                     <td data-label="NroTicket">@u?.DocNumTicket</td>

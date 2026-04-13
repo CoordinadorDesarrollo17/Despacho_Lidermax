@@ -34,7 +34,14 @@ namespace Sln_Lidermax.Services
             {
                 foreach (var ticket in request.Tickets)
                 {
-                 
+
+                    var estadoActual = await ticketsRepository.ObtenerEstadoTicket(ticket.DocEntryHojaRuta,ticket.DocEntryTicket, con, tx);
+
+                    if (estadoActual == "LIBERADO")
+                    {
+                        throw new Exception($"El ticket {ticket.DocNumTicket} está LIBERADO y no se puede recoger.");
+                    }
+
                     var resultInsert = await ticketsRepository.InsertarTicketsRecogidos(ticket.DocEntryTicket, con, tx);
 
                     if (!resultInsert)
@@ -60,7 +67,8 @@ namespace Sln_Lidermax.Services
             catch
             {
                 tx.Rollback();
-                return false;
+                throw;
+                //return false;
             }
         }
 

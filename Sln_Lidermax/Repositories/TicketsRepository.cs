@@ -121,6 +121,15 @@ namespace Sln_Lidermax.Repositories
             return result.ToList();
         }
 
+        public async Task<string> ObtenerEstadoTicket(int docEntryHojaRuta, int docEntryTicket, SqlConnection con, SqlTransaction tx)
+        {
+            var sql = @"SELECT Estado 
+                FROM [al].[RRU0] 
+                WHERE DocEntry = @DocEntryHojaRuta AND DocEntryTicket = @DocEntryTicket";
+
+            return await con.QueryFirstOrDefaultAsync<string>(sql, new { DocEntryHojaRuta = docEntryHojaRuta, DocEntryTicket = docEntryTicket }, tx);
+        }
+
         public async Task<bool> InsertarTicketsRecogidos(int docEntryTicket,SqlConnection con,SqlTransaction tx)
         {
             var sql = @"
