@@ -37,6 +37,11 @@
                             <option value="DEVOLUCION">DEVOLUCION</option>
                         </select>
                     </div>
+
+                    <div class="col-12 col-md-2">
+                        <label class="form-label">N° Hoja de ruta</label>
+                        <input type="text" id="filtroHojaRuta" class="form-control form-control-sm">
+                    </div>
                 </div>
             </div>
         </div>
@@ -188,6 +193,7 @@
 
         const filtroFechaDespacho = document.getElementById("filtroFechaDespacho");
         const filtroEstado = document.getElementById("filtroEstado");
+        const filtroHojaRuta = document.getElementById("filtroHojaRuta");
 
         function cargarTabla(page = 1) { //numero de pagina por default
 
@@ -196,7 +202,8 @@
                    "Paginacion.Page": page,
                    "Paginacion.PageSize": cboPageSize.value,
                    "FechaDespacho": filtroFechaDespacho.value,
-                   "Estado": filtroEstado.value
+                   "Estado": filtroEstado.value,
+                   "DocNumHojaRuta" : filtroHojaRuta.value
              });
 
             let url = `@Url.Action("ListadoTicketsRecogidos")?${params.toString()}`; //accion del controlador , pasamos parametros
@@ -221,6 +228,7 @@
 
         //Agregamos evento para que el usuario de enter
         agregarEventosBusqueda(txtBuscar);
+          agregarEventosBusqueda(filtroHojaRuta);
 
           //funcion para agregar evento enter
         function agregarEventosBusqueda(input) {

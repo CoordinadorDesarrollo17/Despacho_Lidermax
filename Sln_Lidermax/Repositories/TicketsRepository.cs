@@ -52,15 +52,16 @@ namespace Sln_Lidermax.Repositories
                         AND (@DocEntry IS NULL OR tk.DocEntry = @DocEntry)
                         AND (@Estado IS NULL OR rfd.Estado = @Estado)
                         AND (@FechaDespacho IS NULL OR CAST(rfd.FechaDespacho AS DATE) = CAST(@FechaDespacho AS DATE))
+                        AND (@DocNumHojaRuta IS NULL OR r.DocNum = @DocNumHojaRuta)
                         GROUP BY tr.DocEntry,tk.DocEntry,tk.DocNum,tk.CardCode,tk.CardName,
                                  v3_1.Calle,v3_2.Calle, tk.Agencia,tk.EnvioAgencia, tk.Cajas,
                                  rfd.FechaRecojo,rfd.FechaDespacho,rfd.Estado, v1.NombrePer,v1.TelfPer,
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,tk.DistritoEnvio,
                                  v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega
-                        ORDER BY rfd.Estado DESC
+                        ORDER BY rfd.Estado DESC, FechaRecojo DESC
                     "; // tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
 
-            var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryTicket, Estado = model.Estado, FechaDespacho = model.FechaDespacho });
+            var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryTicket, Estado = model.Estado, FechaDespacho = model.FechaDespacho , DocNumHojaRuta = model.DocNumHojaRuta });
             return result;
         }
 
@@ -72,7 +73,15 @@ namespace Sln_Lidermax.Repositories
                         SELECT TOP 200 tr.DocEntry AS DocEntryHojaRuta, tk.DocEntry AS DocEntryTicket, tk.DocNum AS DocNumTicket,
                                tk.CardCode, tk.CardName,
                                (v3_1.Calle + ' / ' + v3_1.Distrito + ' - ' + v3_1.Provincia + ' - ' + v3_1.Departamento) AS Direccion1,
-                               CASE WHEN tk.EnvioAgencia LIKE '%Agencia%' THEN (v3_2.Calle + ' / ' + v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento) ELSE '' END AS Direccion2,
+                                 CASE 
+                                    WHEN tk.EnvioAgencia LIKE '%Agencia%' THEN 
+                                        (CASE 
+                                            WHEN v3_2.Calle IS NULL OR v3_2.Calle = '' 
+                                                THEN v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento
+                                            ELSE v3_2.Calle + ' / ' + v3_2.Distrito + ' - ' + v3_2.Provincia + ' - ' + v3_2.Departamento
+                                         END)
+                                    ELSE '' 
+                                END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
                                tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision

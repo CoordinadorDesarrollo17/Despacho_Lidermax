@@ -49,7 +49,7 @@ namespace Sln_Lidermax.Services
                         throw new Exception("Error insertando ticket");
                     }
                    
-                    var conteo = await ticketsRepository.ObtenerConteoTickets(ticket.DocEntryHojaRuta, new[] { "RECOGIDO", "ENVIADO" }, con, tx);
+                    var conteo = await ticketsRepository.ObtenerConteoTickets(ticket.DocEntryHojaRuta, new[] { "RECOGIDO", "ENVIADO","LIBERADO" }, con, tx);
 
                     if (conteo.TotalTickets == conteo.TicketsObtenidos)
                     {
