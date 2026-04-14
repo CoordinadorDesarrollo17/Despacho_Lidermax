@@ -42,7 +42,7 @@ namespace Sln_Lidermax.Services
                         throw new Exception($"El ticket {ticket.DocNumTicket} está LIBERADO y no se puede recoger.");
                     }
 
-                    var resultInsert = await ticketsRepository.InsertarTicketsRecogidos(ticket.DocEntryTicket, con, tx);
+                    var resultInsert = await ticketsRepository.InsertarTicketsRecogidos(ticket.DocEntryHojaRuta, ticket.DocEntryTicket, con, tx);
 
                     if (!resultInsert)
                     {
@@ -175,7 +175,7 @@ namespace Sln_Lidermax.Services
                     throw new Exception("Error guardando imágenes");
                 }
                    
-                var resultTicketEnviado = await ticketsRepository.ActualizarEstadoEnviado(request.DocEntryTicket, con, tx);
+                var resultTicketEnviado = await ticketsRepository.ActualizarEstadoEnviado(request.DocEntryHojaRuta, request.DocEntryTicket, con, tx);
 
                
 

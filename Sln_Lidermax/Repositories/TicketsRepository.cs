@@ -139,7 +139,7 @@ namespace Sln_Lidermax.Repositories
             return await con.QueryFirstOrDefaultAsync<string>(sql, new { DocEntryHojaRuta = docEntryHojaRuta, DocEntryTicket = docEntryTicket }, tx);
         }
 
-        public async Task<bool> InsertarTicketsRecogidos(int docEntryTicket,SqlConnection con,SqlTransaction tx)
+        public async Task<bool> InsertarTicketsRecogidos(int docEntryHojaRuta, int docEntryTicket,SqlConnection con,SqlTransaction tx)
         {
             var sql = @"
                         INSERT INTO [tmp].[registro_fecha_despacho]
@@ -148,8 +148,8 @@ namespace Sln_Lidermax.Repositories
 
             var result = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
 
-            sql = "UPDATE [al].[RRU0] SET Estado ='RECOGIDO' WHERE DocEntryTicket = @DocEntryTicket ";
-            var result1 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
+            sql = "UPDATE [al].[RRU0] SET Estado ='RECOGIDO' WHERE DocEntry = @DocEntryHojaRuta AND DocEntryTicket = @DocEntryTicket ";
+            var result1 = await con.ExecuteAsync(sql, new { DocEntryHojaRuta = docEntryHojaRuta, DocEntryTicket = docEntryTicket }, tx);
 
             sql = "UPDATE [vt].[ORTV] SET Estado ='RECOGIDO' WHERE DocEntry = @DocEntryTicket ";
             var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
@@ -189,7 +189,7 @@ namespace Sln_Lidermax.Repositories
 
             return result > 0;
         }
-        public async Task<bool> ActualizarEstadoEnviado(int docEntryTicket, SqlConnection con, SqlTransaction tx)
+        public async Task<bool> ActualizarEstadoEnviado(int docEntryHojaRuta, int docEntryTicket, SqlConnection con, SqlTransaction tx)
         {
             var sql = @"UPDATE [tmp].[registro_fecha_despacho]
                 SET Estado = 'ENVIADO'
@@ -198,8 +198,8 @@ namespace Sln_Lidermax.Repositories
             var result = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
 
 
-            sql = "UPDATE [al].[RRU0] SET Estado ='ENVIADO' WHERE DocEntryTicket = @DocEntryTicket ";
-           var result1 =  await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
+            sql = "UPDATE [al].[RRU0] SET Estado ='ENVIADO' WHERE DocEntry = @DocEntryHojaRuta AND DocEntryTicket = @DocEntryTicket ";
+           var result1 =  await con.ExecuteAsync(sql, new { DocEntryHojaRuta = docEntryHojaRuta, DocEntryTicket = docEntryTicket }, tx);
 
             sql = "UPDATE [vt].[ORTV] SET Estado ='ENVIADO' WHERE DocEntry = @DocEntryTicket ";
             var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = docEntryTicket }, tx);
@@ -214,8 +214,8 @@ namespace Sln_Lidermax.Repositories
 
             var result = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket, FechaEntrega = model.Fecha }, tx);
 
-            sql = "UPDATE [al].[RRU0] SET Estado ='ENTREGADO' WHERE DocEntryTicket = @DocEntryTicket ";
-            var result1 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket }, tx);
+            sql = "UPDATE [al].[RRU0] SET Estado ='ENTREGADO' WHERE DocEntry = @DocEntryHojaRuta AND DocEntryTicket = @DocEntryTicket ";
+            var result1 = await con.ExecuteAsync(sql, new { DocEntryHojaRuta = model.DocEntryHojaRuta, DocEntryTicket = model.DocEntryTicket }, tx);
 
             sql = "UPDATE [vt].[ORTV] SET Estado ='ENTREGADO' WHERE DocEntry = @DocEntryTicket ";
             var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket }, tx);
@@ -250,8 +250,8 @@ namespace Sln_Lidermax.Repositories
 
         public async Task<bool> DevolverTicket(TicketSeleccionadoDto model, SqlConnection con, SqlTransaction tx)
         {
-            var sql = @"UPDATE [al].[RRU0] SET Estado ='DEVOLUCION' WHERE DocEntryTicket = @DocEntryTicket";
-            var result1 =  await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket }, tx);
+            var sql = @"UPDATE [al].[RRU0] SET Estado ='DEVOLUCION' WHERE DocEntry = @DocEntryHojaRuta AND DocEntryTicket = @DocEntryTicket";
+            var result1 =  await con.ExecuteAsync(sql, new { DocEntryHojaRuta = model.DocEntryHojaRuta, DocEntryTicket = model.DocEntryTicket }, tx);
 
             sql = "UPDATE [vt].[ORTV] SET Estado ='DEVOLUCION' WHERE DocEntry = @DocEntryTicket ";
             var result2 = await con.ExecuteAsync(sql, new { DocEntryTicket = model.DocEntryTicket }, tx);
