@@ -140,7 +140,7 @@ namespace Sln_Lidermax.Services
 
         public async Task<bool> SubirImagenes(SubirImagenesDto request)
         {
-            string rutaBase = @"C:\COBEFARWEBFILES\DespachoLidermax";
+            string rutaBase = @"D:\COBEFARWEBFILES\DespachoLidermax";
 
             if (!Directory.Exists(rutaBase))
             {
