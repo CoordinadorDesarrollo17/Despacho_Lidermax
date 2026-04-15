@@ -47,6 +47,21 @@ body {
     th, td {
         white-space: nowrap;
     }
+
+
+        th.sticky-actions-th {
+            position: sticky;
+            right: 0;
+            background: white;
+            text-align: center;
+        }
+
+        td.sticky-actions-td {
+            position: sticky;
+            right: 0;
+            background: white;
+            text-align: center;
+        }
 }
 
 @media (max-width: 768px) {

@@ -19,7 +19,7 @@
                 <th>Peso</th>           
                 <th>Fecha Despacho</th>
                 <th>Estado</th>
-                <th class="text-center">Acciones</th>
+                <th class="text-center sticky-actions-th">Acciones</th>
             </tr>
         </thead>
 
@@ -38,7 +38,7 @@
                     <td data-label="Peso" class="text-end">@u?.Peso?.ToString("N2")</td>      
                     <td data-label="FechaDespacho" class="text-end">@u?.FechaDespacho?.ToString("dd/MM/yyyy")</td>
                     <td data-label="Estado">@u?.Estado</td>
-                    <td data-label="Acciones" class="text-center">
+                    <td data-label="Acciones" class="text-center sticky-actions-td">
                         <div class="actions">
                             <a asp-controller="Tickets"
                                asp-action="DetalleTicket"

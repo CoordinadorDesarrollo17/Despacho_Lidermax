@@ -208,7 +208,7 @@ namespace Sln_Lidermax.Services
         {
             List<object> arrImg = new List<object>();
 
-            string ruta = @"C:\COBEFARWEBFILES\DespachoLidermax";
+            string ruta = @"D:\COBEFARWEBFILES\DespachoLidermax";
 
             if (Directory.Exists(ruta))
             {
