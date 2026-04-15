@@ -10,6 +10,7 @@
         public int DocEntryTicket { get; set; }
         public int DocEntryHojaRuta { get; set; }
         public int DocNumTicket { get; set; }   
+        public int Linea { get ; set; } 
 
         public DateTime Fecha { get; set; } 
     }

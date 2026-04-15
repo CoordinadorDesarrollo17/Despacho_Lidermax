@@ -49,6 +49,8 @@
                             </a>
                             <button class="btn btn-sm btn-primary btn-guiaTransportista"
                                     data-docentryticket="@u.DocEntryTicket"
+                                    data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                    data-linea="@u.Linea"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalGuiaTransportista"
                                     title="@(u?.GuiaTransportista != null ? "La guia transportista ya fue registrada" : "Registrar guia transportista")"
@@ -57,6 +59,8 @@
                             </button>
                             <button class="btn btn-sm btn-success btn-fecha"
                                     data-docentryticket="@u.DocEntryTicket"
+                                    data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                    data-linea="@u.Linea"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalFecha"
                                     title="@(u?.FechaDespacho != null ? "La fecha de despacho ya fue registrada" : "Registrar fecha despacho")"
@@ -68,6 +72,7 @@
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docnumticket="@u.DocNumTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                    data-linea="@u.Linea"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modalImagen"
                                     title="Registrar imagenes"
@@ -78,6 +83,7 @@
                                     class="btn btn-sm btn-dark btn-entregar"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                    data-linea="@u.Linea"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalEntrega"
                                     @(u?.Estado != "ENVIADO" ? "disabled" : "")>
@@ -88,6 +94,7 @@
                                     class="btn btn-sm btn-danger btn-anular"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                    data-linea="@u.Linea"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalDevolucion"
                                     @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>

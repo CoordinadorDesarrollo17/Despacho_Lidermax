@@ -7,17 +7,17 @@ namespace Sln_Lidermax.Interfaces
     public interface ITicketsRepository
     {
         Task<bool> ActualizarEstadoEntregado(TicketSeleccionadoDto model, SqlConnection con, SqlTransaction tx);
-        Task<bool> ActualizarEstadoEnviado(int docEntryHojaRuta, int docEntryTicket, SqlConnection con, SqlTransaction tx);
+        Task<bool> ActualizarEstadoEnviado(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con, SqlTransaction tx);
         Task<bool> ActualizarEstadoHojaRuta(int docEntryHojaRuta, string estado, SqlConnection con, SqlTransaction tx);
         Task<bool> ActualizarFechaDespacho(TicketsDto model);
         Task<bool> ActualizarGuiaTransportista(TicketsDto model);
         Task<bool> DevolverTicket(TicketSeleccionadoDto model, SqlConnection con, SqlTransaction tx);     
-        Task<bool> InsertarTicketsRecogidos(int docEntryHojaRuta, int docEntryTicket, SqlConnection con, SqlTransaction tx);
+        Task<bool> InsertarTicketsRecogidos(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con, SqlTransaction tx);
         Task<IPagedList<TicketsDto>> ListadoTickets(FiltrosTicketsDto model);
         Task<List<TicketsDto>> ListadoTicketsExcel(FiltrosTicketsDto model);
         Task<IPagedList<TicketsDto>> ListadoTicketsRecogidos(FiltrosTicketsDto model);
         Task<List<TicketsDto>> ListadoTicketsRecogidosExcel(FiltrosTicketsDto model);
         Task<(int TotalTickets, int TicketsObtenidos)> ObtenerConteoTickets(int docEntryHojaRuta, string[] estado, SqlConnection con, SqlTransaction tx);
-        Task<string> ObtenerEstadoTicket(int docEntryHojaRuta, int docEntryTicket, SqlConnection con, SqlTransaction tx);
+        Task<string> ObtenerEstadoTicket(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con, SqlTransaction tx);
     }
 }

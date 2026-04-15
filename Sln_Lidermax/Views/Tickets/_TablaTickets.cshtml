@@ -38,6 +38,7 @@
                                value="@u?.DocEntryTicket"
                                data-docentryhojaruta="@u?.DocEntryHojaRuta"
                                data-docnumticket="@u?.DocNumTicket"
+                               data-linea="@u?.Linea"
                                @(string.IsNullOrEmpty(u?.Estado) ? "" : "disabled")>
                     </td>
                     <td data-label="NroTicket">@u?.DocNumTicket</td>

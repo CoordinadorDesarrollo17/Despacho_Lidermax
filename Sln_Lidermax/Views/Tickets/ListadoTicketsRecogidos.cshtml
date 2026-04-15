@@ -265,19 +265,24 @@
 
          let docEntryTicketSeleccionado = 0;
          let docNumTicketSeleccionado = 0;
-          let docEntryHojaRutaSeleccionado = 0;
-
+         let docEntryHojaRutaSeleccionado = 0;
+         let lineaSeleccionado=0;
         // Cuando se abre el modal
-          $(document).on("click", ".btn-guiaTransportista", function () {
+          $(document).on("click", ".btn-guiaTransportista", function () { 
+            docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+            lineaSeleccionado = $(this).data("linea");
             docEntryTicketSeleccionado = $(this).data("docentryticket");
         });
         $(document).on("click", ".btn-fecha", function () {
+            docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+            lineaSeleccionado = $(this).data("linea");
             docEntryTicketSeleccionado = $(this).data("docentryticket");
         });
         $(document).on("click", ".btn-imagen", function () {
             docNumTicketSeleccionado = $(this).data("docnumticket");
             docEntryTicketSeleccionado = $(this).data("docentryticket");
             docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+            lineaSeleccionado= $(this).data("linea");
 
             cargarImagenesModal(docNumTicketSeleccionado);
         });
@@ -285,11 +290,13 @@
         $(document).on("click", ".btn-entregar", function () {
              docEntryTicketSeleccionado = $(this).data("docentryticket");
              docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+             lineaSeleccionado= $(this).data("linea");
         });
 
         $(document).on("click", ".btn-anular", function () {
              docEntryTicketSeleccionado = $(this).data("docentryticket");
              docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+             lineaSeleccionado= $(this).data("linea");
         });
 
 
@@ -312,6 +319,8 @@
                 contentType: 'application/json',
                 data: JSON.stringify({
                     docEntryTicket: docEntryTicketSeleccionado,
+                    docEntryHojaRuta: docEntryHojaRutaSeleccionado,
+                    linea: lineaSeleccionado,
                     fechaDespacho: fecha              
                 }),
                 beforeSend: function () {
@@ -373,6 +382,7 @@
             formData.append("Img2", img2);
             formData.append("DocNumTicket",docNumTicketSeleccionado);
             formData.append("DocEntryHojaRuta",docEntryHojaRutaSeleccionado);
+            formData.append("Linea",lineaSeleccionado);
 
             $.ajax({
                 url: '/Tickets/SubirImagenes',
@@ -486,6 +496,8 @@
                 contentType: 'application/json',
                 data: JSON.stringify({
                     docEntryTicket: docEntryTicketSeleccionado,
+                    docEntryHojaRuta: docEntryHojaRutaSeleccionado,
+                    linea: lineaSeleccionado,
                     guiaTransportista: guia
                 }),
                 beforeSend: function () {
@@ -548,6 +560,7 @@
                 data: JSON.stringify({
                     docEntryTicket: docEntryTicketSeleccionado,
                     docEntryHojaRuta: docEntryHojaRutaSeleccionado,
+                    linea : lineaSeleccionado,
                     fecha: fecha //  IMPORTANTE 
                 }),
                 beforeSend: function () {
@@ -602,6 +615,7 @@
                  data: JSON.stringify({
                      docEntryTicket: docEntryTicketSeleccionado,
                      docEntryHojaRuta: docEntryHojaRutaSeleccionado,
+                     linea : lineaSeleccionado,
                      fecha: fecha //  IMPORTANTE
                  }),
                  beforeSend: function () {
