@@ -80,6 +80,20 @@ namespace Sln_Lidermax.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ActualizarObservacion([FromBody] TicketsDto model)
+        {
+            try
+            {
+                var result = await ticketsService.ActualizarObservacion(model);
+                return Json(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, mensaje = ex.Message });
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> DetalleTicket(int id)
         {

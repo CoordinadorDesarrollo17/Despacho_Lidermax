@@ -91,6 +91,17 @@
                             </button>
 
                             <button type="button"
+                                    class="btn btn-sm btn-info btn-observacion"
+                                    data-docentryticket="@u.DocEntryTicket"
+                                    data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                    data-linea="@u.Linea"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalObservacion"
+                                    @(u?.Observacion != null ? "disabled" : "")>
+                                <i class="bi bi-chat-left-text"></i>
+                            </button>
+
+                            <button type="button"
                                     class="btn btn-sm btn-danger btn-anular"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
@@ -100,6 +111,7 @@
                                     @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>
                                 <i class="bi bi-x-circle"></i>
                             </button>
+
                         </div>
                     </td>
                 </tr>

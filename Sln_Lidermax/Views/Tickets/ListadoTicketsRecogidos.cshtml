@@ -83,6 +83,27 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalObservacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Observación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control"
+                          id="observacion"
+                          rows="4"
+                          maxlength="1000"
+                          placeholder="Escribe la observación aquí..."
+                          autocomplete="off"></textarea>
+            </div>
+            <div class="modal-footer">            
+                <button type="button" class="btn btn-info" id="btnRegistrarObservacion">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="modalGuiaTransportista" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -150,7 +171,7 @@
     </div>
 </div>
 <div class="modal fade" id="modalImagen" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Imágenes del Ticket</h5>
@@ -195,9 +216,13 @@
         const filtroEstado = document.getElementById("filtroEstado");
         const filtroHojaRuta = document.getElementById("filtroHojaRuta");
 
+         let paginaActual = 1;
+
         function cargarTabla(page = 1) { //numero de pagina por default
 
-            const params = new URLSearchParams({ //parametros
+              paginaActual = page; 
+
+             const params = new URLSearchParams({ //parametros
                    "Buscar": txtBuscar.value,
                    "Paginacion.Page": page,
                    "Paginacion.PageSize": cboPageSize.value,
@@ -299,9 +324,13 @@
              lineaSeleccionado= $(this).data("linea");
         });
 
+         $(document).on("click", ".btn-observacion", function () {
+              docEntryTicketSeleccionado = $(this).data("docentryticket");
+              docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+              lineaSeleccionado= $(this).data("linea");
+         });
 
         
-
         // Registrar fecha despacho
          $("#btnRegistrarFechaDespacho").click(function () {
             let fecha = $("#fechaDespacho").val();
@@ -341,7 +370,9 @@
                             text: 'Fecha registrada correctamente',
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            location.reload();
+                                 $('#modalFecha').modal('hide');
+                                 $("#fechaDespacho").val("");
+                                cargarTabla(paginaActual);
                         });
                     } else {
                         Swal.fire({
@@ -411,7 +442,12 @@
                               // cargarImagenesModal(docNumTicketSeleccionado);
                               // $("#img1").val("");
                               // $("#img2").val("");
-                                location.reload();
+
+                                 $('#modalImagen').modal('hide');
+                                 $("#img1").val("");
+                                 $("#img2").val("");
+                                cargarTabla(paginaActual);
+
                         });
                     } else {
                         Swal.fire({
@@ -457,7 +493,7 @@
                         contenedor.innerHTML += `
                             <div class="col-md-6 text-center mb-3">
                                 <div class="fw-semibold mb-2">${img.tipo}</div>
-                                <img src="${img.imagen}" class="img-fluid border rounded shadow-sm" style="max-height:300px;">
+                                  <img src="${img.imagen}" class="img-fluid border rounded shadow-sm w-100" style="max-height:500px;">
                             </div>
                         `;
                     });
@@ -518,7 +554,9 @@
                             text: 'Guia transportista registrada correctamente',
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            location.reload();
+                                   $('#modalGuiaTransportista').modal('hide');
+                                     $("#guiaTransportista").val("");
+                                    cargarTabla(paginaActual);
                         });
                     } else {
                         Swal.fire({
@@ -576,7 +614,13 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Entregado correctamente'
-                        }).then(() => location.reload());
+                        }).then(() => {
+
+                             $('#modalEntrega').modal('hide');
+                             $("#fechaEntrega").val("");
+                            cargarTabla(paginaActual);
+                        
+                        });
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -631,7 +675,11 @@
                          Swal.fire({
                              icon: 'success',
                              title: 'Devuelto correctamente'
-                         }).then(() => location.reload());
+                         }).then(() => {
+                            $('#modalDevolucion').modal('hide');
+                           $("#fechaDevolucion").val("");
+                           cargarTabla(paginaActual);
+                         });
                      } else {
                          Swal.fire({
                              icon: 'error',
@@ -647,6 +695,71 @@
                  }
              });
          });
+
+
+
+
+        // Registrar observacion
+           $("#btnRegistrarObservacion").click(function () {
+             let observacion = $("#observacion").val().trim();
+              if (!observacion) {
+                 Swal.fire({
+                     icon: 'warning',
+                     title: 'Observación requerida',
+                     text: 'Ingrese un valor'
+                 });
+                 return;
+             }
+             $.ajax({
+                 url: '/Tickets/ActualizarObservacion',
+                 type: 'POST',
+                 contentType: 'application/json',
+                 data: JSON.stringify({
+                     docEntryTicket: docEntryTicketSeleccionado,
+                     docEntryHojaRuta: docEntryHojaRutaSeleccionado,
+                     linea: lineaSeleccionado,
+                     observacion: observacion
+                 }),
+                 beforeSend: function () {
+                     Swal.fire({
+                         title: 'Guardando...',
+                         text: 'Registrando observacion',
+                         allowOutsideClick: false,
+                         didOpen: () => {
+                             Swal.showLoading();
+                         }
+                     });
+                 },
+                 success: function (resp) {
+                     if (resp.success) {
+                         Swal.fire({
+                             icon: 'success',
+                             title: 'Registrado',
+                             text: 'Observacion registrada correctamente',
+                             confirmButtonText: 'OK'
+                         }).then(() => {
+                             $('#modalObservacion').modal('hide');
+                             $("#observacion").val("");
+                             cargarTabla(paginaActual);
+                         });
+                     } else {
+                         Swal.fire({
+                             icon: 'error',
+                             title: 'Error',
+                             text: 'No se pudo registrar la observacion'
+                         });
+                     }
+                 },
+                 error: function () {
+                     Swal.fire({
+                         icon: 'error',
+                         title: 'Error del servidor',
+                         text: 'Ocurrió un problema al procesar la solicitud'
+                     });
+                 }
+             });
+         });
+
 
     </script>
 }

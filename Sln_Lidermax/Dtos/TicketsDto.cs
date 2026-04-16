@@ -29,5 +29,7 @@
 
         public DateTime? FechaDevolucion { get; set; }
         public DateTime? FechaEntrega { get; set; }
+
+        public string? Observacion { get; set; }
     }
 }

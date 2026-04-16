@@ -36,7 +36,7 @@ namespace Sln_Lidermax.Repositories
                                 END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
-                               tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega
+                               tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega,rfd.Observacion
                         FROM al.RRU0 AS tr 
                         LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
@@ -57,7 +57,7 @@ namespace Sln_Lidermax.Repositories
                                  v3_1.Calle,v3_2.Calle, tk.Agencia,tk.EnvioAgencia, tk.Cajas,
                                  rfd.FechaRecojo,rfd.FechaDespacho,rfd.Estado, v1.NombrePer,v1.TelfPer,
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,tk.DistritoEnvio,
-                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega,tr.Linea
+                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega,tr.Linea, rfd.Observacion
                         ORDER BY rfd.Estado DESC, FechaRecojo DESC
                     "; // tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
 
@@ -170,6 +170,24 @@ namespace Sln_Lidermax.Repositories
                 model.Linea,
                 model.DocEntryTicket,
                 model.GuiaTransportista
+            });
+
+            return result > 0;
+        }
+        public async Task<bool> ActualizarObservacion(TicketsDto model)
+        {
+            using var xCon = new SqlConnection(dapperContext.connectionString);
+
+            var sql = @"UPDATE [tmp].[registro_fecha_despacho]
+                    SET Observacion = @Observacion
+                    WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket";
+
+            var result = await xCon.ExecuteAsync(sql, new
+            {
+                model.DocEntryHojaRuta,
+                model.Linea,
+                model.DocEntryTicket,
+                model.Observacion
             });
 
             return result > 0;

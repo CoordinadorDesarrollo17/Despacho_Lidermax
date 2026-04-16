@@ -85,7 +85,10 @@ namespace Sln_Lidermax.Services
         {
             return await ticketsRepository.ActualizarGuiaTransportista(model);
         }
-
+        public async Task<bool> ActualizarObservacion(TicketsDto model)
+        {
+            return await ticketsRepository.ActualizarObservacion(model);
+        }
         public async Task<bool> DevolverTicket(TicketSeleccionadoDto model)
         {
             using SqlConnection con = new SqlConnection(dapperContext.connectionString);
