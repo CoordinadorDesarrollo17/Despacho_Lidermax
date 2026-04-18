@@ -90,35 +90,30 @@
             <th style="vertical-align: middle;" colspan="2">
                 <img src="~/img/logo-drogueria-cobefar.jpg" style="width:170px;height:60px;" />
             </th>
-            <th style="vertical-align: middle;" colspan="6">
-                FORMATO PROVINCIA
+            <th style="vertical-align: middle;" colspan="3">
+                DATOS CONTACTO
             </th>
-            <th style="vertical-align: middle;" colspan="5">
+            <th style="vertical-align: middle;" colspan="4">
                 Proveedor Transporte: LIDERMAX PERU S.A.C<br />
                 Nro: @ViewBag.DocNum
             </th>
-            <th style="vertical-align: middle;" colspan="4">
+            <th style="vertical-align: middle;" colspan="3">
                 FECHA: @ViewBag.TiempoPac
             </th>
         </tr>
         <tr>
             <th >Ticket</th>
             <th >RazonSocial</th>
-            <th >Departamento1</th>
-            <th >Provincia1</th>
-            <th >Distrito1</th>
-            <th >Departamento2</th>
-            <th >Provincia2</th>
-            <th >Distrito2</th>
-            <th>Vendedor</th>
-            <th >Direccion1</th>
-            <th >Direccion2</th>
+            <th >Contacto</th>
+            <th >Nro Documento</th>   
+            <th>Telefono</th>
             <th>Transportista</th>
+            <th>Direccion1</th>
+            <th>Direccion2</th>
             <th>ModoEnvio</th>
             <th >Cajas</th>
             <th style="width:50px">Peso</th>
-            <th >Vista</th>
-            <th >ALM</th>
+            <th >Costo</th>
         </tr>
     </thead>
 
@@ -128,40 +123,25 @@
             <tr>
                 <td >@d.DocNumTicket</td>
                 <td >@d.CardName</td>
-
-                <td>@d.Departamento1</td>
-                <td>@d.Provincia1</td>
-                <td>@d.Distrito1</td>
-
-                <td>@d.Departamento2</td>
-                <td>@d.Provincia2</td>
-                <td>@d.Distrito2</td>
-
-                <td>@d.Vendedor</td>
-
-                <td>
-                    @d.Calle1 - @d.Distrito1 - @d.Provincia1 - @d.Departamento1
-                </td>
-
-                <td>
-                    @d.Calle2 - @d.Distrito2 - @d.Provincia2 - @d.Departamento2
-                </td>
-
+                <td>@d.NombrePer</td>
+                <td>@d.DocPer</td>
+                <td>@d.TelfPer</td>
                 <td>@d.Transportista</td>
-                <td >@d.ModoEnvio</td>
-                <td>@d.Cajas</td>
+                <td>@d.Direccion1</td>
+                <td>@d.Direccion2</td>
+                <td>@d.ModoEnvio</td>
+                <td >@d.Cajas</td>
                 <td >@d.Peso kg</td>
                 <td ></td>
-                <td >@d.Almacen</td>
             </tr>
         }
     </tbody>
     <tfoot>
         <tr>
-            <th colspan="13" style="font-size: 18px;text-align:right">
+            <th colspan="9" style="font-size: 18px;text-align:right">
                 Total Cajas:
             </th>
-            <th colspan="4" style="font-size: 18px;" >@totalCajas</th>
+            <th colspan="3" style="font-size: 18px;" >@totalCajas</th>
         </tr>
     </tfoot>
 </table>

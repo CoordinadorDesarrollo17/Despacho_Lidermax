@@ -25,10 +25,9 @@
 
         // PDF
         public string CardName { get; set; }
-        public string Provincia1 { get; set; }  
-        public string Provincia2 { get; set; }
-        public string Distrito1 { get; set; }   
-        public string Distrito2 { get; set; }   
+        public string Direccion1 { get; set; }  
+        public string Direccion2 { get; set; }
+
         public string Vendedor { get; set; }     
         public string Almacen { get; set; }
 
