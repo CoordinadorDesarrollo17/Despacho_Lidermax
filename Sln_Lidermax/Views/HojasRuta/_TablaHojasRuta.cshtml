@@ -69,6 +69,14 @@
                                class="btn btn-success btn-sm">
                                 <i class="bi bi-file-earmark-excel"></i>
                             </a>
+                            <a asp-controller="HojasRuta"
+                               asp-action="ExportarPdfPorHojaRuta"
+                               asp-route-docEntryHojaRuta="@u?.DocEntry"
+                               asp-route-docNumHojaRuta="@u?.DocNum"
+                               asp-route-tiempoPac="@u?.TiempoPac"
+                               class="btn btn-danger btn-sm">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
                         </div>
                     </td>
                 </tr>

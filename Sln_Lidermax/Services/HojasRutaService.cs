@@ -23,10 +23,14 @@ namespace Sln_Lidermax.Services
             return await ticketsRepository.ListadoHojasRutaExcel(model);
         }
 
-        public async Task<List<ExcelHojaRutaDto>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta)
+        public async Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta)
         {
             return await ticketsRepository.ListadoTicketsPorHojasRutaExcel(docEntryHojaRuta);
         }
 
+        public async Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaPdf(int docEntryHojaRuta)
+        {
+            return await ticketsRepository.ListadoTicketsPorHojasRutaPdf(docEntryHojaRuta);
+        }
     }
 }

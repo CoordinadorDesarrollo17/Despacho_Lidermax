@@ -31,7 +31,7 @@ namespace Sln_Lidermax.Controllers
 
             return View(listaHojasRuta);
         }
-
+      
         public async Task<IActionResult> ExportarExcel(FiltrosHojasRutaDto model)
         {
             var lista = await hojasRutaService.ListadoHojasRutaExcel(model);
@@ -78,7 +78,16 @@ namespace Sln_Lidermax.Controllers
                 $"HojasRuta_{DateTime.Now:yyyyMMddHHmm}.xlsx"
             );
         }
+        public async Task<IActionResult> ExportarPdfPorHojaRuta(int docEntryHojaRuta, int docNumHojaRuta,string tiempoPac)
+        {
+            var data = await hojasRutaService.ListadoTicketsPorHojasRutaPdf(docEntryHojaRuta);
 
+            ViewBag.DocNum = docNumHojaRuta;
+            ViewBag.TiempoPac = tiempoPac;
+       
+
+            return View("PdfHojaRuta", data);
+        }
         public async Task<IActionResult> ExportarExcelPorHojaRuta(int docEntryHojaRuta, int docNumHojaRuta)
         {
             var lista = await hojasRutaService.ListadoTicketsPorHojasRutaExcel(docEntryHojaRuta);

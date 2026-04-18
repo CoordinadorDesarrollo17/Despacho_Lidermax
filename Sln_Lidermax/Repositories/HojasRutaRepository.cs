@@ -42,7 +42,7 @@ namespace Sln_Lidermax.Repositories
             return result;
         }
 
-        public async Task<List<ExcelHojaRutaDto>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta)
+        public async Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -92,7 +92,7 @@ namespace Sln_Lidermax.Repositories
                         T1.TelfPer,t5.agencia,t5.EnvioAgencia, r.TiempoPac
                     ";  
 
-            var result = await xCon.QueryAsync<ExcelHojaRutaDto>(sql, new { DocEntry = docEntryHojaRuta });
+            var result = await xCon.QueryAsync<ReporteHojaRutaDto>(sql, new { DocEntry = docEntryHojaRuta });
 
             return result.ToList();
         }
@@ -108,5 +108,55 @@ namespace Sln_Lidermax.Repositories
             var result = await ObtenerHojasRuta(model);
             return result.ToList();
         }
+
+        public async Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaPdf(int docEntryHojaRuta)
+        {
+            using var xCon = new SqlConnection(dapperContext.connectionString);
+
+            var sql = @"SELECT tr.DocNumTicket,tk.CardName,
+                            v3_1.Departamento AS departamento1,
+                            v3_1.Provincia AS provincia1,
+                            v3_1.Distrito AS distrito1,
+                            v3_2.Departamento AS departamento2,
+                            v3_2.Provincia AS provincia2,
+                            v3_2.Distrito AS distrito2,
+                            tk.Vendedor ,
+                            v3_1.Calle AS calle1,
+                            v3_2.Calle AS calle2,
+                            tk.Agencia AS Transportista,
+                            tk.EnvioAgencia AS ModoEnvio,
+                            tr.Cajas ,
+                            SUM(v6.Peso) AS peso,
+                            v2.AlmacenSalida AS Almacen
+                            FROM al.RRU0 AS tr
+                            LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket  
+                            LEFT JOIN vt.RTV2 AS v2 ON tk.DocEntry = v2.DocEntry AND v2.Linea =1
+                            LEFT JOIN vt.RTV3 AS v3_1 ON v3_1.DocEntry = tk.DocEntry AND v3_1.IdDireccion =1
+                            LEFT JOIN vt.RTV3 AS v3_2 ON v3_2.DocEntry = tk.DocEntry AND v3_2.IdDireccion =2
+                            LEFT JOIN vt.RTV6 AS v6 ON v6.DocEntry = tk.DocEntry 
+                            WHERE tr.DocEntry = @DocEntry AND tr.Estado <> 'LIBERADO'
+                            GROUP BY
+                            tr.DocNumTicket,tk.CardName,
+                            v3_1.Departamento ,
+                            v3_1.Provincia ,
+                            v3_1.Distrito ,
+                            v3_2.Departamento ,
+                            v3_2.Provincia ,
+                            v3_2.Distrito ,
+                            tk.Vendedor ,
+                            v3_1.Calle ,
+                            v3_2.Calle ,
+                            tk.Agencia ,
+                            tk.EnvioAgencia ,
+                            tr.Cajas,
+                            v2.AlmacenSalida ";
+
+
+            var result = await xCon.QueryAsync<ReporteHojaRutaDto>(sql, new { DocEntry = docEntryHojaRuta });
+
+            return result.ToList();
+
+        }
+
     }
 }

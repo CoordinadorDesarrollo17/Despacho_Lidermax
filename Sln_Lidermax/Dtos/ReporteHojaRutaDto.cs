@@ -1,6 +1,6 @@
 ﻿namespace Sln_Lidermax.Dtos
 {
-    public class ExcelHojaRutaDto
+    public class ReporteHojaRutaDto
     {
         public string TiempoPac { get; set; }
         public string Socio { get; set; }
@@ -21,5 +21,16 @@
         public string TelfPer { get; set; }
         public string Transportista { get; set; }
         public string ModoEnvio { get; set; }
+
+
+        // PDF
+        public string CardName { get; set; }
+        public string Provincia1 { get; set; }  
+        public string Provincia2 { get; set; }
+        public string Distrito1 { get; set; }   
+        public string Distrito2 { get; set; }   
+        public string Vendedor { get; set; }     
+        public string Almacen { get; set; }
+
     }
 }

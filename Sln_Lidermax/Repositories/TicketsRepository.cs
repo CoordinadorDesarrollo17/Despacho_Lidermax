@@ -36,7 +36,7 @@ namespace Sln_Lidermax.Repositories
                                 END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
-                               tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega,rfd.Observacion
+                               tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega,rfd.Observacion
                         FROM al.RRU0 AS tr 
                         LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
@@ -84,7 +84,7 @@ namespace Sln_Lidermax.Repositories
                                 END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
-                               tk.DistritoEnvio AS DistritoTransporte, RIGHT(tr.Guias,13) AS GuiaRemision
+                               tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision
                         FROM al.RRU0 AS tr 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
                         LEFT JOIN vt.RTV1 AS v1 ON v1.DocEntry = tk.DocEntry
