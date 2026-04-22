@@ -328,6 +328,9 @@
               docEntryTicketSeleccionado = $(this).data("docentryticket");
               docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
               lineaSeleccionado= $(this).data("linea");
+
+              let observacion = $(this).data("observacion");
+               $("#observacion").val(observacion ? observacion : "");
          });
 
         

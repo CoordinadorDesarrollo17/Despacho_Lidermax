@@ -95,9 +95,9 @@
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
                                     data-linea="@u.Linea"
+                                    data-observacion="@(u.Observacion ?? "")"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modalObservacion"
-                                    @(u?.Observacion != null ? "disabled" : "")>
+                                    data-bs-target="#modalObservacion">
                                 <i class="bi bi-chat-left-text"></i>
                             </button>
 
