@@ -208,15 +208,16 @@ namespace Sln_Lidermax.Controllers
             ws.Cell(1, 12).Value = "Contacto";
             ws.Cell(1, 13).Value = "Telefono";
             ws.Cell(1, 14).Value = "Estado";
+            ws.Cell(1, 15).Value = "Observacion";
 
-            int colCount = 14;
+            int colCount = 15;
 
             // Si no es hoja de ruta, agregamos dos columnas extra
             if (model.esHojaRuta == false)
             {
-                ws.Cell(1, 15).Value = "Fecha Recojo";
-                ws.Cell(1, 16).Value = "Fecha Despacho";
-                colCount = 16;
+                ws.Cell(1, 16).Value = "Fecha Recojo";
+                ws.Cell(1, 17).Value = "Fecha Despacho";
+                colCount = 17;
             }
 
             ws.Range(1, 1, 1, colCount).Style.Font.Bold = true;
@@ -239,11 +240,12 @@ namespace Sln_Lidermax.Controllers
                 ws.Cell(row, 12).Value = x.Contacto;
                 ws.Cell(row, 13).Value = x.Telefono;
                 ws.Cell(row, 14).Value = x.Estado;
+                ws.Cell(row, 15).Value = x.Observacion;
 
                 if (model.esHojaRuta == false)
                 {
-                    ws.Cell(row, 15).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 16).Value = x.FechaDespacho?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 16).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 17).Value = x.FechaDespacho?.ToString("dd/MM/yyyy");
                 }
 
                 row++;

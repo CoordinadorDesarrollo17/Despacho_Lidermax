@@ -99,7 +99,7 @@ namespace Sln_Lidermax.Repositories
                                  rfd.Estado,rfd.DocEntryTicket, v1.NombrePer,v1.TelfPer,
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,
                                  v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tk.DistritoEnvio,tr.Guias,tr.Linea
-                        ORDER BY CASE WHEN rfd.DocEntryTicket IS NULL THEN 0 ELSE 1 END, tk.DocNum
+                        ORDER BY tk.Agencia
                      ";
 
             var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryHojaRuta });
