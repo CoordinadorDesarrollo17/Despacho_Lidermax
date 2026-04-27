@@ -208,6 +208,7 @@
 </div>
 @section Scripts {
     <script>
+    
         const txtBuscar = document.getElementById("txtBuscar");
         const cboPageSize = document.getElementById("pageSize");
         const tablaTicketsRecogidos = document.getElementById("tablaTicketsRecogidos");
@@ -216,19 +217,49 @@
         const filtroEstado = document.getElementById("filtroEstado");
         const filtroHojaRuta = document.getElementById("filtroHojaRuta");
 
-         let paginaActual = 1;
+          //Nuevo codigo para no perder filtros
+         let filtros = {
+             buscar: "",
+             pageSize: 10,
+             fechaDespacho: "",
+             estado: "",
+             hojaRuta: "",
+             paginaActual: 1
+         };
+
+         function actualizarFiltros() {
+             filtros.buscar = txtBuscar.value;
+             filtros.pageSize = cboPageSize.value;
+             filtros.fechaDespacho = filtroFechaDespacho.value;
+             filtros.estado = filtroEstado.value;
+             filtros.hojaRuta = filtroHojaRuta.value;
+         }
+         // hasta aqui
+
+
+        //let paginaActual = 1;
 
         function cargarTabla(page = 1) { //numero de pagina por default
 
-              paginaActual = page; 
+              //paginaActual = page;
+
+            filtros.paginaActual = page;
+           actualizarFiltros();
 
              const params = new URLSearchParams({ //parametros
-                   "Buscar": txtBuscar.value,
-                   "Paginacion.Page": page,
-                   "Paginacion.PageSize": cboPageSize.value,
-                   "FechaDespacho": filtroFechaDespacho.value,
-                   "Estado": filtroEstado.value,
-                   "DocNumHojaRuta" : filtroHojaRuta.value
+                 "Buscar": filtros.buscar,
+                  "Paginacion.Page": filtros.paginaActual,
+                 "Paginacion.PageSize": filtros.pageSize,
+                 "FechaDespacho": filtros.fechaDespacho,
+                 "Estado": filtros.estado,
+                 "DocNumHojaRuta": filtros.hojaRuta
+                     
+                   // "Buscar": txtBuscar.value,
+                   // "Paginacion.Page": page,
+                   // "Paginacion.PageSize": cboPageSize.value,
+                   // "FechaDespacho": filtroFechaDespacho.value,
+                   // "Estado": filtroEstado.value,
+                   // "DocNumHojaRuta" : filtroHojaRuta.value
              });
 
             let url = `@Url.Action("ListadoTicketsRecogidos")?${params.toString()}`; //accion del controlador , pasamos parametros
@@ -375,7 +406,7 @@
                         }).then(() => {
                                  $('#modalFecha').modal('hide');
                                  $("#fechaDespacho").val("");
-                                cargarTabla(paginaActual);
+                                cargarTabla(filtros.paginaActual);
                         });
                     } else {
                         Swal.fire({
@@ -449,7 +480,7 @@
                                  $('#modalImagen').modal('hide');
                                  $("#img1").val("");
                                  $("#img2").val("");
-                                cargarTabla(paginaActual);
+                                cargarTabla(filtros.paginaActual);
 
                         });
                     } else {
@@ -559,7 +590,7 @@
                         }).then(() => {
                                    $('#modalGuiaTransportista').modal('hide');
                                      $("#guiaTransportista").val("");
-                                    cargarTabla(paginaActual);
+                                    cargarTabla(filtros.paginaActual);
                         });
                     } else {
                         Swal.fire({
@@ -621,7 +652,7 @@
 
                              $('#modalEntrega').modal('hide');
                              $("#fechaEntrega").val("");
-                            cargarTabla(paginaActual);
+                            cargarTabla(filtros.paginaActual);
                         
                         });
                     } else {
@@ -681,7 +712,7 @@
                          }).then(() => {
                             $('#modalDevolucion').modal('hide');
                            $("#fechaDevolucion").val("");
-                           cargarTabla(paginaActual);
+                           cargarTabla(filtros.paginaActual);
                          });
                      } else {
                          Swal.fire({
@@ -743,7 +774,7 @@
                          }).then(() => {
                              $('#modalObservacion').modal('hide');
                              $("#observacion").val("");
-                             cargarTabla(paginaActual);
+                             cargarTabla(filtros.paginaActual);
                          });
                      } else {
                          Swal.fire({
