@@ -90,7 +90,7 @@ namespace Sln_Lidermax.Repositories
                         T1.NombrePer,
                         T1.DocPer,
                         T1.TelfPer,t5.agencia,t5.EnvioAgencia, r.TiempoPac
-                    ";  
+                    ORDER BY T5.Agencia ";  
 
             var result = await xCon.QueryAsync<ReporteHojaRutaDto>(sql, new { DocEntry = docEntryHojaRuta });
 
@@ -146,7 +146,8 @@ namespace Sln_Lidermax.Repositories
                             tr.Cajas,
 							v1.NombrePer,
 						    v1.DocPer,
-						    v1.TelfPer ";
+						    v1.TelfPer 
+                            ORDER BY tk.Agencia ";
 
 
             var result = await xCon.QueryAsync<ReporteHojaRutaDto>(sql, new { DocEntry = docEntryHojaRuta });
