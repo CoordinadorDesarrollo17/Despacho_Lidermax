@@ -29,6 +29,11 @@
                     </div>
 
                     <div class="col-12 col-md-2">
+                        <label class="form-label">Fecha Recojo</label>
+                        <input type="date" id="filtroFechaRecojo" class="form-control form-control-sm">
+                    </div>
+
+                    <div class="col-12 col-md-2">
                         <label class="form-label">Estado</label>
                         <select id="filtroEstado" class="form-select form-select-sm">
                             <option value="">Seleccione</option>
@@ -40,7 +45,7 @@
 
                     <div class="col-12 col-md-2">
                         <label class="form-label">N° Hoja de ruta</label>
-                        <input type="text" id="filtroHojaRuta" class="form-control form-control-sm">
+                        <input type="text" id="filtroHojaRuta" class="form-control form-control-sm" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -214,6 +219,7 @@
         const tablaTicketsRecogidos = document.getElementById("tablaTicketsRecogidos");
 
         const filtroFechaDespacho = document.getElementById("filtroFechaDespacho");
+        const filtroFechaRecojo = document.getElementById("filtroFechaRecojo");
         const filtroEstado = document.getElementById("filtroEstado");
         const filtroHojaRuta = document.getElementById("filtroHojaRuta");
 
@@ -222,6 +228,7 @@
              buscar: "",
              pageSize: 10,
              fechaDespacho: "",
+             fechaRecojo: "",
              estado: "",
              hojaRuta: "",
              paginaActual: 1
@@ -231,6 +238,7 @@
              filtros.buscar = txtBuscar.value;
              filtros.pageSize = cboPageSize.value;
              filtros.fechaDespacho = filtroFechaDespacho.value;
+             filtros.fechaRecojo = filtroFechaRecojo.value;
              filtros.estado = filtroEstado.value;
              filtros.hojaRuta = filtroHojaRuta.value;
          }
@@ -251,6 +259,7 @@
                   "Paginacion.Page": filtros.paginaActual,
                  "Paginacion.PageSize": filtros.pageSize,
                  "FechaDespacho": filtros.fechaDespacho,
+                 "FechaRecojo" : filtros.fechaRecojo ,
                  "Estado": filtros.estado,
                  "DocNumHojaRuta": filtros.hojaRuta
                      
@@ -280,6 +289,7 @@
         //lanzamos eventos de los <select>
         cboPageSize.addEventListener("change", () => cargarTabla(1));
         filtroFechaDespacho.addEventListener("change", () => cargarTabla(1));
+        filtroFechaRecojo.addEventListener("change", () => cargarTabla(1));
         filtroEstado.addEventListener("change", () => cargarTabla(1));
 
         //Agregamos evento para que el usuario de enter
@@ -544,7 +554,7 @@
 
         document.getElementById("btnExportarExcel").addEventListener("click", function () {
             const query = txtBuscar.value;
-            const url = `@Url.Action("ExportarExcelTicketsHojaRuta", "Tickets")?Buscar=${encodeURIComponent(query)}&esHojaRuta=false&FechaDespacho=${filtroFechaDespacho.value}&Estado=${filtroEstado.value}`;
+                const url = `@Url.Action("ExportarExcelTicketsHojaRuta", "Tickets")?Buscar=${encodeURIComponent(query)}&esHojaRuta=false&FechaDespacho=${filtroFechaDespacho.value}&Estado=${filtroEstado.value}&DocNumHojaRuta=${filtroHojaRuta.value}&FechaRecojo=${filtroFechaRecojo.value}`;
             window.location.href = url;
         });
 

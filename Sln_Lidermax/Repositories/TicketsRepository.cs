@@ -52,6 +52,7 @@ namespace Sln_Lidermax.Repositories
                         AND (@DocEntry IS NULL OR tk.DocEntry = @DocEntry)
                         AND (@Estado IS NULL OR rfd.Estado = @Estado)
                         AND (@FechaDespacho IS NULL OR CAST(rfd.FechaDespacho AS DATE) = CAST(@FechaDespacho AS DATE))
+                        AND (@FechaRecojo IS NULL OR CAST(rfd.FechaRecojo AS DATE) = CAST(@FechaRecojo AS DATE))
                         AND (@DocNumHojaRuta IS NULL OR r.DocNum = @DocNumHojaRuta)
                         GROUP BY tr.DocEntry,tk.DocEntry,tk.DocNum,tk.CardCode,tk.CardName,
                                  v3_1.Calle,v3_2.Calle, tk.Agencia,tk.EnvioAgencia, tk.Cajas,
@@ -61,7 +62,7 @@ namespace Sln_Lidermax.Repositories
                         ORDER BY FechaRecojo DESC
                     "; // tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
 
-            var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryTicket, Estado = model.Estado, FechaDespacho = model.FechaDespacho , DocNumHojaRuta = model.DocNumHojaRuta });
+            var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryTicket, Estado = model.Estado, FechaDespacho = model.FechaDespacho , DocNumHojaRuta = model.DocNumHojaRuta , FechaRecojo = model.FechaRecojo });
             return result;
         }
 

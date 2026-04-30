@@ -9,6 +9,7 @@
         public string? Buscar { get; set; }
         public string? Estado { get; set; }
         public DateTime? FechaDespacho { get; set; }
+        public DateTime? FechaRecojo { get; set; }
         public PaginacionDto Paginacion { get; set; } = new();
     }
 }
