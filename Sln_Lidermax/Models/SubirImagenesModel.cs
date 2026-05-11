@@ -1,6 +1,6 @@
-﻿namespace Sln_Lidermax.Dtos
+﻿namespace Sln_Lidermax.Models
 {
-    public class SubirImagenesDto
+    public class SubirImagenesModel
     {
         public int Linea { get; set; }
         public int DocEntryHojaRuta {  get; set; }  

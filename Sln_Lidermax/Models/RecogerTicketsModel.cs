@@ -1,6 +1,6 @@
-﻿namespace Sln_Lidermax.Dtos
+﻿namespace Sln_Lidermax.Models
 {
-    public class RecogerTicketsDto
+    public class RecogerTicketsModel
     {
         public List<TicketSeleccionadoDto> Tickets { get; set; }
     }

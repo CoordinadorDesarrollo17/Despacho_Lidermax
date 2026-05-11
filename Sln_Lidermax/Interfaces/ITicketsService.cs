@@ -1,21 +1,21 @@
-﻿using Sln_Lidermax.Dtos;
+﻿using Sln_Lidermax.Models;
 using X.PagedList;
 
 namespace Sln_Lidermax.Interfaces
 {
     public interface ITicketsService
     {
-        Task<bool> ActualizarFechaDespacho(TicketsDto model);
-        Task<bool> ActualizarGuiaTransportista(TicketsDto model);
-        Task<bool> ActualizarObservacion(TicketsDto model);
+        Task<bool> ActualizarFechaDespacho(TicketsModel model);
+        Task<bool> ActualizarGuiaTransportista(TicketsModel model);
+        Task<bool> ActualizarObservacion(TicketsModel model);
         Task<bool> DevolverTicket(TicketSeleccionadoDto model);
         Task<bool> EntregarTicket(TicketSeleccionadoDto request);
-        Task<bool> InsertarTicketsRecogidos(RecogerTicketsDto request);
-        Task<IPagedList<TicketsDto>> ListadoTickets(FiltrosTicketsDto model);
-        Task<List<TicketsDto>> ListadoTicketsExcel(FiltrosTicketsDto model);
-        Task<IPagedList<TicketsDto>> ListadoTicketsRecogidos(FiltrosTicketsDto model);
-        Task<List<TicketsDto>> ListadoTicketsRecogidosExcel(FiltrosTicketsDto model);
+        Task<bool> InsertarTicketsRecogidos(RecogerTicketsModel request);
+        Task<IPagedList<TicketsModel>> ListadoTickets(FiltrosTicketsModel model);
+        Task<List<TicketsModel>> ListadoTicketsExcel(FiltrosTicketsModel model);
+        Task<IPagedList<TicketsModel>> ListadoTicketsRecogidos(FiltrosTicketsModel model);
+        Task<List<TicketsModel>> ListadoTicketsRecogidosExcel(FiltrosTicketsModel model);
         List<object> ObtenerImagenesLidermax(int docNumTicket);
-        Task<bool> SubirImagenes(SubirImagenesDto request);
+        Task<bool> SubirImagenes(SubirImagenesModel request);
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace Sln_Lidermax.Dtos
+﻿namespace Sln_Lidermax.Models
 {
-    public class FiltrosTicketsDto
+    public class FiltrosTicketsModel
     {
         public int? DocEntryTicket {  get; set; }   
         public Boolean? esHojaRuta {  get; set; }  
@@ -10,6 +10,6 @@
         public string? Estado { get; set; }
         public DateTime? FechaDespacho { get; set; }
         public DateTime? FechaRecojo { get; set; }
-        public PaginacionDto Paginacion { get; set; } = new();
+        public PaginacionModel Paginacion { get; set; } = new();
     }
 }

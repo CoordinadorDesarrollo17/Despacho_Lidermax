@@ -1,13 +1,13 @@
-﻿using Sln_Lidermax.Dtos;
+﻿using Sln_Lidermax.Models;
 using X.PagedList;
 
 namespace Sln_Lidermax.Interfaces
 {
     public interface IHojasRutaService
     {
-        Task<List<HojasRutaDto>> ListadoHojasRutaExcel(FiltrosHojasRutaDto model);
-        Task<IPagedList<HojasRutaDto>> ListadoHojasRutaPaginados(FiltrosHojasRutaDto model);
-        Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta);
-        Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaPdf(int docEntryHojaRuta);
+        Task<List<HojasRutaModel>> ListadoHojasRutaExcel(FiltrosHojasRutaModel model);
+        Task<IPagedList<HojasRutaModel>> ListadoHojasRutaPaginados(FiltrosHojasRutaModel model);
+        Task<List<ReporteHojaRutaModel>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta);
+        Task<List<ReporteHojaRutaModel>> ListadoTicketsPorHojasRutaPdf(int docEntryHojaRuta);
     }
 }

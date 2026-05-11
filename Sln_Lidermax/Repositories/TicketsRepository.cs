@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Sln_Lidermax.Interfaces;
-using Sln_Lidermax.Dtos;
+using Sln_Lidermax.Models;
 using X.PagedList;
 using X.PagedList.Extensions;
 using DocumentFormat.OpenXml.EMMA;
@@ -17,7 +17,7 @@ namespace Sln_Lidermax.Repositories
         }
 
         // Método privado para Tickets Recogidos
-        private async Task<IEnumerable<TicketsDto>> ObtenerTicketsRecogidos(FiltrosTicketsDto model)
+        private async Task<IEnumerable<TicketsModel>> ObtenerTicketsRecogidos(FiltrosTicketsModel model)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -62,11 +62,11 @@ namespace Sln_Lidermax.Repositories
                         ORDER BY FechaRecojo DESC
                     "; // tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
 
-            var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryTicket, Estado = model.Estado, FechaDespacho = model.FechaDespacho , DocNumHojaRuta = model.DocNumHojaRuta , FechaRecojo = model.FechaRecojo });
+            var result = await xCon.QueryAsync<TicketsModel>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryTicket, Estado = model.Estado, FechaDespacho = model.FechaDespacho , DocNumHojaRuta = model.DocNumHojaRuta , FechaRecojo = model.FechaRecojo });
             return result;
         }
 
-        private async Task<IEnumerable<TicketsDto>> ObtenerTicketsPorHojaRuta(FiltrosTicketsDto model)
+        private async Task<IEnumerable<TicketsModel>> ObtenerTicketsPorHojaRuta(FiltrosTicketsModel model)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -103,29 +103,29 @@ namespace Sln_Lidermax.Repositories
                         ORDER BY tk.Agencia
                      ";
 
-            var result = await xCon.QueryAsync<TicketsDto>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryHojaRuta });
+            var result = await xCon.QueryAsync<TicketsModel>(sql, new { Buscar = "%" + model.Buscar + "%", DocEntry = model.DocEntryHojaRuta });
             return result;
         }
 
-        public async Task<IPagedList<TicketsDto>> ListadoTicketsRecogidos(FiltrosTicketsDto model)
+        public async Task<IPagedList<TicketsModel>> ListadoTicketsRecogidos(FiltrosTicketsModel model)
         {
             var result = await ObtenerTicketsRecogidos(model);
             return result.ToPagedList(model.Paginacion.Page, model.Paginacion.PageSize);
         }
 
-        public async Task<List<TicketsDto>> ListadoTicketsRecogidosExcel(FiltrosTicketsDto model)
+        public async Task<List<TicketsModel>> ListadoTicketsRecogidosExcel(FiltrosTicketsModel model)
         {
             var result = await ObtenerTicketsRecogidos(model);
             return result.ToList();
         }
 
-        public async Task<IPagedList<TicketsDto>> ListadoTickets(FiltrosTicketsDto model)
+        public async Task<IPagedList<TicketsModel>> ListadoTickets(FiltrosTicketsModel model)
         {
             var result = await ObtenerTicketsPorHojaRuta(model);
             return result.ToPagedList(model.Paginacion.Page, model.Paginacion.PageSize);
         }
 
-        public async Task<List<TicketsDto>> ListadoTicketsExcel(FiltrosTicketsDto model)
+        public async Task<List<TicketsModel>> ListadoTicketsExcel(FiltrosTicketsModel model)
         {
             var result = await ObtenerTicketsPorHojaRuta(model);
             return result.ToList();
@@ -157,7 +157,7 @@ namespace Sln_Lidermax.Repositories
 
             return result > 0 && result1 > 0 && result2 > 0;
         }
-        public async Task<bool> ActualizarGuiaTransportista(TicketsDto model)
+        public async Task<bool> ActualizarGuiaTransportista(TicketsModel model)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -175,7 +175,7 @@ namespace Sln_Lidermax.Repositories
 
             return result > 0;
         }
-        public async Task<bool> ActualizarObservacion(TicketsDto model)
+        public async Task<bool> ActualizarObservacion(TicketsModel model)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -193,7 +193,7 @@ namespace Sln_Lidermax.Repositories
 
             return result > 0;
         }
-        public async Task<bool> ActualizarFechaDespacho(TicketsDto model)
+        public async Task<bool> ActualizarFechaDespacho(TicketsModel model)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 

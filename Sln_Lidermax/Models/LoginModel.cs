@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Sln_Lidermax.Dtos
+namespace Sln_Lidermax.Models
 {
-    public class LoginDto
+    public class LoginModel
     {
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Usuario")]

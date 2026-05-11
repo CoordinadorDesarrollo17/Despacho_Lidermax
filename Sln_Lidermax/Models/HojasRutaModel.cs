@@ -1,6 +1,6 @@
-﻿namespace Sln_Lidermax.Dtos
+﻿namespace Sln_Lidermax.Models
 {
-    public class HojasRutaDto
+    public class HojasRutaModel
     {
         public int? DocEntry { get; set; }
         public int? DocNum { get; set; }    

@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sln_Lidermax.Dtos;
+using Sln_Lidermax.Models;
 using Sln_Lidermax.Interfaces;
 using Sln_Lidermax.Services;
 using System.Reflection;
@@ -19,7 +19,7 @@ namespace Sln_Lidermax.Controllers
         public TicketsController(ITicketsService ticketsService ) {
             this.ticketsService = ticketsService;
         }
-        public async Task<IActionResult> ListadoTickets(FiltrosTicketsDto model)
+        public async Task<IActionResult> ListadoTickets(FiltrosTicketsModel model)
         {
             ViewBag.DocEntryHojaRuta = model.DocEntryHojaRuta;
             ViewBag.DocNumHojaRuta = model.DocNumHojaRuta;
@@ -33,7 +33,7 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RecogerTickets([FromBody] RecogerTicketsDto request)
+        public async Task<IActionResult> RecogerTickets([FromBody] RecogerTicketsModel request)
         {
             if (request.Tickets == null || !request.Tickets.Any())
             {
@@ -53,7 +53,7 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ActualizarFechaDespacho([FromBody] TicketsDto model)
+        public async Task<IActionResult> ActualizarFechaDespacho([FromBody] TicketsModel model)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ActualizarGuiaTransportista([FromBody] TicketsDto model)
+        public async Task<IActionResult> ActualizarGuiaTransportista([FromBody] TicketsModel model)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ActualizarObservacion([FromBody] TicketsDto model)
+        public async Task<IActionResult> ActualizarObservacion([FromBody] TicketsModel model)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace Sln_Lidermax.Controllers
         [HttpGet]
         public async Task<IActionResult> DetalleTicket(int id)
         {
-            var model = new FiltrosTicketsDto
+            var model = new FiltrosTicketsModel
             {
                 DocEntryTicket = id
             };
@@ -115,7 +115,7 @@ namespace Sln_Lidermax.Controllers
         }
 
 
-        public async Task<IActionResult> ListadoTicketsRecogidos(FiltrosTicketsDto model)
+        public async Task<IActionResult> ListadoTicketsRecogidos(FiltrosTicketsModel model)
         {   
             var listaTicketsRecogidos = await ticketsService.ListadoTicketsRecogidos(model);
 
@@ -159,7 +159,7 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubirImagenes([FromForm] SubirImagenesDto request)
+        public async Task<IActionResult> SubirImagenes([FromForm] SubirImagenesModel request)
         {
             try
             {
@@ -175,9 +175,9 @@ namespace Sln_Lidermax.Controllers
 
   
 
-        public async Task<IActionResult> ExportarExcelTicketsHojaRuta(FiltrosTicketsDto model)
+        public async Task<IActionResult> ExportarExcelTicketsHojaRuta(FiltrosTicketsModel model)
         {
-            IEnumerable<TicketsDto> lista;
+            IEnumerable<TicketsModel> lista;
 
             if (model.esHojaRuta == true)
             {

@@ -1,7 +1,7 @@
 ﻿using Azure.Core;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using Microsoft.Data.SqlClient;
-using Sln_Lidermax.Dtos;
+using Sln_Lidermax.Models;
 using Sln_Lidermax.Interfaces;
 using Sln_Lidermax.Repositories;
 using X.PagedList;
@@ -18,12 +18,12 @@ namespace Sln_Lidermax.Services
             this.dapperContext = dapperContext;
         }
 
-        public async Task<IPagedList<TicketsDto>> ListadoTickets(FiltrosTicketsDto model)
+        public async Task<IPagedList<TicketsModel>> ListadoTickets(FiltrosTicketsModel model)
         {
             return await ticketsRepository.ListadoTickets(model);
         }
 
-        public async Task<bool> InsertarTicketsRecogidos(RecogerTicketsDto request)
+        public async Task<bool> InsertarTicketsRecogidos(RecogerTicketsModel request)
         {
             using var con = new SqlConnection(dapperContext.connectionString);
             await con.OpenAsync();
@@ -72,20 +72,20 @@ namespace Sln_Lidermax.Services
             }
         }
 
-        public async Task<IPagedList<TicketsDto>> ListadoTicketsRecogidos(FiltrosTicketsDto model)
+        public async Task<IPagedList<TicketsModel>> ListadoTicketsRecogidos(FiltrosTicketsModel model)
         {
             return await ticketsRepository.ListadoTicketsRecogidos(model);
         }
 
-        public async Task<bool> ActualizarFechaDespacho(TicketsDto model)
+        public async Task<bool> ActualizarFechaDespacho(TicketsModel model)
         {
             return await ticketsRepository.ActualizarFechaDespacho(model);
         }
-        public async Task<bool> ActualizarGuiaTransportista(TicketsDto model)
+        public async Task<bool> ActualizarGuiaTransportista(TicketsModel model)
         {
             return await ticketsRepository.ActualizarGuiaTransportista(model);
         }
-        public async Task<bool> ActualizarObservacion(TicketsDto model)
+        public async Task<bool> ActualizarObservacion(TicketsModel model)
         {
             return await ticketsRepository.ActualizarObservacion(model);
         }
@@ -141,7 +141,7 @@ namespace Sln_Lidermax.Services
             }
         }
 
-        public async Task<bool> SubirImagenes(SubirImagenesDto request)
+        public async Task<bool> SubirImagenes(SubirImagenesModel request)
         {
             string rutaBase = @"D:\COBEFARWEBFILES\DespachoLidermax";
 
@@ -197,12 +197,12 @@ namespace Sln_Lidermax.Services
             }
         }
 
-        public async Task<List<TicketsDto>> ListadoTicketsExcel(FiltrosTicketsDto model)
+        public async Task<List<TicketsModel>> ListadoTicketsExcel(FiltrosTicketsModel model)
         {
             return await ticketsRepository.ListadoTicketsExcel(model);
         }
 
-        public async Task<List<TicketsDto>> ListadoTicketsRecogidosExcel(FiltrosTicketsDto model)
+        public async Task<List<TicketsModel>> ListadoTicketsRecogidosExcel(FiltrosTicketsModel model)
         {
             return await ticketsRepository.ListadoTicketsRecogidosExcel(model);
         }

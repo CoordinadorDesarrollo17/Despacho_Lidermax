@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Sln_Lidermax.Interfaces;
-using Sln_Lidermax.Dtos;
+using Sln_Lidermax.Models;
 using X.PagedList;
 using X.PagedList.Extensions;
 
@@ -16,7 +16,7 @@ namespace Sln_Lidermax.Repositories
             this.dapperContext = dapperContext;
         }
 
-        private async Task<IEnumerable<HojasRutaDto>> ObtenerHojasRuta(FiltrosHojasRutaDto model)
+        private async Task<IEnumerable<HojasRutaModel>> ObtenerHojasRuta(FiltrosHojasRutaModel model)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -37,12 +37,12 @@ namespace Sln_Lidermax.Repositories
                         ORDER BY r.Estado ASC,r.TiempoPac DESC
                     "; 
 
-            var result = await xCon.QueryAsync<HojasRutaDto>(sql, new { Buscar = "%" + model.Buscar + "%" });
+            var result = await xCon.QueryAsync<HojasRutaModel>(sql, new { Buscar = "%" + model.Buscar + "%" });
 
             return result;
         }
 
-        public async Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta)
+        public async Task<List<ReporteHojaRutaModel>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -92,24 +92,24 @@ namespace Sln_Lidermax.Repositories
                         T1.TelfPer,t5.agencia,t5.EnvioAgencia, r.TiempoPac
                     ORDER BY T5.Agencia ";  
 
-            var result = await xCon.QueryAsync<ReporteHojaRutaDto>(sql, new { DocEntry = docEntryHojaRuta });
+            var result = await xCon.QueryAsync<ReporteHojaRutaModel>(sql, new { DocEntry = docEntryHojaRuta });
 
             return result.ToList();
         }
 
-        public async Task<IPagedList<HojasRutaDto>> ListadoHojasRutaPaginados(FiltrosHojasRutaDto model)
+        public async Task<IPagedList<HojasRutaModel>> ListadoHojasRutaPaginados(FiltrosHojasRutaModel model)
         {
             var result = await ObtenerHojasRuta(model);
             return result.ToPagedList(model.Paginacion.Page, model.Paginacion.PageSize);
         }
 
-        public async Task<List<HojasRutaDto>> ListadoHojasRutaExcel(FiltrosHojasRutaDto model)
+        public async Task<List<HojasRutaModel>> ListadoHojasRutaExcel(FiltrosHojasRutaModel model)
         {
             var result = await ObtenerHojasRuta(model);
             return result.ToList();
         }
 
-        public async Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaPdf(int docEntryHojaRuta)
+        public async Task<List<ReporteHojaRutaModel>> ListadoTicketsPorHojasRutaPdf(int docEntryHojaRuta)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -150,7 +150,7 @@ namespace Sln_Lidermax.Repositories
                             ORDER BY tk.Agencia ";
 
 
-            var result = await xCon.QueryAsync<ReporteHojaRutaDto>(sql, new { DocEntry = docEntryHojaRuta });
+            var result = await xCon.QueryAsync<ReporteHojaRutaModel>(sql, new { DocEntry = docEntryHojaRuta });
 
             return result.ToList();
 

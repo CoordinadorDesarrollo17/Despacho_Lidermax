@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Sln_Lidermax.Dtos;
+using Sln_Lidermax.Models;
 using Sln_Lidermax.Interfaces;
 using System.Drawing;
 using System.IO;
@@ -19,7 +19,7 @@ namespace Sln_Lidermax.Controllers
         {
             this.hojasRutaService = hojasRutaService;
         }
-        public async Task<IActionResult> ListadoHojasRuta(FiltrosHojasRutaDto model)
+        public async Task<IActionResult> ListadoHojasRuta(FiltrosHojasRutaModel model)
         {
 
             var listaHojasRuta = await hojasRutaService.ListadoHojasRutaPaginados(model);
@@ -32,7 +32,7 @@ namespace Sln_Lidermax.Controllers
             return View(listaHojasRuta);
         }
       
-        public async Task<IActionResult> ExportarExcel(FiltrosHojasRutaDto model)
+        public async Task<IActionResult> ExportarExcel(FiltrosHojasRutaModel model)
         {
             var lista = await hojasRutaService.ListadoHojasRutaExcel(model);
 

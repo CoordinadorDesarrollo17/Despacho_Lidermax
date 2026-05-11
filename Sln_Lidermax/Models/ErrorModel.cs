@@ -1,6 +1,6 @@
-namespace Sln_Lidermax.Dtos
+namespace Sln_Lidermax.Models
 {
-    public class ErrorDto
+    public class ErrorModel
     {
         public string? RequestId { get; set; }
 

@@ -1,6 +1,6 @@
-﻿namespace Sln_Lidermax.Dtos
+﻿namespace Sln_Lidermax.Models
 {
-    public class ReporteHojaRutaDto
+    public class ReporteHojaRutaModel
     {
         public string TiempoPac { get; set; }
         public string Socio { get; set; }

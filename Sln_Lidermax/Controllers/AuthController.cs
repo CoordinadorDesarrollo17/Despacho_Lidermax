@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sln_Lidermax.Dtos;
+using Sln_Lidermax.Models;
 using Sln_Lidermax.Interfaces;
 using Sln_Lidermax.Services;
 using System.Security.Claims;
@@ -25,7 +25,7 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginDto model)
+        public async Task<IActionResult> Login(LoginModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);

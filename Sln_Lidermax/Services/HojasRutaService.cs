@@ -1,5 +1,5 @@
 ﻿using Sln_Lidermax.Interfaces;
-using Sln_Lidermax.Dtos;
+using Sln_Lidermax.Models;
 using X.PagedList;
 
 namespace Sln_Lidermax.Services
@@ -13,22 +13,22 @@ namespace Sln_Lidermax.Services
             this.ticketsRepository = ticketsRepository;
         }
 
-        public async Task<IPagedList<HojasRutaDto>> ListadoHojasRutaPaginados(FiltrosHojasRutaDto model)
+        public async Task<IPagedList<HojasRutaModel>> ListadoHojasRutaPaginados(FiltrosHojasRutaModel model)
         {
             return await ticketsRepository.ListadoHojasRutaPaginados(model);
         }
 
-        public async Task<List<HojasRutaDto>> ListadoHojasRutaExcel(FiltrosHojasRutaDto model)
+        public async Task<List<HojasRutaModel>> ListadoHojasRutaExcel(FiltrosHojasRutaModel model)
         {
             return await ticketsRepository.ListadoHojasRutaExcel(model);
         }
 
-        public async Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta)
+        public async Task<List<ReporteHojaRutaModel>> ListadoTicketsPorHojasRutaExcel(int docEntryHojaRuta)
         {
             return await ticketsRepository.ListadoTicketsPorHojasRutaExcel(docEntryHojaRuta);
         }
 
-        public async Task<List<ReporteHojaRutaDto>> ListadoTicketsPorHojasRutaPdf(int docEntryHojaRuta)
+        public async Task<List<ReporteHojaRutaModel>> ListadoTicketsPorHojasRutaPdf(int docEntryHojaRuta)
         {
             return await ticketsRepository.ListadoTicketsPorHojasRutaPdf(docEntryHojaRuta);
         }

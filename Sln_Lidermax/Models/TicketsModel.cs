@@ -1,6 +1,6 @@
-﻿namespace Sln_Lidermax.Dtos
+﻿namespace Sln_Lidermax.Models
 {
-    public class TicketsDto
+    public class TicketsModel
     {
         public int? Linea { get; set; } 
         public int? DocEntryTicket { get; set; }
