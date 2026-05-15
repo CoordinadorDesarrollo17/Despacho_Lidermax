@@ -23,22 +23,42 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <a class="nav-link px-3 rounded hover-bg-light" asp-controller="HojasRuta" asp-action="ListadoHojasRuta">
-                                Hojas de ruta
-                            </a>
-                        </li>
+                        <!-- 
+                            SLID = Supervisor Lidermax 
+                            OLID = Operario Lidermax
+                        -->
 
-                        <li class="nav-item">
-                            <a class="nav-link px-3 rounded hover-bg-light" asp-controller="Tickets" asp-action="ListadoTicketsRecogidos">
-                                Tickets recogidos
-                            </a>
-                        </li>
+                        @if (User.IsInRole("MANAGER") || User.IsInRole("SLID"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 rounded hover-bg-light" asp-controller="HojasRuta" asp-action="ListadoHojasRuta">
+                                    Hojas de ruta
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link px-3 rounded hover-bg-light" asp-controller="Tickets" asp-action="ListadoTicketsRecogidos">
+                                    Tickets recogidos
+                                </a>
+                            </li>
+                        }
+                        @if (User.IsInRole("OLID"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 rounded hover-bg-light" asp-controller="TicketsOperario" asp-action="ListadoTicketsOperario">
+                                    Tickets por operario
+                                </a>
+                            </li>
+                        }
 
                     </ul>
 
                     <ul class="navbar-nav ms-auto align-items-center">
-
+                        <li class="nav-item">
+                            <span class="nav-link text-dark">
+                                Bienvenido, @User.FindFirst("NombreCompleto")?.Value
+                            </span>
+                        </li>
                         <li class="nav-item">
                             <form asp-action="Logout" asp-controller="Auth" method="post">
                                 <button type="submit" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">

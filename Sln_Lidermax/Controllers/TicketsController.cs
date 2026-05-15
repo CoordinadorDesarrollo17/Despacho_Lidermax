@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace Sln_Lidermax.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "MANAGER,SLID")]
     public class TicketsController : Controller
     {
         private readonly ITicketsService ticketsService;

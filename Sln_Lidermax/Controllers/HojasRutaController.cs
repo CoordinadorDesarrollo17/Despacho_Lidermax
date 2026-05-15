@@ -10,7 +10,7 @@ using System.IO;
 
 namespace Sln_Lidermax.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "MANAGER,SLID")]
     public class HojasRutaController : Controller
     {
         private readonly IHojasRutaService hojasRutaService;

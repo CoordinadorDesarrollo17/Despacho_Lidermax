@@ -11,5 +11,7 @@ namespace Sln_Lidermax.Models
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Contraseña")]
         public string Password { get; set; }
+
+    
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Sln_Lidermax.Interfaces
 {
-    public interface IAuthService
+    public interface IAuthRepository
     {
         Task<UsuarioModel> BuscarUsuario(string usuario);
     }

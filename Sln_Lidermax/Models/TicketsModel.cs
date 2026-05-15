@@ -31,5 +31,8 @@
         public DateTime? FechaEntrega { get; set; }
 
         public string? Observacion { get; set; }
+
+        public string? Transportista { get; set; }  
+        public string? EstadoPago { get; set; } 
     }
 }

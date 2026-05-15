@@ -207,9 +207,9 @@ namespace Sln_Lidermax.Services
             return await ticketsRepository.ListadoTicketsRecogidosExcel(model);
         }
 
-        public List<object> ObtenerImagenesLidermax(int docNumTicket)
+        public List<object> ObtenerImagenesLidermax(int docNumTicket, string tipoFiltro = null)
         {
-            List<object> arrImg = new List<object>();
+            List<dynamic> arrImg = new List<dynamic>();
 
             string ruta = @"D:\COBEFARWEBFILES\DespachoLidermax";
 
@@ -223,27 +223,56 @@ namespace Sln_Lidermax.Services
 
                     if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
                     {
+                        string nombreArchivo = Path.GetFileNameWithoutExtension(archivo);
+                        string tipo = "Desconocido";
+                        int orden = 99;
+
+                        if (nombreArchivo.ToLower().Contains("comprobante"))
+                        {
+                            tipo = "Comprobante";
+                            orden = 1;
+                        }else if (nombreArchivo.ToLower().Contains("pedido"))
+                        {
+                            tipo = "Pedido";
+                            orden = 2;
+                        }
+                        else if (nombreArchivo.ToLower().Contains("pago"))
+                        {
+                            tipo = "Pago";
+                            orden = 3;
+                        }
+
+                        if (!string.IsNullOrEmpty(tipoFiltro))
+                        {
+                            if (!tipo.Equals(tipoFiltro, StringComparison.OrdinalIgnoreCase))
+                                continue;
+                        }
+
+
                         byte[] img = File.ReadAllBytes(archivo);
                         string base64 = Convert.ToBase64String(img);
                         string ext = extension.Replace(".", "");
 
-                        string nombreArchivo = Path.GetFileNameWithoutExtension(archivo);
-                        string tipo = "Desconocido";
-
-                        if (nombreArchivo.ToLower().Contains("comprobante"))
-                            tipo = "Comprobante";
-                        else if (nombreArchivo.ToLower().Contains("pedido"))
-                            tipo = "Pedido";
-
                         arrImg.Add(new
                         {
                             imagen = $"data:image/{ext};base64,{base64}",
-                            tipo = tipo
+                            tipo = tipo,
+                            orden = orden
                         });
                     }
                 }
             }
-            return arrImg;
+            //return arrImg;
+
+            return arrImg
+               .OrderBy(x => x.orden)
+               .Select(x => new
+               {
+                   imagen = x.imagen,
+                   tipo = x.tipo
+               })
+               .Cast<object>()
+               .ToList();
         }
     }
 }

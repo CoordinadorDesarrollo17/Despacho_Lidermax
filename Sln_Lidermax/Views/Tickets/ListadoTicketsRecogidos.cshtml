@@ -534,12 +534,24 @@
 
                     contenedor.innerHTML = "";
                     data.images.forEach(img => {
-                        contenedor.innerHTML += `
-                            <div class="col-md-6 text-center mb-3">
-                                <div class="fw-semibold mb-2">${img.tipo}</div>
-                                  <img src="${img.imagen}" class="img-fluid border rounded shadow-sm w-100" style="max-height:500px;">
-                            </div>
-                        `;
+                        // contenedor.innerHTML += `
+                        //     <div class="col-md-6 text-center mb-3">
+                        //         <div class="fw-semibold mb-2">${img.tipo}</div>
+                        //           <img src="${img.imagen}" class="img-fluid border rounded shadow-sm w-100" style="max-height:500px;">
+                        //     </div>
+                        // `;
+                          contenedor.innerHTML += `
+                                     <div class="col-md-6 mb-4">
+                                         <div class="card shadow-sm border-0 h-100">
+                                             <div class="card-header bg-light fw-bold text-center">
+                                                 ${img.tipo}
+                                             </div>
+                                             <div class="card-body p-2 d-flex align-items-center justify-content-center">
+                                                 <img src="${img.imagen}" class="img-fluid rounded border" style="max-height:500px; object-fit:contain;">
+                                             </div>
+                                         </div>
+                                     </div>
+                                 `;
                     });
                 })
                 .catch(() => {

@@ -1,26 +1,23 @@
 ﻿using Sln_Lidermax.Interfaces;
 using BCrypt.Net;
+using Sln_Lidermax.Models;
 
 namespace Sln_Lidermax.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IConfiguration config;
+        private readonly IAuthRepository authRepository;
 
-        public AuthService(IConfiguration config)
+        public AuthService(IConfiguration config, IAuthRepository authRepository)
         {
             this.config = config;
-        }
+            this.authRepository = authRepository;
+        }      
 
-        public bool ValidateUser(string username, string password)
+        public async Task<UsuarioModel> BuscarUsuario(string usuario)
         {
-            var configUser = config["Auth:Username"];
-            var hash = config["Auth:PasswordHash"];
-
-            if (username != configUser)
-                return false;
-
-            return BCrypt.Net.BCrypt.Verify(password, hash);
+            return await authRepository.BuscarUsuario(usuario);
         }
     }
 }

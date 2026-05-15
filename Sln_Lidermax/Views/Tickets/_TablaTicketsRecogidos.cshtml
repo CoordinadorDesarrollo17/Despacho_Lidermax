@@ -57,7 +57,8 @@
                                     @(u?.Estado == "DEVOLUCION" || u?.GuiaTransportista != null ? "disabled" : "")>
                                 <i class="bi bi-file-earmark-text"></i>
                             </button>
-                            <button class="btn btn-sm btn-success btn-fecha"
+
+                           @*  <button class="btn btn-sm btn-success btn-fecha"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
                                     data-linea="@u.Linea"
@@ -66,7 +67,7 @@
                                     title="@(u?.FechaDespacho != null ? "La fecha de despacho ya fue registrada" : "Registrar fecha despacho")"
                                     @(u?.Estado == "DEVOLUCION" || u?.FechaDespacho != null || u?.GuiaTransportista == null ? "disabled" : "")>
                                 <i class="bi bi-calendar-check"></i>
-                            </button>
+                            </button> *@
 
                             <button class="btn btn-sm btn-warning btn-imagen"
                                     data-docentryticket="@u.DocEntryTicket"
@@ -75,8 +76,9 @@
                                     data-linea="@u.Linea"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modalImagen"
-                                    title="Registrar imagenes"
-                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" || u?.FechaDespacho == null ? "disabled" : "")>
+                                    title="Registrar imagenes"                                
+                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO"  ? "disabled" : "")>
+                                @*  @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" || u?.FechaDespacho == null ? "disabled" : "")> *@
                                 <i class="bi bi-image"></i>
                             </button>
                             <button type="button"

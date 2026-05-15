@@ -10,6 +10,7 @@
         public string? Estado { get; set; }
         public DateTime? FechaDespacho { get; set; }
         public DateTime? FechaRecojo { get; set; }
+        public string? NombreCompleto { get; set; }
         public PaginacionModel Paginacion { get; set; } = new();
     }
 }

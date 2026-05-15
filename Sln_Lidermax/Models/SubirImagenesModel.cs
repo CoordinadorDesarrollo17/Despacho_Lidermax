@@ -8,5 +8,8 @@
         public int DocNumTicket { get; set; } 
         public IFormFile Img1 { get; set; }
         public IFormFile Img2 { get; set; }
+
+        public IFormFile ImgPago { get; set; }
+        public string EstadoPago { get; set; }  
     }
 }

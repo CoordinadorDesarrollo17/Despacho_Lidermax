@@ -15,7 +15,7 @@ namespace Sln_Lidermax.Interfaces
         Task<List<TicketsModel>> ListadoTicketsExcel(FiltrosTicketsModel model);
         Task<IPagedList<TicketsModel>> ListadoTicketsRecogidos(FiltrosTicketsModel model);
         Task<List<TicketsModel>> ListadoTicketsRecogidosExcel(FiltrosTicketsModel model);
-        List<object> ObtenerImagenesLidermax(int docNumTicket);
+        List<object> ObtenerImagenesLidermax(int docNumTicket, string tipoFiltro = null);
         Task<bool> SubirImagenes(SubirImagenesModel request);
     }
 }

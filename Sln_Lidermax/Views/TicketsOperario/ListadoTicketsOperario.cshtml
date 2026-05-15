@@ -1,0 +1,642 @@
+﻿@using Sln_Lidermax.Models
+@using X.PagedList
+@model IPagedList<TicketsModel>
+@{
+    ViewData["Title"] = "Listado de Tickets Operario";
+}
+<div class="card shadow-sm mb-4">
+    <div class="card-header header-gradient text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold">
+            TICKETS OPERARIO
+        </h5>
+    </div>
+    <div class="card-body">      
+        <div class="row mb-3 gy-2">
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <label class="mb-0 fw-semibold">Mostrar</label>
+                    <select id="pageSize" class="form-select form-select-sm w-auto">
+                        @foreach (var size in new[] { 1, 5, 10, 20, 40, 60, 80, 100 })
+                        {
+                            <option value="@size" selected="@(size == 10)">@size</option>
+                        }
+                    </select>
+                    <span class="text-nowrap">registros por página</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex justify-content-start justify-content-md-end gap-2">
+                    <input type="text"
+                           id="txtBuscar"
+                           class="form-control form-control-sm w-100 w-md-auto"
+                           style="max-width: 300px;"
+                           placeholder="Buscar:" autocomplete="off" />
+
+                </div>
+            </div>
+        </div>
+        <div id="tablaTicketsOperario">
+            <partial name="_TablaTicketsOperario" model="Model" />
+        </div>
+    </div>
+</div>
+
+<!-- MODALES -->
+<div class="modal fade" id="modalTransportista" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Actualizar Transportista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="Transportista" autocomplete="off" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnActualizarTransportista">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalImagen" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Imágenes del Ticket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- CONTENEDOR DE IMÁGENES EXISTENTES -->
+                <div class="row mb-3" id="contenedorImagenesModal">
+                    <!-- Aquí se cargan imágenes dinámicamente -->
+                </div>
+
+                <hr />
+
+                <!-- SUBIR NUEVAS IMÁGENES -->
+                <h6>Subir nuevas imágenes</h6>
+                <div class="mb-2">
+                    <label class="form-label">Imagen 1: Comprobante de pago</label>
+                    <input type="file" class="form-control" id="img1" accept="image/*" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Imagen 2: Pedido</label>
+                    <input type="file" class="form-control" id="img2" accept="image/*" />
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnRegistrarImagen">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalPago" tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPagoLabel">Estado de Pago</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="estadoPago" class="form-label">Estado de Pago</label>
+                    <select class="form-select" id="estadoPago">
+                        <option value="">Seleccione</option>
+                        <option value="PAGADO">PAGADO</option>
+                        <option value="POR PAGAR">POR PAGAR</option>
+                    </select>
+                </div>
+                <div class="mb-3 d-none" id="contenedorImagen">
+                    <label for="imgPago" class="form-label">Subir Imagen</label>
+                    <input type="file" class="form-control" id="imgPago" accept="image/*">
+                    <div id="previewPago" class="mt-2"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-success" id="btnRegistrarPago">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+
+         const txtBuscar = document.getElementById("txtBuscar");
+         const cboPageSize = document.getElementById("pageSize");
+         const tablaTicketsOperario = document.getElementById("tablaTicketsOperario");
+
+          let filtros = {
+              buscar: "",
+              pageSize: 10,
+              paginaActual: 1
+          };
+
+           function actualizarFiltros() {
+              filtros.buscar = txtBuscar.value;
+              filtros.pageSize = cboPageSize.value;
+          }
+
+         function cargarTabla(page = 1) { //numero de pagina por default
+
+            filtros.paginaActual = page;
+            actualizarFiltros();
+
+              const params = new URLSearchParams({ //parametros
+                  "Buscar": filtros.buscar,
+                   "Paginacion.Page": filtros.paginaActual,
+                  "Paginacion.PageSize": filtros.pageSize
+              });
+
+             let url = `@Url.Action("ListadoTicketsOperario")?${params.toString()}`; //accion del controlador , pasamos parametros
+
+             fetch(url, { //fetch que lanza la accion
+                 headers:  {
+                     "X-Requested-With": "XMLHttpRequest" //nos dice si es una peticion AJAX
+                   }
+                 })
+                 .then(r => r.text())
+                 .then(html => {
+                 tablaTicketsOperario.innerHTML = html;
+             });
+         }
+         //lanzamos eventos de los <select>
+         cboPageSize.addEventListener("change", () => cargarTabla(1));
+
+         //Agregamos evento para que el usuario de enter
+         agregarEventosBusqueda(txtBuscar);
+
+          function agregarEventosBusqueda(input) {
+             if (!input) return;
+
+             // Cuando presiona Enter
+             input.addEventListener("keydown", function (e) {
+                 if (e.key === "Enter") {
+                     e.preventDefault();
+                     cargarTabla(1);
+                 }
+             });
+
+             // Cuando borra todo el contenido
+             input.addEventListener("input", function () {
+                 if (input.value.trim() === "") {
+                     cargarTabla(1);
+                 }
+             });
+         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+             // Modal imágenes
+             document.querySelectorAll(".btn-imagen").forEach(btn => {
+                 btn.addEventListener("click", function() {
+                     document.getElementById("img1").value = "";
+                     document.getElementById("img2").value = "";
+                 });
+             });
+
+         });
+
+         /// MODALES
+          let docEntryTicketSeleccionado = 0;
+          let docNumTicketSeleccionado = 0;
+          let docEntryHojaRutaSeleccionado = 0;
+          let lineaSeleccionado=0;
+
+          // Cuando se abre el modal
+         $(document).on("click", ".btn-Transportista", function () {
+             $("#Transportista").val("");
+
+             docEntryTicketSeleccionado = $(this).data("docentryticket");
+         });
+
+         $(document).on("click", ".btn-imagen", function () {
+             docNumTicketSeleccionado = $(this).data("docnumticket");
+             docEntryTicketSeleccionado = $(this).data("docentryticket");
+             docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+             lineaSeleccionado= $(this).data("linea");
+
+             cargarImagenesModal(docNumTicketSeleccionado);
+         });
+
+          $(document).on("click", ".btn-pago", function () {
+               let estadoPago = $(this).data("estadopago");
+
+              docNumTicketSeleccionado = $(this).data("docnumticket");
+              docEntryTicketSeleccionado = $(this).data("docentryticket");
+              docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+              lineaSeleccionado= $(this).data("linea");
+
+             $("#imgPago").val("");
+              $("#estadoPago").val(estadoPago || "");
+
+                 // mostrar u ocultar input
+                if (estadoPago && estadoPago === "PAGADO") {
+                    $("#estadoPago").prop("disabled", true);
+                    $("#contenedorImagen").removeClass("d-none");
+                } else {
+                    $("#estadoPago").prop("disabled", false);
+                    $("#contenedorImagen").addClass("d-none");
+                }
+
+                //  si ya existe pago, cargar imagen
+                if (estadoPago && estadoPago !== "") {
+                    cargarImagenPago(docNumTicketSeleccionado);
+                } else {
+                    $("#previewPago").remove();
+                }
+
+          });
+
+         ///MODAL TRANSPORTISTA
+         $("#btnActualizarTransportista").click(function () {
+             let transportista = $("#Transportista").val();
+             if (!transportista) {
+                 Swal.fire({
+                     icon: 'warning',
+                     title: 'Dato de transportista requerido',
+                     text: 'Ingrese un valor'
+                 });
+                 return;
+             }
+             $.ajax({
+                 url: '/TicketsOperario/ActualizarTransportista',
+                 type: 'POST',
+                 contentType: 'application/json',
+                 data: JSON.stringify({
+                     docEntryTicket: docEntryTicketSeleccionado,
+                     transportista: transportista
+                 }),
+                 beforeSend: function () {
+                     Swal.fire({
+                         title: 'Guardando...',
+                         text: 'Actualizando transportista',
+                         allowOutsideClick: false,
+                         didOpen: () => {
+                             Swal.showLoading();
+                         }
+                     });
+                 },
+                 success: function (resp) {
+                     if (resp.success) {
+                         Swal.fire({
+                             icon: 'success',
+                             title: 'Actualizado',
+                             text: 'Transportista actualizado correctamente',
+                             confirmButtonText: 'OK'
+                         }).then(() => {
+                                    $('#modalTransportista').modal('hide');
+                                      $("#Transportista").val("");
+                                     cargarTabla(filtros.paginaActual);
+                         });
+                     } else {
+                         Swal.fire({
+                             icon: 'error',
+                             title: 'Error',
+                             text: 'No se pudo actualizar el transportista'
+                         });
+                     }
+                 },
+                 error: function () {
+                     Swal.fire({
+                         icon: 'error',
+                         title: 'Error del servidor',
+                         text: 'Ocurrió un problema al procesar la solicitud'
+                     });
+                 }
+             });
+         });
+
+
+         ///CARGA IMAGENES
+         function cargarImagenesModal(docNum) {
+             const contenedor = document.getElementById("contenedorImagenesModal");
+             contenedor.innerHTML = `
+                 <div class="text-center w-100">
+                     <div class="spinner-border text-primary"></div>
+                     <p class="mt-2">Cargando imágenes...</p>
+                 </div>
+             `;
+
+             fetch(`/TicketsOperario/ObtenerImagenes?docNum=${docNum}`)
+                 .then(r => r.json())
+                 .then(data => {
+                     if (!data.success || data.images.length === 0) {
+                         contenedor.innerHTML = `
+                             <div class="text-muted text-center w-100">
+                                 No hay imágenes disponibles
+                             </div>
+                         `;
+                         return;
+                     }
+
+                     contenedor.innerHTML = "";
+                     data.images.forEach(img => {
+                         // contenedor.innerHTML += `
+                         //     <div class="col-md-6 text-center mb-3">
+                         //         <div class="fw-semibold mb-2">${img.tipo}</div>
+                         //           <img src="${img.imagen}" class="img-fluid border rounded shadow-sm w-100" style="max-height:500px;">
+                         //     </div>
+                         // `;
+                             contenedor.innerHTML += `
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card shadow-sm border-0 h-100">
+                                            <div class="card-header bg-light fw-bold text-center">
+                                                ${img.tipo}
+                                            </div>
+                                            <div class="card-body p-2 d-flex align-items-center justify-content-center">
+                                                <img src="${img.imagen}" class="img-fluid rounded border" style="max-height:500px; object-fit:contain;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                     });
+                 })
+                 .catch(() => {
+                     contenedor.innerHTML = `
+                         <div class="text-danger text-center w-100">
+                             Error al cargar imágenes
+                         </div>
+                     `;
+                 });
+         }
+
+         //MODAL IMAGENES
+         $("#btnRegistrarImagen").click(function () {
+
+             let img1 = $("#img1")[0].files[0];
+             let img2 = $("#img2")[0].files[0];
+
+             if (!img1 || !img2) {
+                 Swal.fire({
+                     icon: "warning",
+                     title: "Imágenes requeridas",
+                     text: "Debe seleccionar ambas imágenes"
+                 });
+                 return;
+             }
+
+             let formData = new FormData();
+             formData.append("DocEntryTicket", docEntryTicketSeleccionado);
+             formData.append("Img1", img1);
+             formData.append("Img2", img2);
+             formData.append("DocNumTicket",docNumTicketSeleccionado);
+             formData.append("DocEntryHojaRuta",docEntryHojaRutaSeleccionado);
+             formData.append("Linea",lineaSeleccionado);
+
+             $.ajax({
+                  url: '/TicketsOperario/SubirImagenes',
+                 type: 'POST',
+                 data: formData,
+                 processData: false,
+                 contentType: false,
+
+                 beforeSend: function () {
+                     Swal.fire({
+                         title: "Subiendo imágenes...",
+                         allowOutsideClick: false,
+                         didOpen: () => {
+                             Swal.showLoading();
+                         }
+                     });
+                 },
+                 success: function (resp) {
+                     if (resp.success) {
+                         Swal.fire({
+                             icon: "success",
+                             title: "Imágenes registradas",
+                             text: "El ticket fue marcado como ENVIADO"
+                         }).then(() => {
+
+                                  $('#modalImagen').modal('hide');
+                                  $("#img1").val("");
+                                  $("#img2").val("");
+                                 cargarTabla(filtros.paginaActual);
+
+                         });
+                     } else {
+                         Swal.fire({
+                             icon: "error",
+                             title: "Error",
+                             text: resp.message || "No se pudieron guardar las imágenes"
+                         });
+                     }
+                 },
+                 error: function () {
+                     Swal.fire({
+                         icon: "error",
+                         title: "Error del servidor"
+                     });
+                 }
+             });
+         });
+
+         /// IMAGEN PAGO
+           const estadoPagoBandera = document.getElementById('estadoPago');
+           const contenedorImagen = document.getElementById('contenedorImagen');
+
+           estadoPagoBandera.addEventListener('change', function () {
+
+             if (estadoPagoBandera.value === 'PAGADO') {
+               contenedorImagen.classList.remove('d-none');
+             } else {
+               contenedorImagen.classList.add('d-none');
+             }
+
+           });
+
+                   function cargarImagenPago(docNumTicket) {
+
+            fetch(`/TicketsOperario/ObtenerImagenes?docNum=${docNumTicket}&tipoFiltro=Pago`)
+                .then(r => r.json())
+                .then(resp => {
+
+                    $("#previewPago").remove();
+
+                    if (resp.success && resp.images && resp.images.length > 0) {
+
+                        let img = resp.images[0];
+
+                        let html = `
+                            <div id="previewPago" class="mt-3 text-center">
+                                <label class="form-label">Imagen Pago</label>
+                                <img src="${img.imagen}"
+                                     class="img-fluid border rounded shadow-sm"
+                                     style="max-height:250px;">
+                            </div>
+                        `;
+
+                        $("#contenedorImagen").after(html);
+                    }
+                });
+        }
+
+           // BOTON MODAL PAGO
+           $("#btnRegistrarPago").click(function () {
+               let imgPago = $("#imgPago")[0].files[0];
+               let estadoPago = $("#estadoPago").val();
+
+               if (estadoPago === "") {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Seleccione estado",
+                        text: "Debe seleccionar un estado de pago"
+                    });
+                    return;
+               }
+
+               if(estadoPago == 'PAGADO' ){
+                      if (!imgPago) {
+                         Swal.fire({
+                             icon: "warning",
+                             title: "Imagen requerida",
+                             text: "Debe seleccionar imagen de pago"
+                         });
+                         return;
+                     }
+               }
+
+              let formData = new FormData();
+              formData.append("DocEntryTicket", docEntryTicketSeleccionado);
+              formData.append("DocNumTicket",docNumTicketSeleccionado);
+              formData.append("DocEntryHojaRuta",docEntryHojaRutaSeleccionado);
+              formData.append("Linea",lineaSeleccionado);
+              if (imgPago) {
+                 formData.append("ImgPago", imgPago);
+              }
+              formData.append("EstadoPago", estadoPago);
+
+              $.ajax({
+                   url: '/TicketsOperario/RegistrarPago',
+                  type: 'POST',
+                  data: formData,
+                  processData: false,
+                  contentType: false,
+
+                  beforeSend: function () {
+                      Swal.fire({
+                          title: "Registrando estado de pago...",
+                          allowOutsideClick: false,
+                          didOpen: () => {
+                              Swal.showLoading();
+                          }
+                      });
+                  },
+                  success: function (resp) {
+                      if (resp.success) {
+                          Swal.fire({
+                              icon: "success",
+                              title: "Registro exitoso",
+                              text: "El estado de pago fue actualizado correctamente"
+                          }).then(() => {
+
+                                   $('#modalPago').modal('hide');
+                                   $("#imgPago").val("");
+                                   $("#estadoPago").val("");
+                                  cargarTabla(filtros.paginaActual);
+
+                          });
+                      } else {
+                          Swal.fire({
+                              icon: "error",
+                              title: "Error",
+                              text: resp.message || "No se pudo guardar el estado de pago"
+                          });
+                      }
+                  },
+                  error: function () {
+                      Swal.fire({
+                          icon: "error",
+                          title: "Error del servidor"
+                      });
+                  }
+              });
+          });
+
+          //BOTON ENTREGAR
+         $(document).on("click", ".btn-entregar", function () {
+
+             docEntryTicketSeleccionado = $(this).data("docentryticket");
+             docEntryHojaRutaSeleccionado = $(this).data("docentryhojaruta");
+             lineaSeleccionado= $(this).data("linea");
+
+            Swal.fire({
+                title: "¿Confirmar entrega?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Sí, entregar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: '/TicketsOperario/EstadoEntregado',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            DocEntryTicket: docEntryTicketSeleccionado,
+                            DocEntryHojaRuta: docEntryHojaRutaSeleccionado,
+                            Linea: lineaSeleccionado
+                           }),
+                        beforeSend: function () {
+
+                            Swal.fire({
+                                title: "Procesando...",
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                        },
+
+                        success: function (resp) {
+
+                            if (resp.success) {
+
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Estado cambio a entregado"
+                                });
+
+                                cargarTabla(filtros.paginaActual);
+
+                            } else {
+
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error",
+                                    text: resp.message || "No se pudo registrar"
+                                });
+
+                            }
+
+                        },
+
+                        error: function () {
+
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error del servidor"
+                            });
+
+                        }
+
+                    });
+
+                }
+
+            });
+
+        });
+
+    </script>
+
+}
