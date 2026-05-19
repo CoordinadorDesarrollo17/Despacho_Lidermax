@@ -77,5 +77,15 @@ namespace Sln_Lidermax.Repositories
             return result > 0 ;
         }
 
+        public async Task<bool> ActualizarMontoFlete(SubirImagenesModel request, SqlConnection con, SqlTransaction tx)
+        {
+            var sql = @" UPDATE [tmp].[registro_fecha_despacho]
+                SET  MontoFlete = @MontoFlete
+                WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket";
+
+            var result = await con.ExecuteAsync(sql, new { request.DocEntryHojaRuta, request.Linea, request.DocEntryTicket, request.MontoFlete }, tx);
+
+            return result > 0;
+        }
     }
 }

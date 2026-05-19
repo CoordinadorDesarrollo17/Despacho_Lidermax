@@ -204,6 +204,7 @@
                     <input type="file" class="form-control" id="img2" accept="image/*" />
                 </div>
 
+       
             </div>
 
             <div class="modal-footer">
@@ -212,6 +213,7 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
     <script>
     
@@ -460,6 +462,7 @@
             formData.append("DocEntryHojaRuta",docEntryHojaRutaSeleccionado);
             formData.append("Linea",lineaSeleccionado);
 
+      
             $.ajax({
                 url: '/Tickets/SubirImagenes',
                 type: 'POST',

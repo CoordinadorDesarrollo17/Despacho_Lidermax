@@ -70,7 +70,8 @@ namespace Sln_Lidermax.Controllers
                     DocNumTicket = request.DocNumTicket,
                     Linea = request.Linea,
                     Fecha = DateTime.Now,
-                    Observacion = request.Observacion
+                    Observacion = request.Observacion,
+                    MontoFlete= request.MontoFlete
                 };
 
                 bool result1 = true;

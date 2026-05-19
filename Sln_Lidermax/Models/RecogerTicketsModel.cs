@@ -16,6 +16,7 @@
         public string? Observacion { get; set; }
 
         public bool Excluido { get; set; } = false;
+        public double? MontoFlete { get; set; }
     }
 
    

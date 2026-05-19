@@ -71,10 +71,11 @@ namespace Sln_Lidermax.Services
                 }
 
                 var resultTicketEnviado = await ticketsOperarioRepository.ActualizarEstadoPago(request, con, tx);
+                var resultMontoFlete = await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
 
                 tx.Commit();
 
-                return resultTicketEnviado;
+                return resultTicketEnviado && resultMontoFlete;
             }
             catch
             {

@@ -205,19 +205,20 @@ namespace Sln_Lidermax.Controllers
             ws.Cell(1, 9).Value = "Modo Envio";
             ws.Cell(1, 10).Value = "Cajas";
             ws.Cell(1, 11).Value = "Peso";
-            ws.Cell(1, 12).Value = "Contacto";
-            ws.Cell(1, 13).Value = "Telefono";
-            ws.Cell(1, 14).Value = "Estado";
-            ws.Cell(1, 15).Value = "Observacion";
+            ws.Cell(1, 12).Value = "Monto Flete";
+            ws.Cell(1, 13).Value = "Contacto";
+            ws.Cell(1, 14).Value = "Telefono";
+            ws.Cell(1, 15).Value = "Estado";
+            ws.Cell(1, 16).Value = "Observacion";
 
-            int colCount = 15;
+            int colCount = 16;
 
             // Si no es hoja de ruta, agregamos dos columnas extra
             if (model.esHojaRuta == false)
             {
-                ws.Cell(1, 16).Value = "Fecha Recojo";
-                ws.Cell(1, 17).Value = "Fecha Entrega";
-                colCount = 17;
+                ws.Cell(1, 17).Value = "Fecha Recojo";
+                ws.Cell(1, 18).Value = "Fecha Entrega";
+                colCount = 18;
             }
 
             ws.Range(1, 1, 1, colCount).Style.Font.Bold = true;
@@ -237,15 +238,16 @@ namespace Sln_Lidermax.Controllers
                 ws.Cell(row, 9).Value = x.ModoEnvio;
                 ws.Cell(row, 10).Value = x.Cajas;
                 ws.Cell(row, 11).Value = x.Peso;
-                ws.Cell(row, 12).Value = x.Contacto;
-                ws.Cell(row, 13).Value = x.Telefono;
-                ws.Cell(row, 14).Value = x.Estado;
-                ws.Cell(row, 15).Value = x.Observacion;
+                ws.Cell(row, 12).Value = x.MontoFlete;
+                ws.Cell(row, 13).Value = x.Contacto;
+                ws.Cell(row, 14).Value = x.Telefono;
+                ws.Cell(row, 15).Value = x.Estado;
+                ws.Cell(row, 16).Value = x.Observacion;
 
                 if (model.esHojaRuta == false)
                 {
-                    ws.Cell(row, 16).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 17).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 17).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 18).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
                 }
 
                 row++;

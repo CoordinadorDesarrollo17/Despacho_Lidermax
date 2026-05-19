@@ -12,10 +12,12 @@ namespace Sln_Lidermax.Services
     {
         private readonly ITicketsRepository ticketsRepository;
         private readonly DapperContext dapperContext;
+        private readonly ITicketsOperarioRepository ticketsOperarioRepository;
 
-        public TicketsService(ITicketsRepository ticketsRepository, DapperContext dapperContext) {
+        public TicketsService(ITicketsRepository ticketsRepository, DapperContext dapperContext, ITicketsOperarioRepository ticketsOperarioRepository ) {
             this.ticketsRepository = ticketsRepository;
             this.dapperContext = dapperContext;
+            this.ticketsOperarioRepository = ticketsOperarioRepository;
         }
 
         public async Task<IPagedList<TicketsModel>> ListadoTickets(FiltrosTicketsModel model)
@@ -180,7 +182,32 @@ namespace Sln_Lidermax.Services
                    
                 var resultTicketEnviado = await ticketsRepository.ActualizarEstadoEnviado(request.DocEntryHojaRuta,request.Linea, request.DocEntryTicket, con, tx);
 
-               
+
+                //if (request.EstadoPago == "PAGADO")
+                //{      
+                //    string nombreImgPago = $"{request.DocNumTicket}_Pago{Path.GetExtension(request.ImgPago.FileName)}";
+
+                //    var pathPago = Path.Combine(rutaBase, nombreImgPago);
+
+                //    using (var stream = new FileStream(pathPago, FileMode.Create))
+                //    {
+                //        await request.ImgPago.CopyToAsync(stream);
+                //    }
+
+                //    if (!File.Exists(pathPago))
+                //    {
+                //        throw new Exception("Error guardando imagen pago");
+                //    }
+
+                //    var resultMontoFlete = await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
+
+                //    if (!resultMontoFlete)
+                //    {
+                //        throw new Exception("Error actualizando monto de flete");
+                //    }
+
+                //}
+
 
                 tx.Commit();
 

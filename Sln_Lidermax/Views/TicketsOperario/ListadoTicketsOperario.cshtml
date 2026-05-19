@@ -60,19 +60,19 @@
                 <div class="card mb-3">
                     <div class="card-header fw-bold">Transportista</div>
                     <div class="card-body">
-                        <input type="text" class="form-control" id="Transportista" autocomplete="off" placeholder="Dato opcional..."/>
-                    </div>             
+                        <input type="text" class="form-control" id="Transportista" autocomplete="off" placeholder="Dato opcional..." />
+                    </div>
                 </div>
 
                 <!-- IMÁGENES -->
                 <div class="card mb-3">
                     <div class="card-header fw-bold">Imágenes</div>
                     <div class="card-body">
-                       
+
                         <!-- CONTENEDOR DE IMÁGENES EXISTENTES -->
                         @* <div class="row mb-3" id="contenedorImagenesModal"></div> *@
 
-                       @*  <hr /> *@
+                        @*  <hr /> *@
 
                         <div class="mb-2">
                             <label class="form-label">Imagen 1: <strong>Comprobante de pago</strong></label>
@@ -100,42 +100,47 @@
                         </div>
                         <div class="mb-3 d-none" id="contenedorImagen">
                             <label for="imgPago" class="form-label">Subir Imagen</label>
-                            <input type="file" class="form-control" id="imgPago" accept="image/*">
-                            <div id="previewPago" class="mt-2"></div>
+                            <div class="mb-3">
+                                <input type="file" class="form-control" id="imgPago" accept="image/*">
+                            </div>
+                            <div>
+                                <input type="number" class="form-control" id="MontoFlete" autocomplete="off" min="0.01" step="0.01" placeholder="Monto Flete..." />
+                                <div>
+                                    <div id="previewPago" class="mt-2"></div>
+                                </div>
+
+                            </div>
                         </div>
 
-                    </div>
-                </div>
-
-                <!-- OBSERVACION -->
-                <div class="card mb-3">
-                    <div class="card-header fw-bold">Observación</div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <textarea class="form-control"
-                                      id="observacion"
-                                      rows="4"
-                                      maxlength="1000"
-                                      placeholder="Dato opcional..."
-                                      autocomplete="off"></textarea>
+                        <!-- OBSERVACION -->
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Observación</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <textarea class="form-control"
+                                              id="observacion"
+                                              rows="4"
+                                              maxlength="1000"
+                                              placeholder="Dato opcional..."
+                                              autocomplete="off"></textarea>
+                                </div>
+                            </div>
                         </div>
+
+
                     </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button class="btn btn-dark" id="btnConfirmarEntregaFinal">ENTREGAR</button>
+                    </div>
+
                 </div>
-
-
             </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button class="btn btn-dark" id="btnConfirmarEntregaFinal">ENTREGAR</button>
-            </div>
-
         </div>
+
     </div>
 </div>
-
-
-
 
 
 @section Scripts {
@@ -221,7 +226,7 @@
           let docEntryHojaRutaSeleccionado = 0;
           let lineaSeleccionado=0;
 
-          // Cuando se abre el modal  
+          // Cuando se abre el modal
           $(document).on("click", ".btn-entregar", function () {
                let estadoPago = $(this).data("estadopago");
 
@@ -232,8 +237,9 @@
 
               //cargarImagenesModal(docNumTicketSeleccionado);
 
+             $("#MontoFlete").val("");
              $("#imgPago").val("");
-              $("#estadoPago").val(estadoPago || "");
+             $("#estadoPago").val(estadoPago || "");
 
                  // mostrar u ocultar input
                 if (estadoPago && estadoPago === "PAGADO") {
@@ -356,6 +362,7 @@
             let imgPago = $("#imgPago")[0].files[0];
             let estadoPago = $("#estadoPago").val();
             let observacion = $("#observacion").val();
+            let montoFlete = $("#MontoFlete").val();
             // ================= VALIDACIONES =================
 
             // IMÁGENES
@@ -387,6 +394,18 @@
                 return;
             }
 
+                if (estadoPago === "PAGADO") {
+                  if (montoFlete.trim() === "" || Number.isNaN(Number(montoFlete)) || Number(montoFlete) <= 0) {
+                    Swal.fire({
+                      icon: "warning",
+                      title: "Monto requerido",
+                      text: "Debe ingresar un monto de flete mayor a 0"
+                    });
+                    return;
+                  }
+                }
+
+
             // ================= ARMADO DE DATA =================
 
             let formData = new FormData();
@@ -405,6 +424,7 @@
 
             // Pago
             formData.append("EstadoPago", estadoPago);
+            formData.append("MontoFlete", montoFlete);
             if (imgPago) {
                 formData.append("ImgPago", imgPago);
             }
@@ -447,6 +467,7 @@
                             $("#img1").val("");
                             $("#img2").val("");
                             $("#imgPago").val("");
+                            $("#MontoFlete").val("");
                             $("#estadoPago").val("");
                             $("#observacion").val("");
 
@@ -474,7 +495,7 @@
             });
 
         });
-    
+
 
     </script>
 
