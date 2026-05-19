@@ -34,5 +34,6 @@
 
         public string? Transportista { get; set; }  
         public string? EstadoPago { get; set; } 
+        public bool Excluido { get; set; }
     }
 }

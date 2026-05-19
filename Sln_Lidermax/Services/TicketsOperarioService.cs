@@ -22,15 +22,15 @@ namespace Sln_Lidermax.Services
             return await ticketsOperarioRepository.ListadoTicketsOperario(model);
         }
 
-        public async Task<bool> ActualizarTransportista(TicketsModel model)
+        public async Task<bool> ActualizarTransportista(int DocEntryTicket, string Transportista)
         {
-            return await ticketsOperarioRepository.ActualizarTransportista(model);
+            return await ticketsOperarioRepository.ActualizarTransportista(DocEntryTicket, Transportista);
         }
 
 
         public async Task<bool> RegistrarEstadoPago(SubirImagenesModel request)
         {
-            string rutaBase = @"D:\COBEFARWEBFILES\DespachoLidermax";
+            string rutaBase = @"C:\COBEFARWEBFILES\DespachoLidermax";
 
             if (!Directory.Exists(rutaBase))
             {

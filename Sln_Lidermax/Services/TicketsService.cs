@@ -85,7 +85,7 @@ namespace Sln_Lidermax.Services
         {
             return await ticketsRepository.ActualizarGuiaTransportista(model);
         }
-        public async Task<bool> ActualizarObservacion(TicketsModel model)
+        public async Task<bool> ActualizarObservacion(TicketSeleccionadoDto model)
         {
             return await ticketsRepository.ActualizarObservacion(model);
         }
@@ -143,7 +143,7 @@ namespace Sln_Lidermax.Services
 
         public async Task<bool> SubirImagenes(SubirImagenesModel request)
         {
-            string rutaBase = @"D:\COBEFARWEBFILES\DespachoLidermax";
+            string rutaBase = @"C:\COBEFARWEBFILES\DespachoLidermax";
 
             if (!Directory.Exists(rutaBase))
             {
@@ -211,7 +211,7 @@ namespace Sln_Lidermax.Services
         {
             List<dynamic> arrImg = new List<dynamic>();
 
-            string ruta = @"D:\COBEFARWEBFILES\DespachoLidermax";
+            string ruta = @"C:\COBEFARWEBFILES\DespachoLidermax";
 
             if (Directory.Exists(ruta))
             {
@@ -274,5 +274,12 @@ namespace Sln_Lidermax.Services
                .Cast<object>()
                .ToList();
         }
+
+        //Excluir
+        public async Task<bool> ExcluirTicket(TicketSeleccionadoDto model)
+        {
+            return await ticketsRepository.ExcluirTicket(model);
+        }
+
     }
 }

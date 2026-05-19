@@ -13,6 +13,9 @@
         public int Linea { get ; set; } 
 
         public DateTime Fecha { get; set; } 
+        public string? Observacion { get; set; }
+
+        public bool Excluido { get; set; } = false;
     }
 
    

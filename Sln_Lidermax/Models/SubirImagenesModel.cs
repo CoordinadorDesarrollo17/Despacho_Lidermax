@@ -10,6 +10,9 @@
         public IFormFile Img2 { get; set; }
 
         public IFormFile ImgPago { get; set; }
-        public string EstadoPago { get; set; }  
+        public string EstadoPago { get; set; }
+        public string? Transportista { get; set; }
+        public DateTime Fecha { get; set; }
+        public string? Observacion { get; set; }
     }
 }

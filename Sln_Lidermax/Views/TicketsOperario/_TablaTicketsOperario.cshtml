@@ -30,45 +30,17 @@
                     <td data-label="Transportista">@u?.Agencia</td>
                    
                     <td data-label="Acciones" class="text-center sticky-actions-td">
-                        <div class="actions">
-
-                            <button class="btn btn-sm btn-primary btn-Transportista"
-                                    data-docentryticket="@u.DocEntryTicket"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalTransportista"
-                                    title="Actualizar transportista"
-                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>
-                                <i class="bi bi-file-earmark-text"></i>
-                            </button>
-                            <button class="btn btn-sm btn-warning btn-imagen"
-                                    data-docentryticket="@u.DocEntryTicket"
-                                    data-docnumticket="@u.DocNumTicket"
-                                    data-docentryhojaruta="@u.DocEntryHojaRuta"
-                                    data-linea="@u.Linea"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalImagen"
-                                    title="Registrar imagenes"
-                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>
-                                <i class="bi bi-image"></i>
-                            </button>
-                            <button class="btn btn-sm btn-success btn-pago"
+                        <div class="actions">       
+                            <button type="button"
+                                    class="btn btn-sm btn-dark btn-entregar"
                                     data-docentryticket="@u.DocEntryTicket"
                                     data-docnumticket="@u.DocNumTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
                                     data-estadopago="@u.EstadoPago"
                                     data-linea="@u.Linea"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modalPago"
-                                    title="Registrar imagen de pago"
-                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>
-                                <i class="bi bi-image"></i>
-                            </button>
-                            <button type="button"
-                                    class="btn btn-sm btn-dark btn-entregar"
-                                    data-docentryticket="@u.DocEntryTicket"
-                                    data-docentryhojaruta="@u.DocEntryHojaRuta"
-                                    data-linea="@u.Linea"
-                                    @(u?.Estado != "ENVIADO" ? "disabled" : "")>
+                                    data-bs-target="#modalEntrega"
+                                    @(u?.Estado == "ENTREGADO" || u?.Estado == "DEVOLUCION" ? "disabled" : "")>
                                 <i class="bi bi-check-circle"></i>
                             </button>
                         </div>

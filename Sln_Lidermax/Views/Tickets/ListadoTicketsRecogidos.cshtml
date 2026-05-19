@@ -24,8 +24,8 @@
             <div class="card-body">
                 <div class="row gy-2">
                     <div class="col-12 col-md-2">
-                        <label class="form-label">Fecha despacho</label>
-                        <input type="date" id="filtroFechaDespacho" class="form-control form-control-sm">
+                        <label class="form-label">Fecha entrega</label>
+                        <input type="date" id="filtroFechaEntrega" class="form-control form-control-sm">
                     </div>
 
                     <div class="col-12 col-md-2">
@@ -39,6 +39,7 @@
                             <option value="">Seleccione</option>
                             <option value="RECOGIDO">RECOGIDO</option>
                             <option value="ENVIADO">ENVIADO</option>
+                            <option value="ENTREGADO">ENTREGADO</option>
                             <option value="DEVOLUCION">DEVOLUCION</option>
                         </select>
                     </div>
@@ -218,7 +219,7 @@
         const cboPageSize = document.getElementById("pageSize");
         const tablaTicketsRecogidos = document.getElementById("tablaTicketsRecogidos");
 
-        const filtroFechaDespacho = document.getElementById("filtroFechaDespacho");
+         const filtroFechaEntrega = document.getElementById("filtroFechaEntrega");
         const filtroFechaRecojo = document.getElementById("filtroFechaRecojo");
         const filtroEstado = document.getElementById("filtroEstado");
         const filtroHojaRuta = document.getElementById("filtroHojaRuta");
@@ -227,7 +228,7 @@
          let filtros = {
              buscar: "",
              pageSize: 10,
-             fechaDespacho: "",
+             fechaEntrega: "",
              fechaRecojo: "",
              estado: "",
              hojaRuta: "",
@@ -237,7 +238,7 @@
          function actualizarFiltros() {
              filtros.buscar = txtBuscar.value;
              filtros.pageSize = cboPageSize.value;
-             filtros.fechaDespacho = filtroFechaDespacho.value;
+              filtros.fechaEntrega = filtroFechaEntrega.value;
              filtros.fechaRecojo = filtroFechaRecojo.value;
              filtros.estado = filtroEstado.value;
              filtros.hojaRuta = filtroHojaRuta.value;
@@ -258,7 +259,7 @@
                  "Buscar": filtros.buscar,
                   "Paginacion.Page": filtros.paginaActual,
                  "Paginacion.PageSize": filtros.pageSize,
-                 "FechaDespacho": filtros.fechaDespacho,
+                  "FechaEntrega": filtros.fechaEntrega,
                  "FechaRecojo" : filtros.fechaRecojo ,
                  "Estado": filtros.estado,
                  "DocNumHojaRuta": filtros.hojaRuta
@@ -288,7 +289,7 @@
         }
         //lanzamos eventos de los <select>
         cboPageSize.addEventListener("change", () => cargarTabla(1));
-        filtroFechaDespacho.addEventListener("change", () => cargarTabla(1));
+         filtroFechaEntrega.addEventListener("change", () => cargarTabla(1));
         filtroFechaRecojo.addEventListener("change", () => cargarTabla(1));
         filtroEstado.addEventListener("change", () => cargarTabla(1));
 
@@ -566,7 +567,7 @@
 
         document.getElementById("btnExportarExcel").addEventListener("click", function () {
             const query = txtBuscar.value;
-                const url = `@Url.Action("ExportarExcelTicketsHojaRuta", "Tickets")?Buscar=${encodeURIComponent(query)}&esHojaRuta=false&FechaDespacho=${filtroFechaDespacho.value}&Estado=${filtroEstado.value}&DocNumHojaRuta=${filtroHojaRuta.value}&FechaRecojo=${filtroFechaRecojo.value}`;
+                 const url = `@Url.Action("ExportarExcelTicketsHojaRuta", "Tickets")?Buscar=${encodeURIComponent(query)}&esHojaRuta=false&FechaEntrega=${filtroFechaEntrega.value}&Estado=${filtroEstado.value}&DocNumHojaRuta=${filtroHojaRuta.value}&FechaRecojo=${filtroFechaRecojo.value}`;
             window.location.href = url;
         });
 
@@ -816,6 +817,73 @@
              });
          });
 
+         //Excluir ticket
+     $(document).on('click', '.btn-excluir', function () {
+
+            const docEntryTicket = $(this).data('docentryticket');
+            const docEntryHojaRuta = $(this).data('docentryhojaruta');
+            const linea = $(this).data('linea');
+
+            Swal.fire({
+                title: '¿Excluir ticket?',
+                text: `Se quitará de la hoja de ruta`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, excluir',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+
+                if (!result.isConfirmed) return;
+
+                $.ajax({
+                    url: '/Tickets/ExcluirTicket',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        docEntryTicket: docEntryTicket,
+                        docEntryHojaRuta: docEntryHojaRuta,
+                        linea: linea,
+                        excluido: true
+                    }),
+                    beforeSend: function () {
+                        Swal.fire({
+                            title: 'Procesando...',
+                            text: 'Excluyendo ticket',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    },
+                    success: function (resp) {
+                        if (resp.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Excluido',
+                                text: 'El ticket fue excluido correctamente'
+                            }).then(() => {
+                                cargarTabla(filtros.paginaActual); // recarga tu tabla
+                            });
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'No se pudo excluir el ticket'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error del servidor',
+                            text: 'Ocurrió un problema al procesar la solicitud'
+                        });
+                    }
+                });
+
+            });
+        });
 
     </script>
 }

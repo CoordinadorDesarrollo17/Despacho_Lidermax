@@ -7,9 +7,10 @@ namespace Sln_Lidermax.Interfaces
     {
         Task<bool> ActualizarFechaDespacho(TicketsModel model);
         Task<bool> ActualizarGuiaTransportista(TicketsModel model);
-        Task<bool> ActualizarObservacion(TicketsModel model);
+        Task<bool> ActualizarObservacion(TicketSeleccionadoDto model);
         Task<bool> DevolverTicket(TicketSeleccionadoDto model);
         Task<bool> EntregarTicket(TicketSeleccionadoDto request);
+        Task<bool> ExcluirTicket(TicketSeleccionadoDto model);
         Task<bool> InsertarTicketsRecogidos(RecogerTicketsModel request);
         Task<IPagedList<TicketsModel>> ListadoTickets(FiltrosTicketsModel model);
         Task<List<TicketsModel>> ListadoTicketsExcel(FiltrosTicketsModel model);

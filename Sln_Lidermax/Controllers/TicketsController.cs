@@ -81,7 +81,7 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ActualizarObservacion([FromBody] TicketsModel model)
+        public async Task<IActionResult> ActualizarObservacion([FromBody] TicketSeleccionadoDto model)
         {
             try
             {
@@ -216,7 +216,7 @@ namespace Sln_Lidermax.Controllers
             if (model.esHojaRuta == false)
             {
                 ws.Cell(1, 16).Value = "Fecha Recojo";
-                ws.Cell(1, 17).Value = "Fecha Despacho";
+                ws.Cell(1, 17).Value = "Fecha Entrega";
                 colCount = 17;
             }
 
@@ -245,7 +245,7 @@ namespace Sln_Lidermax.Controllers
                 if (model.esHojaRuta == false)
                 {
                     ws.Cell(row, 16).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 17).Value = x.FechaDespacho?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 17).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
                 }
 
                 row++;
@@ -295,7 +295,21 @@ namespace Sln_Lidermax.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ExcluirTicket([FromBody] TicketSeleccionadoDto model)
+        {
+            try
+            {
+                var result = ticketsService.ExcluirTicket(model); 
 
-        
+                return Json(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
     }
 }

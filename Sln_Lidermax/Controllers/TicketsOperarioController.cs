@@ -33,21 +33,7 @@ namespace Sln_Lidermax.Controllers
             return View(listaTicketsOperario);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ActualizarTransportista([FromBody] TicketsModel model)
-        {
-            try
-            {
-                var result = ticketsOperarioService.ActualizarTransportista(model);
-                return Json(new { success = result });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, mensaje = ex.Message });
-            }
-        }
-
-
+       
         [HttpGet]
         public IActionResult ObtenerImagenes(int docNum, string tipoFiltro = null)
         {
@@ -72,43 +58,46 @@ namespace Sln_Lidermax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubirImagenes([FromForm] SubirImagenesModel request)
+        public async Task<IActionResult> EstadoEntregado([FromForm] SubirImagenesModel request)
         {
             try
             {
-                var result = await ticketsService.SubirImagenes(request);
+              
+                var model = new TicketSeleccionadoDto
+                {
+                    DocEntryTicket = request.DocEntryTicket,
+                    DocEntryHojaRuta = request.DocEntryHojaRuta,
+                    DocNumTicket = request.DocNumTicket,
+                    Linea = request.Linea,
+                    Fecha = DateTime.Now,
+                    Observacion = request.Observacion
+                };
 
-                return Json(new { success = result });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-        [HttpPost]
-        public async Task<IActionResult> RegistrarPago([FromForm] SubirImagenesModel request)
-        {
-            try
-            {
-                var result = await ticketsOperarioService.RegistrarEstadoPago(request); 
+                bool result1 = true;
+                if (!string.IsNullOrWhiteSpace(request.Transportista))
+                {
+                  result1 = await ticketsOperarioService.ActualizarTransportista(request.DocEntryTicket, request.Transportista);
+                }
 
-                return Json(new { success = result });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
+                bool result2 = true;
+                if (!string.IsNullOrWhiteSpace(request.Observacion))
+                {
+                    result2 = await ticketsService.ActualizarObservacion(model);
+                }
 
-        [HttpPost]
-        public async Task<IActionResult> EstadoEntregado([FromBody] TicketSeleccionadoDto model)
-        {
-            try
-            {
-                model.Fecha = DateTime.Now;
-                var result = await ticketsService.EntregarTicket(model);
+                var result3 = await ticketsService.SubirImagenes(request);
+                var result4 = await ticketsOperarioService.RegistrarEstadoPago(request);                  
+                var result5 = await ticketsService.EntregarTicket(model);
 
-                return Json(new { success = result });
+
+                if (!result1) return Json(new { success = false, message = "Error transportista" });
+                if (!result2) return Json(new { success = false, message = "Error observacion" });
+                if (!result3) return Json(new { success = false, message = "Error imágenes" });
+                if (!result4) return Json(new { success = false, message = "Error pago" });
+                if (!result5) return Json(new { success = false, message = "Error entrega" });
+
+                return Json(new { success = true });
+
             }
             catch (Exception ex)
             {

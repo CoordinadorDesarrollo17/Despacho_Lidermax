@@ -31,6 +31,7 @@ namespace Sln_Lidermax.Repositories
                               AND tr.Estado <> 'LIBERADO' 
                               AND rfd.Estado IS NOT NULL
                               AND rfd.Estado <> '' 
+                              AND rfd.Excluido = 0
                               AND r.Trans2Desc LIKE @NombreCompleto   
                               AND CONCAT(tk.DocNum,tk.CardCode,tk.CardName,tr.Guias,tr.Cajas,tk.Agencia) LIKE @Buscar
                             GROUP BY 
@@ -48,7 +49,7 @@ namespace Sln_Lidermax.Repositories
             return result.ToPagedList(model.Paginacion.Page, model.Paginacion.PageSize);
         }
 
-        public async Task<bool> ActualizarTransportista(TicketsModel model)
+        public async Task<bool> ActualizarTransportista(int DocEntryTicket, string Transportista)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
@@ -58,8 +59,8 @@ namespace Sln_Lidermax.Repositories
 
             var result = await xCon.ExecuteAsync(sql, new
             {
-                model.DocEntryTicket,
-                model.Transportista
+                DocEntryTicket,
+                Transportista
             });
 
             return result > 0;

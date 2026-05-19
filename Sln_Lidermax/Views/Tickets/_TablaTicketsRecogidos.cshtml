@@ -17,7 +17,7 @@
                 <th>Modo Envio</th>
                 <th>Cajas</th>
                 <th>Peso</th>           
-                <th>Fecha Despacho</th>
+                <th>Fecha Entrega</th>
                 <th>Estado</th>
                 <th class="text-center sticky-actions-th">Acciones</th>
             </tr>
@@ -35,8 +35,8 @@
                     <td data-label="Agencia">@u?.Agencia</td>
                     <td data-label="ModoEnvio">@u?.ModoEnvio</td>
                     <td data-label="Cajas" class="text-end">@u?.Cajas</td>
-                    <td data-label="Peso" class="text-end">@u?.Peso?.ToString("N2")</td>      
-                    <td data-label="FechaDespacho" class="text-end">@u?.FechaDespacho?.ToString("dd/MM/yyyy")</td>
+                    <td data-label="Peso" class="text-end">@u?.Peso?.ToString("N2")</td>
+                    <td data-label="FechaEntrega" class="text-end">@u?.FechaEntrega?.ToString("dd/MM/yyyy")</td>
                     <td data-label="Estado">@u?.Estado</td>
                     <td data-label="Acciones" class="text-center sticky-actions-td">
                         <div class="actions">
@@ -102,6 +102,18 @@
                                     data-bs-target="#modalObservacion">
                                 <i class="bi bi-chat-left-text"></i>
                             </button>
+
+
+                            <button type="button"
+                                    class="btn btn-sm btn-success btn-excluir"
+                                    data-docentryticket="@u.DocEntryTicket"
+                                    data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                    data-linea="@u.Linea"
+                                    title="Excluir ticket"
+                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" || u?.Excluido == true ? "disabled" : "")>
+                                <i class="bi bi-ban"></i>
+                            </button>
+
 
                             <button type="button"
                                     class="btn btn-sm btn-danger btn-anular"
