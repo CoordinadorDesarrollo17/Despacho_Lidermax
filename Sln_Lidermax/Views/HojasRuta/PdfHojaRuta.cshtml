@@ -95,7 +95,11 @@
             </th>
             <th style="vertical-align: middle;" colspan="4">
                 Proveedor Transporte: LIDERMAX PERU S.A.C<br />
-                Nro: @ViewBag.DocNum
+                Nro: @ViewBag.DocNum<br />
+                @if (!string.IsNullOrWhiteSpace(ViewBag.Placa?.ToString()))
+                {
+                    <text>Placa: @ViewBag.Placa</text>
+                }
             </th>
             <th style="vertical-align: middle;" colspan="3">
                 FECHA: @ViewBag.TiempoPac

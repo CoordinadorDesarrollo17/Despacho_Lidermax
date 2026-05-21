@@ -31,5 +31,7 @@
         public string Vendedor { get; set; }     
         public string Almacen { get; set; }
 
+        public string Placa { get; set; }
+
     }
 }

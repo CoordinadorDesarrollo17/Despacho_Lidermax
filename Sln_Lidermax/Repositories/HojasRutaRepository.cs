@@ -122,8 +122,9 @@ namespace Sln_Lidermax.Repositories
 						CONCAT_WS(' - ', v3_2.Departamento, v3_2.Provincia, v3_2.Distrito, v3_2.Calle) AS Direccion2,
 							tk.EnvioAgencia AS ModoEnvio,
                             tr.Cajas ,
-                            SUM(v6.Peso) AS peso                       
+                            SUM(v6.Peso) AS peso    , r.Placa                   
                             FROM al.RRU0 AS tr
+                            LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry
                             LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket  
 							LEFT JOIN vt.RTV1 AS v1 ON tk.DocEntry = v1.DocEntry 
                             LEFT JOIN vt.RTV2 AS v2 ON tk.DocEntry = v2.DocEntry AND v2.Linea =1
@@ -146,7 +147,7 @@ namespace Sln_Lidermax.Repositories
                             tr.Cajas,
 							v1.NombrePer,
 						    v1.DocPer,
-						    v1.TelfPer 
+						    v1.TelfPer , r.Placa  
                             ORDER BY tk.Agencia ";
 
 

@@ -84,7 +84,7 @@ namespace Sln_Lidermax.Controllers
 
             ViewBag.DocNum = docNumHojaRuta;
             ViewBag.TiempoPac = tiempoPac;
-       
+            ViewBag.Placa = data.FirstOrDefault()?.Placa;
 
             return View("PdfHojaRuta", data);
         }
