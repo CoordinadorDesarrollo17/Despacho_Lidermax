@@ -204,11 +204,36 @@
                     <input type="file" class="form-control" id="img2" accept="image/*" />
                 </div>
 
+
+                <div class="card mb-3 d-none" id="divPago">
+                    <div class="card-header fw-bold">Pago</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="estadoPago" class="form-label">Estado de Pago</label>
+                            <select class="form-select" id="estadoPago">
+                                <option value="">Seleccione</option>
+                                <option value="PAGADO">PAGADO</option>
+                                <option value="POR PAGAR">POR PAGAR</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 d-none" id="contenedorImagen">
+                            <label for="imgPago" class="form-label">Subir Imagen</label>
+                            <div class="mb-3">
+                                <input type="file" class="form-control" id="imgPago" accept="image/*">
+                            </div>
+                            <div>
+                                <input type="number" class="form-control" id="MontoFlete" autocomplete="off" min="0.01" step="0.01" placeholder="Monto Flete..." />                         
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
        
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="btnRegistrarImagen">Registrar</button>
+                <button type="button" class="btn btn-success d-none" id="btnActualizar">Actualizar</button>
             </div>
         </div>
     </div>
@@ -331,7 +356,7 @@
             });
 
         });
-
+           let idRolSeleccionado = 0;
          let docEntryTicketSeleccionado = 0;
          let docNumTicketSeleccionado = 0;
          let docEntryHojaRutaSeleccionado = 0;
@@ -354,6 +379,31 @@
             lineaSeleccionado= $(this).data("linea");
 
             cargarImagenesModal(docNumTicketSeleccionado);
+
+            let estado = ($(this).data("estado") || "").toString().toUpperCase();
+            let montoFlete = $(this).data("montoflete");
+            let estadoPago = $(this).data("estadopago");
+
+            idRolSeleccionado  = $(this).data("idrol");
+
+             if (estado === "ENTREGADO" && idRolSeleccionado == 73 ) { //73 operario lidermax
+                 $("#btnActualizar").removeClass("d-none");
+                 $("#btnRegistrarImagen").addClass("d-none");
+                 $("#divPago").removeClass("d-none");
+
+                 //reset
+                 $("#estadoPago").val(estadoPago);
+                 actualizarEstadoPago(estadoPago);
+                 $("#MontoFlete").val(montoFlete);
+
+                $("#imgPago").val("");
+
+             } else {
+                 $("#btnActualizar").addClass("d-none");
+                 $("#btnRegistrarImagen").removeClass("d-none");
+                 $("#divPago").addClass("d-none");
+                 $("#contenedorImagen").addClass("d-none");
+             }
         });
 
         $(document).on("click", ".btn-entregar", function () {
@@ -377,6 +427,23 @@
                $("#observacion").val(observacion ? observacion : "");
          });
 
+         // Cuando cambie el estado de pago
+        $(document).on("change", "#estadoPago", function () {
+            actualizarEstadoPago($(this).val());
+        });
+
+        function actualizarEstadoPago(estadoPago) {
+            estadoPago = (estadoPago || "").toString().toUpperCase();
+
+            if (estadoPago === "PAGADO") {
+                $("#contenedorImagen").removeClass("d-none");
+            } else {
+                $("#contenedorImagen").addClass("d-none");
+
+                $("#imgPago").val("");
+                $("#MontoFlete").val("");
+            }
+        }
         
         // Registrar fecha despacho
          $("#btnRegistrarFechaDespacho").click(function () {
@@ -486,11 +553,7 @@
                             title: "Imágenes registradas",
                             text: "El ticket fue marcado como ENVIADO"
                         }).then(() => {
-                           
-                              // cargarImagenesModal(docNumTicketSeleccionado);
-                              // $("#img1").val("");
-                              // $("#img2").val("");
-
+                                                 
                                  $('#modalImagen').modal('hide');
                                  $("#img1").val("");
                                  $("#img2").val("");
@@ -887,6 +950,87 @@
 
             });
         });
+
+
+           ///Actualizar conductor
+           $("#btnActualizar").click(function () {
+
+               let img1 = $("#img1")[0].files[0];
+               let img2 = $("#img2")[0].files[0];
+               let imgPago = $("#imgPago")[0].files[0];
+               let estadoPago = $("#estadoPago").val();
+               let montoFlete = $("#MontoFlete").val();
+
+                if (!estadoPago) {
+                   Swal.fire({
+                       icon: "warning",
+                       title: "Dato requerido",
+                       text: "Debe seleccionar un estado de pago"
+                   });
+                   return;
+               }
+
+               let formData = new FormData();
+               formData.append("DocEntryTicket", docEntryTicketSeleccionado);
+               formData.append("DocNumTicket",docNumTicketSeleccionado);
+               formData.append("DocEntryHojaRuta",docEntryHojaRutaSeleccionado);
+               formData.append("Linea",lineaSeleccionado);
+               
+               formData.append("EstadoPago",estadoPago);           
+               formData.append("MontoFlete", montoFlete);
+
+                  formData.append("IdRol", idRolSeleccionado);
+
+                if (img1) formData.append("Img1", img1);
+                if (img2) formData.append("Img2", img2);
+                if (imgPago) formData.append("ImgPago", imgPago);
+
+               $.ajax({
+                   url: '/Tickets/ActualizarDatos',
+                   type: 'POST',
+                   data: formData,
+                   processData: false,
+                   contentType: false,
+
+                   beforeSend: function () {
+                       Swal.fire({
+                           title: "Actualizando...",
+                           allowOutsideClick: false,
+                           didOpen: () => {
+                               Swal.showLoading();
+                           }
+                       });
+                   },
+                   success: function (resp) {
+                       if (resp.success) {
+                           Swal.fire({
+                               icon: "success",
+                               title: "Datos actualizados",
+                               text: "El ticket fue actualizado correctamente"
+                           }).then(() => {
+
+                                    $('#modalImagen').modal('hide');
+                                    $("#img1").val("");
+                                    $("#img2").val("");
+                                   cargarTabla(filtros.paginaActual);
+
+                           });
+                       } else {
+                           Swal.fire({
+                               icon: "error",
+                               title: "Error",
+                               text: resp.message || "No se pudieron actualizar los datos"
+                           });
+                       }
+                   },
+                   error: function () {
+                       Swal.fire({
+                           icon: "error",
+                           title: "Error del servidor"
+                       });
+                   }
+               });
+           });
 
     </script>
 }

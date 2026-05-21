@@ -71,7 +71,8 @@ namespace Sln_Lidermax.Controllers
                     Linea = request.Linea,
                     Fecha = DateTime.Now,
                     Observacion = request.Observacion,
-                    MontoFlete= request.MontoFlete
+                    MontoFlete= request.MontoFlete,
+                    IdRol =  int.Parse(User.FindFirst("IdRol")?.Value ?? "0")
                 };
 
                 bool result1 = true;
@@ -105,6 +106,9 @@ namespace Sln_Lidermax.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+
+       
 
     }
 }

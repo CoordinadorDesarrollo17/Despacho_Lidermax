@@ -143,6 +143,180 @@ namespace Sln_Lidermax.Services
             }
         }
 
+        public async Task<bool> ActualizarDatos(SubirImagenesModel request)
+        {
+            string rutaBase = @"C:\COBEFARWEBFILES\DespachoLidermax";
+
+            if (!Directory.Exists(rutaBase))
+            {
+                Directory.CreateDirectory(rutaBase);
+            }
+
+            var archivosGuardados = new List<string>();
+
+            using SqlConnection con = new SqlConnection(dapperContext.connectionString);
+
+            await con.OpenAsync();
+
+            using var tx = con.BeginTransaction();
+
+            try
+            {
+                // =========================================
+                // OBTENER ESTADO ACTUAL DEL TICKET
+                // =========================================
+
+                var ticketActual = await ticketsRepository.ObtenerTicket(request.DocEntryHojaRuta, request.Linea, request.DocEntryTicket, con, tx);
+
+                bool yaEraPagado = ticketActual?.EstadoPago?.Equals("PAGADO", StringComparison.OrdinalIgnoreCase) == true;
+
+                bool ahoraEsPagado = request.EstadoPago?.Equals("PAGADO", StringComparison.OrdinalIgnoreCase) == true;
+
+                // =========================================
+                // IMG1 OPCIONAL
+                // =========================================
+
+                if (request.Img1 != null && request.Img1.Length > 0)
+                {
+                    string path1 = Path.Combine(rutaBase,$"{request.DocNumTicket}_Comprobante{Path.GetExtension(request.Img1.FileName)}");
+
+                    await GuardarArchivo(request.Img1, path1);
+
+                    archivosGuardados.Add(path1);
+                }
+
+                // =========================================
+                // IMG2 OPCIONAL
+                // =========================================
+
+                if (request.Img2 != null && request.Img2.Length > 0)
+                {
+                    string path2 = Path.Combine(rutaBase,$"{request.DocNumTicket}_Pedido{Path.GetExtension(request.Img2.FileName)}");
+
+                    await GuardarArchivo(request.Img2, path2);
+
+                    archivosGuardados.Add(path2);
+                }
+
+                // =========================================
+                // VALIDACIÓN ESTADO PAGO
+                // =========================================
+
+                if (ahoraEsPagado)
+                {
+                    // =====================================
+                    // SI ES LA PRIMERA VEZ QUE PASA A PAGADO
+                    // =====================================
+
+                    if (!yaEraPagado)
+                    {
+                        // IMAGEN OBLIGATORIA
+                        if (request.ImgPago == null || request.ImgPago.Length == 0)
+                        {
+                            throw new Exception("La imagen de pago es obligatoria");
+                        }
+
+                        // MONTO OBLIGATORIO
+                        if (request.MontoFlete == null || request.MontoFlete <= 0)
+                        {
+                            throw new Exception("El monto flete es obligatorio");
+                        }
+                    }
+
+                    // =====================================
+                    // SI SUBIÓ NUEVA IMAGEN -> ACTUALIZAR
+                    // =====================================
+
+                    if (request.ImgPago != null && request.ImgPago.Length > 0)
+                    {
+                        string pathPago = Path.Combine(rutaBase,$"{request.DocNumTicket}_Pago{Path.GetExtension(request.ImgPago.FileName)}");
+
+                        await GuardarArchivo(request.ImgPago, pathPago);
+
+                        archivosGuardados.Add(pathPago);
+                    }
+                }
+                else
+                {
+                    if(request.EstadoPago != null)
+                    {
+                        // =====================================
+                        // SI CAMBIA A POR PAGAR
+                        // =====================================
+
+                        request.MontoFlete = null;
+
+                        // ELIMINAR IMAGEN ANTERIOR
+                        string archivoPagoAnterior =Directory.GetFiles(rutaBase,$"{request.DocNumTicket}_Pago.*").FirstOrDefault();
+
+                        if (!string.IsNullOrWhiteSpace(archivoPagoAnterior))
+                        {
+                            File.Delete(archivoPagoAnterior);
+                        }
+
+                        await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
+                    }       
+                }
+
+                // =========================================
+                // ACTUALIZAR ESTADO PAGO
+                // =========================================
+
+                var resultEstadoPago = await ticketsOperarioRepository.ActualizarEstadoPago(request, con, tx);
+
+                // =========================================
+                // ACTUALIZAR MONTO SOLO SI EXISTE
+                // =========================================
+
+                bool resultMonto = true;
+
+                if (request.MontoFlete.HasValue && request.MontoFlete > 0)
+                {
+                    resultMonto = await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
+                }
+
+                // =========================================
+                // VALIDAR RESULTADO
+                // =========================================
+
+                bool resultado = resultEstadoPago && resultMonto;
+
+                if (!resultado)
+                {
+                    throw new Exception("Error actualizando datos");
+                }
+
+                tx.Commit();
+
+                return true;
+            }
+            catch
+            {
+                tx.Rollback();
+
+                // BORRAR ARCHIVOS SI FALLA
+                foreach (var archivo in archivosGuardados)
+                {
+                    if (File.Exists(archivo))
+                    {
+                        File.Delete(archivo);
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        private async Task GuardarArchivo(IFormFile file, string path)
+        {
+            using var stream = new FileStream(path, FileMode.Create);
+
+            await file.CopyToAsync(stream);
+
+            if (!File.Exists(path))
+                throw new Exception($"Error guardando archivo: {path}");
+        }
+
         public async Task<bool> SubirImagenes(SubirImagenesModel request)
         {
             string rutaBase = @"C:\COBEFARWEBFILES\DespachoLidermax";
@@ -181,34 +355,7 @@ namespace Sln_Lidermax.Services
                 }
                    
                 var resultTicketEnviado = await ticketsRepository.ActualizarEstadoEnviado(request.DocEntryHojaRuta,request.Linea, request.DocEntryTicket, con, tx);
-
-
-                //if (request.EstadoPago == "PAGADO")
-                //{      
-                //    string nombreImgPago = $"{request.DocNumTicket}_Pago{Path.GetExtension(request.ImgPago.FileName)}";
-
-                //    var pathPago = Path.Combine(rutaBase, nombreImgPago);
-
-                //    using (var stream = new FileStream(pathPago, FileMode.Create))
-                //    {
-                //        await request.ImgPago.CopyToAsync(stream);
-                //    }
-
-                //    if (!File.Exists(pathPago))
-                //    {
-                //        throw new Exception("Error guardando imagen pago");
-                //    }
-
-                //    var resultMontoFlete = await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
-
-                //    if (!resultMontoFlete)
-                //    {
-                //        throw new Exception("Error actualizando monto de flete");
-                //    }
-
-                //}
-
-
+             
                 tx.Commit();
 
                 return resultTicketEnviado;

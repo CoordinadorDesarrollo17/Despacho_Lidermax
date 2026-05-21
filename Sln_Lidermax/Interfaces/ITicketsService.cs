@@ -5,6 +5,7 @@ namespace Sln_Lidermax.Interfaces
 {
     public interface ITicketsService
     {
+        Task<bool> ActualizarDatos(SubirImagenesModel request);
         Task<bool> ActualizarFechaDespacho(TicketsModel model);
         Task<bool> ActualizarGuiaTransportista(TicketsModel model);
         Task<bool> ActualizarObservacion(TicketSeleccionadoDto model);

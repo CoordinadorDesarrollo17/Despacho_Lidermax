@@ -17,6 +17,8 @@
 
         public bool Excluido { get; set; } = false;
         public double? MontoFlete { get; set; }
+
+        public int IdRol { get; set; }
     }
 
    

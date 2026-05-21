@@ -173,7 +173,20 @@ namespace Sln_Lidermax.Controllers
             }
         }
 
-  
+        [HttpPost]
+        public async Task<IActionResult> ActualizarDatos([FromForm] SubirImagenesModel request)
+        {
+            try
+            {
+                var result = await ticketsService.ActualizarDatos(request);
+
+                return Json(new { success = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
         public async Task<IActionResult> ExportarExcelTicketsHojaRuta(FiltrosTicketsModel model)
         {
@@ -312,6 +325,8 @@ namespace Sln_Lidermax.Controllers
             }
         }
 
+
+       
 
     }
 }

@@ -36,7 +36,7 @@ namespace Sln_Lidermax.Repositories
                                 END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
-                               tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago
+                               tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago, rfd.IdRol
                         FROM al.RRU0 AS tr 
                         LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
@@ -58,7 +58,7 @@ namespace Sln_Lidermax.Repositories
                                  v3_1.Calle,v3_2.Calle, tk.Agencia,tk.EnvioAgencia, tk.Cajas,
                                  rfd.FechaRecojo,rfd.FechaDespacho,rfd.Estado, v1.NombrePer,v1.TelfPer,
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,tk.DistritoEnvio,
-                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega,tr.Linea, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago
+                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega,tr.Linea, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago,  rfd.IdRol
                         ORDER BY FechaRecojo DESC
                     "; // tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
 
@@ -256,10 +256,10 @@ namespace Sln_Lidermax.Repositories
         public async Task<bool> ActualizarEstadoEntregado(TicketSeleccionadoDto model, SqlConnection con, SqlTransaction tx)
         {
             var sql = @"UPDATE [tmp].[registro_fecha_despacho]
-                SET Estado = 'ENTREGADO', FechaEntrega = @FechaEntrega
+                SET Estado = 'ENTREGADO', FechaEntrega = @FechaEntrega, IdRol = @IdRol
                 WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket";
 
-            var result = await con.ExecuteAsync(sql, new { DocEntryHojaRuta = model.DocEntryHojaRuta, Linea = model.Linea, DocEntryTicket = model.DocEntryTicket, FechaEntrega = model.Fecha }, tx);
+            var result = await con.ExecuteAsync(sql, new { DocEntryHojaRuta = model.DocEntryHojaRuta, Linea = model.Linea, DocEntryTicket = model.DocEntryTicket, FechaEntrega = model.Fecha, IdRol = model.IdRol }, tx);
 
             sql = "UPDATE [al].[RRU0] SET Estado ='ENTREGADO' WHERE DocEntry = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket ";
             var result1 = await con.ExecuteAsync(sql, new { DocEntryHojaRuta = model.DocEntryHojaRuta, Linea = model.Linea, DocEntryTicket = model.DocEntryTicket }, tx);
@@ -304,7 +304,24 @@ namespace Sln_Lidermax.Repositories
             return result > 0;
         }
 
+        public async Task<TicketsModel> ObtenerTicket(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con,SqlTransaction tx) 
+        {
+            string query = @"
+        SELECT EstadoPago,MontoFlete,IdRol
+        FROM tmp.registro_fecha_despacho
+      WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket ";
 
+            return await con.QueryFirstOrDefaultAsync<TicketsModel>(
+                query,
+                new
+                {
+                    DocEntryHojaRuta = docEntryHojaRuta,
+                    Linea = linea,
+                    DocEntryTicket = docEntryTicket
+                },
+                tx
+            );
+        }
 
 
     }

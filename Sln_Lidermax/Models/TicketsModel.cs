@@ -36,5 +36,7 @@
         public string? EstadoPago { get; set; } 
         public bool Excluido { get; set; }
         public double? MontoFlete { get; set; }
+
+        public int? IdRol { get; set; }
     }
 }

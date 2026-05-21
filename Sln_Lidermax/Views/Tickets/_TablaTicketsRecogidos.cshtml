@@ -76,10 +76,14 @@
                                     data-docnumticket="@u.DocNumTicket"
                                     data-docentryhojaruta="@u.DocEntryHojaRuta"
                                     data-linea="@u.Linea"
+                                    data-estado="@u.Estado"
+                                    data-montoflete="@u.MontoFlete"
+                                    data-idrol="@u.IdRol"
+                                    data-estadopago="@u.EstadoPago"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modalImagen"
                                     title="Registrar imagenes"
-                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>
+                                    @(u?.Estado == "DEVOLUCION" || (u?.Estado == "ENTREGADO" && u?.IdRol != 73) ? "disabled" : "")>
                                 <i class="bi bi-image"></i>
                             </button>
                             <button type="button"

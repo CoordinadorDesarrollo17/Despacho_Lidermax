@@ -21,5 +21,6 @@ namespace Sln_Lidermax.Interfaces
         Task<List<TicketsModel>> ListadoTicketsRecogidosExcel(FiltrosTicketsModel model);
         Task<(int TotalTickets, int TicketsObtenidos)> ObtenerConteoTickets(int docEntryHojaRuta, string[] estado, SqlConnection con, SqlTransaction tx);
         Task<string> ObtenerEstadoTicket(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con, SqlTransaction tx);
+        Task<TicketsModel> ObtenerTicket(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con, SqlTransaction tx);
     }
 }
