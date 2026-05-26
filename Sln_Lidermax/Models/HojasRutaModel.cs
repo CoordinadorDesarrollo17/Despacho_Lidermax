@@ -8,5 +8,6 @@
         public string? TiempoPac { get; set; }  
         public int? Cajas { get; set; }
         public string?Estado { get; set; }  
+        public string? Placa { get; set; }
     }
 }

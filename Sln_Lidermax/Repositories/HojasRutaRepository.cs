@@ -27,13 +27,13 @@ namespace Sln_Lidermax.Repositories
                             r.TipoRuta,
                             CONVERT(VARCHAR(10), r.TiempoPac, 103) AS TiempoPac,
                             SUM(tr.Cajas) AS Cajas,
-                            r.Estado
+                            r.Estado,r.Placa
                         FROM al.ORRU AS r
                         INNER JOIN al.RRU0 AS tr ON r.DocEntry = tr.DocEntry AND tr.Estado <> 'LIBERADO'
                         LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket 
                         WHERE r.TransDesc LIKE '%LIDERMAX%' AND 
                         CONCAT(r.DocNum,r.TipoRuta,CONVERT(VARCHAR(10), r.TiempoPac, 103),r.Estado) LIKE @Buscar
-                        GROUP BY r.DocEntry,r.DocNum, r.TipoRuta, r.TiempoPac ,  r.Estado   
+                        GROUP BY r.DocEntry,r.DocNum, r.TipoRuta, r.TiempoPac ,  r.Estado   ,r.Placa
                         ORDER BY r.Estado ASC,r.TiempoPac DESC
                     "; 
 

@@ -38,5 +38,6 @@
         public double? MontoFlete { get; set; }
 
         public int? IdRol { get; set; }
+        public string? Placa { get; set; }   
     }
 }

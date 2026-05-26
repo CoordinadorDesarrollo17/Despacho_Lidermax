@@ -8,7 +8,8 @@
     <table class="table table-hover align-middle text-nowrap">
         <thead class="table-header">
             <tr>           
-                <th>Nro Ticket</th>  
+                <th>Nro Ticket</th>
+                <th>Placa</th>
                 <th>Fecha Recojo</th>
                 <th>Razón Social</th> 
                 <th>Dirección Envío</th>
@@ -29,6 +30,7 @@
             {
                 <tr>                 
                     <td data-label="NroTicket">@u?.DocNumTicket</td>
+                    <td data-label="Placa">@u?.Placa</td>
                     <td data-label="FechaRecojo" class="text-end">@u?.FechaRecojo?.ToString("dd/MM/yyyy")</td>
                     <td data-label="RazonSocial">@u?.CardName</td>
                     <td data-label="DireccionEnvio">@u?.Direccion1</td>
@@ -127,7 +129,7 @@
                                     data-linea="@u.Linea"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalDevolucion"
-                                    @(u?.Estado == "DEVOLUCION" || u?.Estado == "ENTREGADO" ? "disabled" : "")>
+                                    @(u?.Estado == "DEVOLUCION"  ? "disabled" : "")>
                                 <i class="bi bi-x-circle"></i>
                             </button>
 
