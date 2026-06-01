@@ -22,21 +22,21 @@ namespace Sln_Lidermax.Repositories
 
             var sql = @"   SELECT TOP 200 
                             tr.DocEntry AS DocEntryHojaRuta, tr.Linea, tk.DocEntry AS DocEntryTicket, tk.DocNum AS DocNumTicket,
-                            tk.CardCode,tk.CardName,tr.Guias AS GuiaRemision,tr.Cajas,tk.Agencia , rfd.Estado , rfd.EstadoPago
+                            tk.CardCode,tk.CardName,tr.Guias AS GuiaRemision,tr.Cajas, CASE WHEN rfd.Agencia IS NOT NULL THEN rfd.Agencia ELSE tk.Agencia END AS Agencia, 
+                            rfd.Estado , rfd.EstadoPago
                             FROM al.RRU0 AS tr 
                             LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                             LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
                             LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryHojaRuta=tr.DocEntry AND rfd.Linea= tr.Linea AND rfd.DocEntryTicket = tr.DocEntryTicket
-                            WHERE r.TransDesc LIKE '%LIDERMAX%'
+                            WHERE ( (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA') )                  
+                              AND (rfd.Estado IS NOT NULL AND rfd.Estado <> '' )
                               AND tr.Estado <> 'LIBERADO' 
-                              AND rfd.Estado IS NOT NULL
-                              AND rfd.Estado <> '' 
                               AND rfd.Excluido = 0
-                              AND r.Trans2Desc LIKE @NombreCompleto   
+                              AND (r.Trans2Desc LIKE @NombreCompleto OR rfd.Conductor LIKE @NombreCompleto )
                               AND CONCAT(tk.DocNum,tk.CardCode,tk.CardName,tr.Guias,tr.Cajas,tk.Agencia) LIKE @Buscar
                             GROUP BY 
                             tr.DocEntry , tr.Linea, tk.DocEntry , tk.DocNum ,
-                            tk.CardCode , tk.CardName,rfd.FechaRecojo,tr.Guias,tk.DocNum,tr.Cajas,tk.Agencia , rfd.Estado , rfd.EstadoPago
+                            tk.CardCode , tk.CardName,rfd.FechaRecojo,tr.Guias,tk.DocNum,tr.Cajas,tk.Agencia , rfd.Estado , rfd.EstadoPago , rfd.Agencia
                             ORDER BY FechaRecojo DESC ";
 
             var result = await xCon.QueryAsync<TicketsModel>(sql, new { NombreCompleto = "%" + model.NombreCompleto + "%", Buscar = "%" + model.Buscar + "%" });
@@ -49,17 +49,19 @@ namespace Sln_Lidermax.Repositories
             return result.ToPagedList(model.Paginacion.Page, model.Paginacion.PageSize);
         }
 
-        public async Task<bool> ActualizarTransportista(int DocEntryTicket, string Transportista)
+        public async Task<bool> ActualizarTransportista(int DocEntryHojaRuta, int Linea, int DocEntryTicket, string Transportista)
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
-            var sql = @"UPDATE [vt].[ORTV]
+            var sql = @"UPDATE [tmp].[registro_fecha_despacho]
                     SET Agencia = @Transportista
-                    WHERE DocEntry = @DocEntryTicket ";
+                    WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket ";
 
             var result = await xCon.ExecuteAsync(sql, new
             {
-                DocEntryTicket,
+                DocEntryHojaRuta ,
+                Linea ,
+                DocEntryTicket ,
                 Transportista
             });
 
@@ -87,5 +89,19 @@ namespace Sln_Lidermax.Repositories
 
             return result > 0;
         }
+
+
+        public async Task<bool> ActualizarFactura(SubirImagenesModel request, SqlConnection con, SqlTransaction tx)
+        {
+            var sql = @" UPDATE [tmp].[registro_fecha_despacho]
+                SET  Factura = @Factura
+                WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket";
+
+            var result = await con.ExecuteAsync(sql, new { request.DocEntryHojaRuta, request.Linea, request.DocEntryTicket, request.Factura }, tx);
+
+            return result > 0;
+        }
+
+
     }
 }

@@ -50,7 +50,24 @@ namespace Sln_Lidermax.Services
                     {
                         throw new Exception("Error insertando ticket");
                     }
-                   
+
+                    bool actualizarExcluido = true;
+                    if(ticket.EntregaPedido == "RECOJO")
+                    {
+                        TicketSeleccionadoDto obj = new TicketSeleccionadoDto()
+                        {
+                            DocEntryHojaRuta = ticket.DocEntryHojaRuta,
+                            Linea = ticket.Linea,
+                            DocEntryTicket = ticket.DocEntryTicket,
+                            Excluido = true
+                        };
+                        actualizarExcluido = await ticketsRepository.ExcluirTicket(obj, con, tx); //falta transaccion
+                    }
+                    if (!resultInsert)
+                    {
+                        throw new Exception("Error actualizando excluido");
+                    }
+
                     var conteo = await ticketsRepository.ObtenerConteoTickets(ticket.DocEntryHojaRuta, new[] { "RECOGIDO", "ENVIADO","LIBERADO" }, con, tx);
 
                     if (conteo.TotalTickets == conteo.TicketsObtenidos)
@@ -211,9 +228,15 @@ namespace Sln_Lidermax.Services
                     if (!yaEraPagado)
                     {
                         // IMAGEN OBLIGATORIA
-                        if (request.ImgPago == null || request.ImgPago.Length == 0)
+                        //if (request.ImgPago == null || request.ImgPago.Length == 0)
+                        //{
+                        //    throw new Exception("La imagen de pago es obligatoria");
+                        //}
+
+                        //FACTURA OBLIGATORIA
+                        if (string.IsNullOrEmpty(request.Factura))
                         {
-                            throw new Exception("La imagen de pago es obligatoria");
+                            throw new Exception("El campo de factura es obligatorio");
                         }
 
                         // MONTO OBLIGATORIO
@@ -222,19 +245,30 @@ namespace Sln_Lidermax.Services
                             throw new Exception("El monto flete es obligatorio");
                         }
                     }
+                    else
+                    {
+                        if (request.MontoFlete <= 0)
+                        {
+                            throw new Exception("El monto flete debe ser mayor a 0");
+                        }
+                        if (string.IsNullOrEmpty(request.Factura))
+                        {
+                            throw new Exception("El campo de factura es obligatorio");
+                        }
+                    }
 
                     // =====================================
                     // SI SUBIÓ NUEVA IMAGEN -> ACTUALIZAR
                     // =====================================
 
-                    if (request.ImgPago != null && request.ImgPago.Length > 0)
-                    {
-                        string pathPago = Path.Combine(rutaBase,$"{request.DocNumTicket}_Pago{Path.GetExtension(request.ImgPago.FileName)}");
+                    //if (request.ImgPago != null && request.ImgPago.Length > 0)
+                    //{
+                    //    string pathPago = Path.Combine(rutaBase,$"{request.DocNumTicket}_Pago{Path.GetExtension(request.ImgPago.FileName)}");
 
-                        await GuardarArchivo(request.ImgPago, pathPago);
+                    //    await GuardarArchivo(request.ImgPago, pathPago);
 
-                        archivosGuardados.Add(pathPago);
-                    }
+                    //    archivosGuardados.Add(pathPago);
+                    //}
                 }
                 else
                 {
@@ -245,16 +279,18 @@ namespace Sln_Lidermax.Services
                         // =====================================
 
                         request.MontoFlete = null;
+                        request.Factura = null;
 
                         // ELIMINAR IMAGEN ANTERIOR
-                        string archivoPagoAnterior =Directory.GetFiles(rutaBase,$"{request.DocNumTicket}_Pago.*").FirstOrDefault();
+                        //string archivoPagoAnterior =Directory.GetFiles(rutaBase,$"{request.DocNumTicket}_Pago.*").FirstOrDefault();
 
-                        if (!string.IsNullOrWhiteSpace(archivoPagoAnterior))
-                        {
-                            File.Delete(archivoPagoAnterior);
-                        }
+                        //if (!string.IsNullOrWhiteSpace(archivoPagoAnterior))
+                        //{
+                        //    File.Delete(archivoPagoAnterior);
+                        //}
 
                         await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
+                        await ticketsOperarioRepository.ActualizarFactura(request, con, tx);
                     }       
                 }
 
@@ -269,17 +305,22 @@ namespace Sln_Lidermax.Services
                 // =========================================
 
                 bool resultMonto = true;
-
                 if (request.MontoFlete.HasValue && request.MontoFlete > 0)
                 {
                     resultMonto = await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
+                }
+
+                bool resultFactura = true;
+                if(request.Factura != null)
+                {
+                    resultFactura = await ticketsOperarioRepository.ActualizarFactura(request, con, tx);
                 }
 
                 // =========================================
                 // VALIDAR RESULTADO
                 // =========================================
 
-                bool resultado = resultEstadoPago && resultMonto;
+                bool resultado = resultEstadoPago && resultMonto && resultFactura;
 
                 if (!resultado)
                 {
@@ -452,7 +493,22 @@ namespace Sln_Lidermax.Services
         //Excluir
         public async Task<bool> ExcluirTicket(TicketSeleccionadoDto model)
         {
-            return await ticketsRepository.ExcluirTicket(model);
+            using SqlConnection con = new SqlConnection(dapperContext.connectionString);
+            await con.OpenAsync();
+            using var tx = con.BeginTransaction();
+            try
+            {
+                var result= await ticketsRepository.ExcluirTicket(model,con,tx);
+
+                tx.Commit();
+
+                return result;
+            }
+            catch
+            {
+                tx.Rollback();
+                return false;
+            }
         }
 
     }

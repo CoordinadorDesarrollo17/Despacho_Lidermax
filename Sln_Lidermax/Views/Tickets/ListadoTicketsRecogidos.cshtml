@@ -217,9 +217,12 @@
                             </select>
                         </div>
                         <div class="mb-3 d-none" id="contenedorImagen">
-                            <label for="imgPago" class="form-label">Subir Imagen</label>
+                            @* <label for="imgPago" class="form-label">Subir Imagen</label>
                             <div class="mb-3">
                                 <input type="file" class="form-control" id="imgPago" accept="image/*">
+                            </div> *@
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="NumFactura" autocomplete="off" placeholder="Ingrese número de factura..." />
                             </div>
                             <div>
                                 <input type="number" class="form-control" id="MontoFlete" autocomplete="off" min="0.01" step="0.01" placeholder="Monto Flete..." />                         
@@ -356,7 +359,7 @@
             });
 
         });
-           let idRolSeleccionado = 0;
+         let idRolSeleccionado = 0;
          let docEntryTicketSeleccionado = 0;
          let docNumTicketSeleccionado = 0;
          let docEntryHojaRutaSeleccionado = 0;
@@ -383,10 +386,11 @@
             let estado = ($(this).data("estado") || "").toString().toUpperCase();
             let montoFlete = $(this).data("montoflete");
             let estadoPago = $(this).data("estadopago");
+            let factura = $(this).data("factura");
 
             idRolSeleccionado  = $(this).data("idrol");
 
-             if (estado === "ENTREGADO" && idRolSeleccionado == 73 ) { //73 operario lidermax
+             //if (estado === "ENTREGADO" && idRolSeleccionado == 73 ) { //73 operario lidermax
                  $("#btnActualizar").removeClass("d-none");
                  $("#btnRegistrarImagen").addClass("d-none");
                  $("#divPago").removeClass("d-none");
@@ -394,16 +398,15 @@
                  //reset
                  $("#estadoPago").val(estadoPago);
                  actualizarEstadoPago(estadoPago);
-                 $("#MontoFlete").val(montoFlete);
+                 $("#MontoFlete").val(montoFlete);             
+                 $("#NumFactura").val(factura);
 
-                $("#imgPago").val("");
-
-             } else {
-                 $("#btnActualizar").addClass("d-none");
-                 $("#btnRegistrarImagen").removeClass("d-none");
-                 $("#divPago").addClass("d-none");
-                 $("#contenedorImagen").addClass("d-none");
-             }
+             // } else {
+             //     $("#btnActualizar").addClass("d-none");
+             //     $("#btnRegistrarImagen").removeClass("d-none");
+             //     $("#divPago").addClass("d-none");
+             //     $("#contenedorImagen").addClass("d-none");
+             // }
         });
 
         $(document).on("click", ".btn-entregar", function () {
@@ -440,7 +443,8 @@
             } else {
                 $("#contenedorImagen").addClass("d-none");
 
-                $("#imgPago").val("");
+                // $("#imgPago").val("");
+                $("#NumFactura").val("");
                 $("#MontoFlete").val("");
             }
         }
@@ -957,7 +961,8 @@
 
                let img1 = $("#img1")[0].files[0];
                let img2 = $("#img2")[0].files[0];
-               let imgPago = $("#imgPago")[0].files[0];
+               // let imgPago = $("#imgPago")[0].files[0];
+               let factura =  $("#NumFactura").val();
                let estadoPago = $("#estadoPago").val();
                let montoFlete = $("#MontoFlete").val();
 
@@ -983,7 +988,8 @@
 
                 if (img1) formData.append("Img1", img1);
                 if (img2) formData.append("Img2", img2);
-                if (imgPago) formData.append("ImgPago", imgPago);
+                // if (imgPago) formData.append("ImgPago", imgPago);
+                formData.append("Factura",factura);
 
                $.ajax({
                    url: '/Tickets/ActualizarDatos',

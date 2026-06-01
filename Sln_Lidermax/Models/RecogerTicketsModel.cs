@@ -19,6 +19,7 @@
         public double? MontoFlete { get; set; }
 
         public int IdRol { get; set; }
+        public string EntregaPedido { get; set; }
     }
 
    

@@ -36,7 +36,7 @@ namespace Sln_Lidermax.Repositories
                                 END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
-                               tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago, rfd.IdRol , r.Placa
+                               tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago, rfd.IdRol , r.Placa , rfd.Factura
                         FROM al.RRU0 AS tr 
                         LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
@@ -45,7 +45,7 @@ namespace Sln_Lidermax.Repositories
                         LEFT JOIN vt.RTV3 AS v3_2 ON v3_2.DocEntry = tk.DocEntry AND v3_2.IdDireccion = 2
                         LEFT JOIN vt.RTV6 AS v6 ON v6.DocEntry = tk.DocEntry 
                         LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryHojaRuta=tr.DocEntry AND rfd.Linea= tr.Linea AND rfd.DocEntryTicket = tr.DocEntryTicket
-                        WHERE r.TransDesc LIKE '%LIDERMAX%'
+                        WHERE ( r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%' )
                           AND tr.Estado <> 'LIBERADO' 
                           AND rfd.Estado <> '' --IN ('RECOGIDO','ENVIADO') 
                           AND CONCAT(CONVERT(VARCHAR(10), rfd.FechaRecojo, 103),CONVERT(VARCHAR(10), rfd.FechaEntrega, 103),rfd.Estado,tk.DistritoEnvio,tr.Guias,v1.TelfPer,v1.NombrePer,tk.DocNum,tk.CardCode,tk.CardName,v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,v3_1.Calle,v3_2.Departamento, v3_2.Provincia,v3_2.Distrito,tk.Agencia,tk.EnvioAgencia) LIKE @Buscar
@@ -58,7 +58,7 @@ namespace Sln_Lidermax.Repositories
                                  v3_1.Calle,v3_2.Calle, tk.Agencia,tk.EnvioAgencia, tk.Cajas,
                                  rfd.FechaRecojo,rfd.FechaDespacho,rfd.Estado, v1.NombrePer,v1.TelfPer,
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,tk.DistritoEnvio,
-                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega,tr.Linea, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago,  rfd.IdRol , r.Placa
+                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega,tr.Linea, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago,  rfd.IdRol , r.Placa , rfd.Factura
                         ORDER BY FechaRecojo DESC
                     "; // tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
 
@@ -85,21 +85,23 @@ namespace Sln_Lidermax.Repositories
                                 END AS Direccion2,
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
-                               tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision
+                               tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision, tk.EntregaPedido
                         FROM al.RRU0 AS tr 
+                        LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
                         LEFT JOIN vt.RTV1 AS v1 ON v1.DocEntry = tk.DocEntry
                         LEFT JOIN vt.RTV3 AS v3_1 ON v3_1.DocEntry = tk.DocEntry AND v3_1.IdDireccion = 1
                         LEFT JOIN vt.RTV3 AS v3_2 ON v3_2.DocEntry = tk.DocEntry AND v3_2.IdDireccion = 2
                         LEFT JOIN vt.RTV6 AS v6 ON v6.DocEntry = tk.DocEntry 
                         LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryHojaRuta=tr.DocEntry AND rfd.Linea= tr.Linea AND rfd.DocEntryTicket = tr.DocEntryTicket
-                        WHERE tr.DocEntry = @DocEntry AND tr.Estado <> 'LIBERADO' 
+                        WHERE tr.DocEntry = @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA') )
+                          AND tr.Estado <> 'LIBERADO' 
                           AND CONCAT(RIGHT(tr.Guias,13),tk.DistritoEnvio,v1.TelfPer,tk.DocNum,tk.CardCode,tk.CardName,v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,v3_1.Calle,v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tk.Agencia,tk.EnvioAgencia,rfd.Estado,v1.NombrePer) LIKE @Buscar
                         GROUP BY tr.DocEntry,tk.DocEntry,tk.DocNum,tk.CardCode,tk.CardName,
                                  v3_1.Calle,v3_2.Calle, tk.Agencia,tk.EnvioAgencia, tk.Cajas,
                                  rfd.Estado,rfd.DocEntryTicket, v1.NombrePer,v1.TelfPer,
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,
-                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tk.DistritoEnvio,tr.Guias,tr.Linea
+                                 v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tk.DistritoEnvio,tr.Guias,tr.Linea , tk.EntregaPedido
                         ORDER BY tk.Agencia
                      ";
 
@@ -285,21 +287,20 @@ namespace Sln_Lidermax.Repositories
 
 
         //Excluir ticket
-        public async Task<bool> ExcluirTicket(TicketSeleccionadoDto model)
+        public async Task<bool> ExcluirTicket(TicketSeleccionadoDto model, SqlConnection con , SqlTransaction tx )
         {
-            using var xCon = new SqlConnection(dapperContext.connectionString);
-
+          
             var sql = @"UPDATE [tmp].[registro_fecha_despacho]
                     SET Excluido = @Excluido
                     WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket";
 
-            var result = await xCon.ExecuteAsync(sql, new
+            var result = await con.ExecuteAsync(sql, new
             {
                 model.DocEntryHojaRuta,
                 model.Linea,
                 model.DocEntryTicket,
                 model.Excluido
-            });
+            }, tx);
 
             return result > 0;
         }

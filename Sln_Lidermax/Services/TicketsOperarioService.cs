@@ -22,68 +22,93 @@ namespace Sln_Lidermax.Services
             return await ticketsOperarioRepository.ListadoTicketsOperario(model);
         }
 
-        public async Task<bool> ActualizarTransportista(int DocEntryTicket, string Transportista)
+        public async Task<bool> ActualizarTransportista(int DocEntryHojaRuta, int Linea, int DocEntryTicket, string Transportista)
         {
-            return await ticketsOperarioRepository.ActualizarTransportista(DocEntryTicket, Transportista);
+            return await ticketsOperarioRepository.ActualizarTransportista(DocEntryHojaRuta, Linea, DocEntryTicket, Transportista);
         }
 
 
         public async Task<bool> RegistrarEstadoPago(SubirImagenesModel request)
-        {
-            string rutaBase = @"C:\COBEFARWEBFILES\DespachoLidermax";
-
-            if (!Directory.Exists(rutaBase))
-            {
-                Directory.CreateDirectory(rutaBase);
-            }
-
-            string pathPago = string.Empty;
-
+        {               
             using SqlConnection con = new SqlConnection(dapperContext.connectionString);
             await con.OpenAsync();
 
             using var tx = con.BeginTransaction();
 
             try
-            {
-                // SOLO guardar imagen si el estado es PAGADO
-                if (request.EstadoPago == "PAGADO")
-                {
-                    // Validar imagen
-                    if (request.ImgPago == null)
-                    {
-                        throw new Exception("Debe enviar imagen de pago");
-                    }
-
-                    string nombreImgPago = $"{request.DocNumTicket}_Pago{Path.GetExtension(request.ImgPago.FileName)}";
-
-                    pathPago = Path.Combine(rutaBase, nombreImgPago);
-
-                    using (var stream = new FileStream(pathPago, FileMode.Create))
-                    {
-                        await request.ImgPago.CopyToAsync(stream);
-                    }
-
-                    if (!File.Exists(pathPago))
-                    {
-                        throw new Exception("Error guardando imagen pago");
-                    }
-                }
-
+            {             
                 var resultTicketEnviado = await ticketsOperarioRepository.ActualizarEstadoPago(request, con, tx);
                 var resultMontoFlete = await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
+                var resultFactura = await ticketsOperarioRepository.ActualizarFactura(request, con, tx);
 
                 tx.Commit();
 
-                return resultTicketEnviado && resultMontoFlete;
+                return resultTicketEnviado && resultMontoFlete && resultFactura;
             }
             catch
             {
-                tx.Rollback();
-                if (File.Exists(pathPago)) File.Delete(pathPago);
+                tx.Rollback();              
                 return false;
             }
         }
+
+
+        //public async Task<bool> RegistrarEstadoPago(SubirImagenesModel request)
+        //{
+        //    string rutaBase = @"C:\COBEFARWEBFILES\DespachoLidermax";
+
+        //    if (!Directory.Exists(rutaBase))
+        //    {
+        //        Directory.CreateDirectory(rutaBase);
+        //    }
+
+        //    string pathPago = string.Empty;
+
+        //    using SqlConnection con = new SqlConnection(dapperContext.connectionString);
+        //    await con.OpenAsync();
+
+        //    using var tx = con.BeginTransaction();
+
+        //    try
+        //    {
+        //        // SOLO guardar imagen si el estado es PAGADO
+        //        if (request.EstadoPago == "PAGADO")
+        //        {
+        //            // Validar imagen
+        //            if (request.ImgPago == null)
+        //            {
+        //                throw new Exception("Debe enviar imagen de pago");
+        //            }
+
+        //            string nombreImgPago = $"{request.DocNumTicket}_Pago{Path.GetExtension(request.ImgPago.FileName)}";
+
+        //            pathPago = Path.Combine(rutaBase, nombreImgPago);
+
+        //            using (var stream = new FileStream(pathPago, FileMode.Create))
+        //            {
+        //                await request.ImgPago.CopyToAsync(stream);
+        //            }
+
+        //            if (!File.Exists(pathPago))
+        //            {
+        //                throw new Exception("Error guardando imagen pago");
+        //            }
+        //        }
+
+        //        var resultTicketEnviado = await ticketsOperarioRepository.ActualizarEstadoPago(request, con, tx);
+        //        var resultMontoFlete = await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
+
+        //        tx.Commit();
+
+        //        return resultTicketEnviado && resultMontoFlete;
+        //    }
+        //    catch
+        //    {
+        //        tx.Rollback();
+        //        if (File.Exists(pathPago)) File.Delete(pathPago);
+        //        return false;
+        //    }
+        //}
 
     }
 }

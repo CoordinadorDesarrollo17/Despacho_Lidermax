@@ -42,6 +42,12 @@
                                     Tickets recogidos
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link px-3 rounded hover-bg-light" asp-controller="TicketsCoordinados" asp-action="ListadoTicketsCoordinados">
+                                    Tickets coordinados
+                                </a>
+                            </li>
                         }
                         @if (User.IsInRole("OLID"))
                         {

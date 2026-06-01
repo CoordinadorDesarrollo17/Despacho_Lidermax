@@ -32,6 +32,8 @@
         public string Almacen { get; set; }
 
         public string Placa { get; set; }
+        public string DetallePedido { get; set; }
+        public string TipoRuta { get; set; }    
 
     }
 }

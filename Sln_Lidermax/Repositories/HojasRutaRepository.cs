@@ -31,8 +31,8 @@ namespace Sln_Lidermax.Repositories
                         FROM al.ORRU AS r
                         INNER JOIN al.RRU0 AS tr ON r.DocEntry = tr.DocEntry AND tr.Estado <> 'LIBERADO'
                         LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket 
-                        WHERE r.TransDesc LIKE '%LIDERMAX%' AND 
-                        CONCAT(r.DocNum,r.TipoRuta,CONVERT(VARCHAR(10), r.TiempoPac, 103),r.Estado) LIKE @Buscar
+                        WHERE ( (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA') )
+                        AND CONCAT(r.DocNum,r.TipoRuta,CONVERT(VARCHAR(10), r.TiempoPac, 103),r.Estado) LIKE @Buscar
                         GROUP BY r.DocEntry,r.DocNum, r.TipoRuta, r.TiempoPac ,  r.Estado   ,r.Placa
                         ORDER BY r.Estado ASC,r.TiempoPac DESC
                     "; 
@@ -70,7 +70,8 @@ namespace Sln_Lidermax.Repositories
                     LEFT OUTER JOIN vt.RTV3 T4_2 ON T4_2.DocEntry = T0.DocEntryTicket AND T4_2.IdDireccion =2
                     LEFT OUTER JOIN vt.ORTV T5 ON T5.DocEntry = T0.DocEntryTicket
                     LEFT OUTER JOIN vt.RTV1 T1 ON T1.DocEntry = T0.DocEntryTicket
-                    WHERE T0.DocEntry = @DocEntry AND T0.Estado <> 'LIBERADO'
+                    WHERE T0.DocEntry = @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND T5.LugarDestino = 'DOMICILIO' AND T5.EntregaPedido = 'PROVINCIA') )
+                    AND T0.Estado <> 'LIBERADO'
                     GROUP BY 
                         T0.Socio,
                         T5.EnvioAgencia,
@@ -122,7 +123,7 @@ namespace Sln_Lidermax.Repositories
 						CONCAT_WS(' - ', v3_2.Departamento, v3_2.Provincia, v3_2.Distrito, v3_2.Calle) AS Direccion2,
 							tk.EnvioAgencia AS ModoEnvio,
                             tr.Cajas ,
-                            SUM(v6.Peso) AS peso    , r.Placa                   
+                            SUM(v6.Peso) AS peso    , r.Placa       , tk.DetallePedido   , r.TipoRuta         
                             FROM al.RRU0 AS tr
                             LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry
                             LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket  
@@ -131,7 +132,8 @@ namespace Sln_Lidermax.Repositories
                             LEFT JOIN vt.RTV3 AS v3_1 ON v3_1.DocEntry = tk.DocEntry AND v3_1.IdDireccion =1
                             LEFT JOIN vt.RTV3 AS v3_2 ON v3_2.DocEntry = tk.DocEntry AND v3_2.IdDireccion =2
                             LEFT JOIN vt.RTV6 AS v6 ON v6.DocEntry = tk.DocEntry 
-                            WHERE tr.DocEntry =  @DocEntry AND tr.Estado <> 'LIBERADO'
+                            WHERE tr.DocEntry =  @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA') )
+                            AND tr.Estado <> 'LIBERADO'
                             GROUP BY
                             tr.DocNumTicket,tk.CardName,
                             v3_1.Departamento ,
@@ -147,7 +149,7 @@ namespace Sln_Lidermax.Repositories
                             tr.Cajas,
 							v1.NombrePer,
 						    v1.DocPer,
-						    v1.TelfPer , r.Placa  
+						    v1.TelfPer , r.Placa  , tk.DetallePedido    , r.TipoRuta   
                             ORDER BY tk.Agencia ";
 
 

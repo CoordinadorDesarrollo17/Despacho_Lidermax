@@ -15,5 +15,6 @@
         public DateTime Fecha { get; set; }
         public string? Observacion { get; set; }
         public double? MontoFlete { get; set; }
+        public string? Factura { get; set; }    
     }
 }

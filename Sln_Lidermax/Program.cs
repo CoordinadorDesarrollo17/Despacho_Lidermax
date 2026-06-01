@@ -64,6 +64,9 @@ builder.Services.AddTransient<ITicketsRepository, TicketsRepository>();
 builder.Services.AddTransient<ITicketsOperarioService, TicketsOperarioService>();
 builder.Services.AddTransient<ITicketsOperarioRepository, TicketsOperarioRepository>();
 
+builder.Services.AddTransient<ITicketsCoordinadosService, TicketsCoordinadosService>();
+builder.Services.AddTransient<ITicketsCoordinadosRepository, TicketsCoordinadosRepository>();
+
 //LOGIN
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();

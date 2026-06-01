@@ -78,7 +78,7 @@ namespace Sln_Lidermax.Controllers
                 bool result1 = true;
                 if (!string.IsNullOrWhiteSpace(request.Transportista))
                 {
-                  result1 = await ticketsOperarioService.ActualizarTransportista(request.DocEntryTicket, request.Transportista);
+                  result1 = await ticketsOperarioService.ActualizarTransportista(request.DocEntryHojaRuta, request.Linea, request.DocEntryTicket, request.Transportista);
                 }
 
                 bool result2 = true;

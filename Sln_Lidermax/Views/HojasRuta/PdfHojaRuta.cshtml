@@ -3,6 +3,7 @@
 @{
     Layout = "~/Views/Shared/_LayoutReporte.cshtml";
     int totalCajas = Model.Sum(x => x.Cajas);
+    bool tieneDetalle = Model.Any(x => x.TipoRuta =="VD");
 }
 
 <style>
@@ -112,8 +113,17 @@
             <th >Nro Documento</th>   
             <th>Telefono</th>
             <th>Transportista</th>
-            <th>Direccion1</th>
-            <th>Direccion2</th>
+
+            @if (tieneDetalle)
+            {
+                <th colspan="2">Detalle Pedido</th>
+            }
+            else
+            {
+                <th>Direccion1</th>
+                <th>Direccion2</th>
+            }
+
             <th>ModoEnvio</th>
             <th >Cajas</th>
             <th style="width:50px">Peso</th>
@@ -131,8 +141,18 @@
                 <td>@d.DocPer</td>
                 <td>@d.TelfPer</td>
                 <td>@d.Transportista</td>
-                <td>@d.Direccion1</td>
-                <td>@d.Direccion2</td>
+
+                @if (d.TipoRuta == "VD")
+                {
+                    <td colspan="2">@d.DetallePedido</td>
+                }
+                else
+                {
+                    <td>@d.Direccion1</td>
+                    <td>@d.Direccion2</td>
+                }
+
+
                 <td>@d.ModoEnvio</td>
                 <td >@d.Cajas</td>
                 <td >@d.Peso kg</td>

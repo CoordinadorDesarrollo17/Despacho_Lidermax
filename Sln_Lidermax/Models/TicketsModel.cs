@@ -39,5 +39,7 @@
 
         public int? IdRol { get; set; }
         public string? Placa { get; set; }   
+        public string? Factura { get; set; }
+        public string? EntregaPedido { get; set; }
     }
 }

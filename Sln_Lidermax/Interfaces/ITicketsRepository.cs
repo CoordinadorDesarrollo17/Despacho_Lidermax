@@ -13,7 +13,7 @@ namespace Sln_Lidermax.Interfaces
         Task<bool> ActualizarGuiaTransportista(TicketsModel model);
         Task<bool> ActualizarObservacion(TicketSeleccionadoDto model);
         Task<bool> DevolverTicket(TicketSeleccionadoDto model, SqlConnection con, SqlTransaction tx);
-        Task<bool> ExcluirTicket(TicketSeleccionadoDto model);
+        Task<bool> ExcluirTicket(TicketSeleccionadoDto model, SqlConnection con, SqlTransaction tx);
         Task<bool> InsertarTicketsRecogidos(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con, SqlTransaction tx);
         Task<IPagedList<TicketsModel>> ListadoTickets(FiltrosTicketsModel model);
         Task<List<TicketsModel>> ListadoTicketsExcel(FiltrosTicketsModel model);

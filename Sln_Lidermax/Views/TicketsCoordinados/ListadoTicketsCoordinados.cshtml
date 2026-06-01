@@ -1,0 +1,288 @@
+﻿@using Sln_Lidermax.Models
+@using X.PagedList
+@model IPagedList<TicketsCoordinados>
+
+
+@{
+    ViewData["Title"] = "Listado de tickets coordinados";
+}
+<div class="card shadow-sm mb-4">
+    <div class="card-header header-gradient text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold">MÓDULO GESTIÓN DE TICKETS COORDINADOS</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row mb-3 gy-2">
+
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <label class="mb-0 fw-semibold">Mostrar</label>
+
+                    <select id="pageSize" class="form-select form-select-sm w-auto">
+                        @foreach (var size in new[] { 1, 5, 10, 20, 40, 60, 80, 100 })
+                        {
+                            <option value="@size" selected="@(size == 10)">@size</option>
+                        }
+                    </select>
+
+                    <span class="text-nowrap">registros por página</span>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="d-flex justify-content-start justify-content-md-end gap-2">
+                    <input type="text"
+                           id="txtBuscar"
+                           class="form-control form-control-sm w-100 w-md-auto"
+                           style="max-width: 300px;"
+                           placeholder="Buscar:" autocomplete="off" />
+
+                  
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="tablaTicketsCoordinados">
+            <partial name="_TablaTicketsCoordinados" model="Model" />
+        </div>
+
+
+    </div>
+</div>
+
+<div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle Pedido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control"
+                          id="detalle"
+                          rows="4"
+                          maxlength="500"
+                          autocomplete="off" readonly></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalPlacaYConductor" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Actualizar Placa y Transportista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">              
+                <input type="hidden" id="DocEntryHojaRuta" />
+                <input type="hidden" id="Linea" />
+                <input type="hidden" id="DocEntryTicket" />
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Conductor</label>
+                    <select class="form-select" id="Conductor">
+                        <option value="">-- Seleccione --</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Placa</label>
+                    <select class="form-select" id="Placa">
+                        <option value="">-- Seleccione --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnActualizar">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        const txtBuscar = document.getElementById("txtBuscar");
+        const cboPageSize = document.getElementById("pageSize");
+        const tablaTicketsCoordinados = document.getElementById("tablaTicketsCoordinados");
+
+        function cargarTabla(page = 1) { //numero de pagina por default
+
+            const params = new URLSearchParams({ //parametros
+                   "Buscar": txtBuscar.value,
+                   "Paginacion.Page": page,
+                   "Paginacion.PageSize": cboPageSize.value
+             });
+
+            let url = `@Url.Action("ListadoTicketsCoordinados")?${params.toString()}`; //accion del controlador , pasamos parametros
+
+            fetch(url, { //fetch que lanza la accion
+                headers:  {
+                    "X-Requested-With": "XMLHttpRequest" //nos dice si es una peticion AJAX
+                  }
+                })
+                .then(r => r.text())
+                .then(html => {
+                tablaTicketsCoordinados.innerHTML = html;
+            });
+
+        }
+        //lanzamos eventos de los <select>
+        cboPageSize.addEventListener("change", () => cargarTabla(1));
+
+        //Agregamos evento para que el usuario de enter
+        agregarEventosBusqueda(txtBuscar);
+
+          //funcion para agregar evento enter
+        function agregarEventosBusqueda(input) {
+            if (!input) return;
+
+            // Cuando presiona Enter
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    cargarTabla(1);
+                }
+            });
+
+            // Cuando borra todo el contenido
+            input.addEventListener("input", function () {
+                if (input.value.trim() === "") {
+                    cargarTabla(1);
+                }
+            });
+        }
+
+          $(document).on("click", ".btn-editar", function () {
+            let hojaRuta  = $(this).data("hojaruta");
+            let placa     = $(this).data("placa");
+            let conductor = $(this).data("conductor");
+
+            $("#DocEntryHojaRuta").val($(this).data("docentryhojaruta"));
+            $("#Linea").val($(this).data("linea"));
+            $("#DocEntryTicket").val($(this).data("docentryticket"));
+
+            // Cargar conductores
+            let selConductor = $("#Conductor");
+            selConductor.html('<option value="">Cargando...</option>');
+
+            fetch(`@Url.Action("ObtenerConductores")`, {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(r => r.json())
+            .then(data => {
+                selConductor.html('<option value="">-- Seleccione --</option>');
+                data.forEach(item => {
+                    let selected = item === conductor ? "selected" : "";
+                    selConductor.append(`<option value="${item}" ${selected}>${item}</option>`);
+                });
+            });
+
+            // Cargar placas
+            let selPlaca = $("#Placa");
+            selPlaca.html('<option value="">Cargando...</option>');
+
+            fetch(`@Url.Action("ObtenerPlacas")`, {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(r => r.json())
+            .then(data => {
+                selPlaca.html('<option value="">-- Seleccione --</option>');
+                data.forEach(item => {
+                    let selected = item === placa ? "selected" : "";
+                    selPlaca.append(`<option value="${item}" ${selected}>${item}</option>`);
+                });
+            });
+        });
+
+
+
+        $("#btnActualizar").on("click", function () {
+            let docentryhojaruta = $("#DocEntryHojaRuta").val();
+            let linea = $("#Linea").val();
+            let docentryticket = $("#DocEntryTicket").val();
+                        
+            let conductor      = $("#Conductor").val();
+            let placa          = $("#Placa").val();
+
+            if (!conductor || !placa) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Campos requeridos",
+                    text: "Por favor seleccione conductor y placa.",
+                    confirmButtonColor: "#0d6efd"
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: "¿Confirmar actualización?",
+                text: `Conductor: ${conductor} | Placa: ${placa}`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#0d6efd",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Sí, actualizar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                fetch(`@Url.Action("ActualizarPlacaConductor")`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({ 
+                        DocEntryHojaRuta: docentryhojaruta,
+                        Linea : linea,
+                        DocEntryTicket: docentryticket,
+                        Conductor: conductor,
+                        Placa: placa
+                    })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        $("#modalPlacaYConductor").modal("hide");
+                        Swal.fire({
+                            icon: "success",
+                            title: "¡Actualizado!",
+                            text: "Placa y conductor actualizados correctamente.",
+                            confirmButtonColor: "#0d6efd",
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(() => cargarTabla());
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: res.message,
+                            confirmButtonColor: "#0d6efd"
+                        });
+                    }
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error de conexión",
+                        text: "No se pudo conectar con el servidor.",
+                        confirmButtonColor: "#0d6efd"
+                    });
+                });
+            });
+        });
+
+                $(document).on("click", ".btn-detalle", function () {
+            let detalle = $(this).data("detalle");
+            $("#detalle").val(detalle);
+        });
+
+    </script>
+}
