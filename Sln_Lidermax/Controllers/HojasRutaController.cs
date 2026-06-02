@@ -43,11 +43,13 @@ namespace Sln_Lidermax.Controllers
             // CABECERAS
             ws.Cell(1, 1).Value = "Nro Hoja Ruta";
             ws.Cell(1, 2).Value = "Tipo Ruta";
-            ws.Cell(1, 3).Value = "Tiempo Pactado";
-            ws.Cell(1, 4).Value = "Nro Cajas";
-            ws.Cell(1, 5).Value = "Estado";
+            ws.Cell(1, 3).Value = "Placa";
+            ws.Cell(1, 4).Value = "Fecha Pactada";
+            ws.Cell(1, 5).Value = "Hora Pactada";
+            ws.Cell(1, 6).Value = "Nro Cajas";
+            ws.Cell(1, 7).Value = "Estado";
         
-            ws.Range("A1:E1").Style.Font.Bold = true;
+            ws.Range("A1:G1").Style.Font.Bold = true;
     
             int row = 2;
 
@@ -55,9 +57,11 @@ namespace Sln_Lidermax.Controllers
             {
                 ws.Cell(row, 1).Value = x.DocNum;
                 ws.Cell(row, 2).Value = x.TipoRuta;
-                ws.Cell(row, 3).Value = x.TiempoPac;
-                ws.Cell(row, 4).Value = x.Cajas;
-                ws.Cell(row, 5).Value = x.Estado;
+                ws.Cell(row, 3).Value = x.Placa;
+                ws.Cell(row, 4).Value = x.TiempoPac;
+                ws.Cell(row, 5).Value = x.HoraPac;
+                ws.Cell(row, 6).Value = x.Cajas;
+                ws.Cell(row, 7).Value = x.Estado;
                 
                 row++;
             }
@@ -78,12 +82,13 @@ namespace Sln_Lidermax.Controllers
                 $"HojasRuta_{DateTime.Now:yyyyMMddHHmm}.xlsx"
             );
         }
-        public async Task<IActionResult> ExportarPdfPorHojaRuta(int docEntryHojaRuta, int docNumHojaRuta,string tiempoPac)
+        public async Task<IActionResult> ExportarPdfPorHojaRuta(int docEntryHojaRuta, int docNumHojaRuta,string tiempoPac, string horaPac)
         {
             var data = await hojasRutaService.ListadoTicketsPorHojasRutaPdf(docEntryHojaRuta);
 
             ViewBag.DocNum = docNumHojaRuta;
             ViewBag.TiempoPac = tiempoPac;
+            ViewBag.HoraPac = horaPac;
             ViewBag.Placa = data.FirstOrDefault()?.Placa;
 
             return View("PdfHojaRuta", data);

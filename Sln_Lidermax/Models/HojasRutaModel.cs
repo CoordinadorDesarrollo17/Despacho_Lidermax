@@ -9,5 +9,6 @@
         public int? Cajas { get; set; }
         public string?Estado { get; set; }  
         public string? Placa { get; set; }
+        public string? HoraPac { get; set; }  
     }
 }

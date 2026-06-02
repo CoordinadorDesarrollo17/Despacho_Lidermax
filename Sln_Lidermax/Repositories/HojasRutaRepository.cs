@@ -27,7 +27,8 @@ namespace Sln_Lidermax.Repositories
                             r.TipoRuta,
                             CONVERT(VARCHAR(10), r.TiempoPac, 103) AS TiempoPac,
                             SUM(tr.Cajas) AS Cajas,
-                            r.Estado,r.Placa
+                            r.Estado,r.Placa,
+                            CONVERT(VARCHAR(5), r.TiempoPac, 108) AS HoraPac
                         FROM al.ORRU AS r
                         INNER JOIN al.RRU0 AS tr ON r.DocEntry = tr.DocEntry AND tr.Estado <> 'LIBERADO'
                         LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket 
