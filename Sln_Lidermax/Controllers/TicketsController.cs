@@ -223,15 +223,17 @@ namespace Sln_Lidermax.Controllers
             ws.Cell(1, 14).Value = "Telefono";
             ws.Cell(1, 15).Value = "Estado";
             ws.Cell(1, 16).Value = "Observacion";
-
+       
             int colCount = 16;
 
             // Si no es hoja de ruta, agregamos dos columnas extra
             if (model.esHojaRuta == false)
             {
-                ws.Cell(1, 17).Value = "Fecha Recojo";
-                ws.Cell(1, 18).Value = "Fecha Entrega";
-                colCount = 18;
+                ws.Cell(1, 17).Value = "Placa";
+                ws.Cell(1, 18).Value = "Factura";
+                ws.Cell(1, 19).Value = "Fecha Recojo";
+                ws.Cell(1, 20).Value = "Fecha Entrega";
+                colCount = 20;
             }
 
             ws.Range(1, 1, 1, colCount).Style.Font.Bold = true;
@@ -241,7 +243,7 @@ namespace Sln_Lidermax.Controllers
             foreach (var x in lista)
             {
                 ws.Cell(row, 1).Value = x.DocNumTicket;
-                ws.Cell(row, 2).Value = x.GuiaRemision;
+                ws.Cell(row, 2).Value = x.GuiaRemision?.Replace(Environment.NewLine, " , ").Trim();
                 ws.Cell(row, 3).Value = x.CardCode;
                 ws.Cell(row, 4).Value = x.CardName;
                 ws.Cell(row, 5).Value = x.Direccion1;
@@ -256,11 +258,13 @@ namespace Sln_Lidermax.Controllers
                 ws.Cell(row, 14).Value = x.Telefono;
                 ws.Cell(row, 15).Value = x.Estado;
                 ws.Cell(row, 16).Value = x.Observacion;
-
+            
                 if (model.esHojaRuta == false)
                 {
-                    ws.Cell(row, 17).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 18).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 17).Value = x.Placa;
+                    ws.Cell(row, 18).Value = x.Factura;
+                    ws.Cell(row, 19).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 20).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
                 }
 
                 row++;
