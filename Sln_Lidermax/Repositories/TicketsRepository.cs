@@ -308,7 +308,7 @@ namespace Sln_Lidermax.Repositories
         public async Task<TicketsModel> ObtenerTicket(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con,SqlTransaction tx) 
         {
             string query = @"
-        SELECT EstadoPago,MontoFlete,IdRol
+        SELECT EstadoPago,MontoFlete,IdRol,Estado
         FROM tmp.registro_fecha_despacho
       WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket ";
 

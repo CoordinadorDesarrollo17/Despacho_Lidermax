@@ -316,11 +316,17 @@ namespace Sln_Lidermax.Services
                     resultFactura = await ticketsOperarioRepository.ActualizarFactura(request, con, tx);
                 }
 
+                bool resultTicketEnviado = true;
+                if (ticketActual.Estado =="RECOGIDO")
+                {
+                    resultTicketEnviado = await ticketsRepository.ActualizarEstadoEnviado(request.DocEntryHojaRuta, request.Linea, request.DocEntryTicket, con, tx);
+                }
+
                 // =========================================
                 // VALIDAR RESULTADO
                 // =========================================
 
-                bool resultado = resultEstadoPago && resultMonto && resultFactura;
+                bool resultado = resultEstadoPago && resultMonto && resultFactura && resultTicketEnviado;
 
                 if (!resultado)
                 {
