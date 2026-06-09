@@ -194,16 +194,17 @@
                 <hr />
 
                 <!-- SUBIR NUEVAS IMÁGENES -->
-                <h6>Subir nuevas imágenes</h6>
-                <div class="mb-2">
-                    <label class="form-label">Imagen 1: Comprobante de pago</label>
-                    <input type="file" class="form-control" id="img1" accept="image/*" />
+                <div id="divSubirImagenes">
+                    <h6>Subir nuevas imágenes</h6>
+                    <div class="mb-2">
+                        <label class="form-label">Imagen 1: Comprobante de pago</label>
+                        <input type="file" class="form-control" id="img1" accept="image/*" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Imagen 2: Pedido</label>
+                        <input type="file" class="form-control" id="img2" accept="image/*" />
+                    </div>
                 </div>
-                <div class="mb-2">
-                    <label class="form-label">Imagen 2: Pedido</label>
-                    <input type="file" class="form-control" id="img2" accept="image/*" />
-                </div>
-
 
                 <div class="card mb-3 d-none" id="divPago">
                     <div class="card-header fw-bold">Pago</div>
@@ -235,6 +236,10 @@
             </div>
 
             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnCerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-info" id="btnDescargarImagenes">
+                    <i class="bi bi-download"></i> Descargar imágenes
+                </button>
                 <button type="button" class="btn btn-primary" id="btnRegistrarImagen">Registrar</button>
                 <button type="button" class="btn btn-success d-none" id="btnActualizar">Actualizar</button>
             </div>
@@ -390,23 +395,23 @@
 
             idRolSeleccionado  = $(this).data("idrol");
 
-             //if (estado === "ENTREGADO" && idRolSeleccionado == 73 ) { //73 operario lidermax
-                 $("#btnActualizar").removeClass("d-none");
-                 $("#btnRegistrarImagen").addClass("d-none");
-                 $("#divPago").removeClass("d-none");
-
-                 //reset
-                 $("#estadoPago").val(estadoPago);
-                 actualizarEstadoPago(estadoPago);
-                 $("#MontoFlete").val(montoFlete);             
-                 $("#NumFactura").val(factura);
-
-             // } else {
-             //     $("#btnActualizar").addClass("d-none");
-             //     $("#btnRegistrarImagen").removeClass("d-none");
-             //     $("#divPago").addClass("d-none");
-             //     $("#contenedorImagen").addClass("d-none");
-             // }
+             if (estado === "ENTREGADO" && idRolSeleccionado != 73 ) { //73 operario lidermax
+                     $("#btnActualizar").addClass("d-none");
+                     $("#btnRegistrarImagen").addClass("d-none");
+                     $("#divPago").addClass("d-none");
+                     $("#divSubirImagenes").addClass("d-none");
+             }
+             else{
+                        $("#btnActualizar").removeClass("d-none");
+                        $("#btnRegistrarImagen").addClass("d-none");
+                        $("#divPago").removeClass("d-none");
+                        $("#divSubirImagenes").removeClass("d-none"); // 
+                        $("#estadoPago").val(estadoPago);
+                        actualizarEstadoPago(estadoPago);
+                        $("#MontoFlete").val(montoFlete);
+                        $("#NumFactura").val(factura);
+             }           
+                    
         });
 
         $(document).on("click", ".btn-entregar", function () {
@@ -581,9 +586,15 @@
             });
         });
 
+        // Variable para almacenar las imágenes cargadas
+        let imagenesActuales = [];
+
         //CARGAR IMAGENES
        function cargarImagenesModal(docNum) {
             const contenedor = document.getElementById("contenedorImagenesModal");
+
+            imagenesActuales = []; // limpiar antes de cargar
+
             contenedor.innerHTML = `
                 <div class="text-center w-100">
                     <div class="spinner-border text-primary"></div>
@@ -602,15 +613,9 @@
                         `;
                         return;
                     }
-
+                    imagenesActuales = data.images; // guardar para descarga
                     contenedor.innerHTML = "";
-                    data.images.forEach(img => {
-                        // contenedor.innerHTML += `
-                        //     <div class="col-md-6 text-center mb-3">
-                        //         <div class="fw-semibold mb-2">${img.tipo}</div>
-                        //           <img src="${img.imagen}" class="img-fluid border rounded shadow-sm w-100" style="max-height:500px;">
-                        //     </div>
-                        // `;
+                    data.images.forEach(img => {                 
                           contenedor.innerHTML += `
                                      <div class="col-md-6 mb-4">
                                          <div class="card shadow-sm border-0 h-100">
@@ -1037,6 +1042,31 @@
                    }
                });
            });
+
+
+        // Descargar imágenes
+        document.getElementById("btnDescargarImagenes").addEventListener("click", async function () {
+            if (imagenesActuales.length === 0) {
+                Swal.fire({ icon: "warning", title: "Sin imágenes", text: "No hay imágenes disponibles para descargar" });
+                return;
+            }
+
+            const zip = new JSZip();
+
+            imagenesActuales.forEach(img => {
+                const match = img.imagen.match(/data:image\/(\w+);base64,(.+)/);
+                if (!match) return;
+                const ext = match[1];
+                const base64Data = match[2];
+                zip.file(`${docNumTicketSeleccionado}_${img.tipo}.${ext}`, base64Data, { base64: true });
+            });
+
+            const blob = await zip.generateAsync({ type: "blob" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Ticket_${docNumTicketSeleccionado}_imagenes.zip`;
+            link.click();
+        });
 
     </script>
 }

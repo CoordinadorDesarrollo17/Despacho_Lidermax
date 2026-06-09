@@ -86,7 +86,7 @@
                                     data-bs-toggle="modal" 
                                     data-bs-target="#modalImagen"
                                     title="Registrar imagenes"
-                                    @(u?.Estado == "DEVOLUCION" || (u?.Estado == "ENTREGADO" && u?.IdRol != 73) ? "disabled" : "")>
+                                    @(u?.Estado == "DEVOLUCION"  ? "disabled" : "")>
                                 <i class="bi bi-image"></i>
                             </button>
                             <button type="button"
