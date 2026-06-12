@@ -1,10 +1,11 @@
 ﻿using Dapper;
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.Data.SqlClient;
+using Sap.Data.Hana;
 using Sln_Lidermax.Interfaces;
 using Sln_Lidermax.Models;
 using X.PagedList;
 using X.PagedList.Extensions;
-using DocumentFormat.OpenXml.EMMA;
 
 namespace Sln_Lidermax.Repositories
 {
@@ -324,6 +325,83 @@ namespace Sln_Lidermax.Repositories
             );
         }
 
+
+        public async Task<List<DetalleTicketModel>> obtenerDet2Ticket(int DocEntry)
+        {
+            using var xCon = new SqlConnection(dapperContext.connectionString);
+            string query = "SELECT DocEntry, Linea, NroSap FROM vt.RTV2 WHERE DocEntry = @DocEntry ORDER BY Linea";
+            try
+            {
+                return (await xCon.QueryAsync<DetalleTicketModel>(query, new { DocEntry })).ToList();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<List<string>> ObtenerFacturasxDocEntry(int NroSap)
+        {
+            using var xCon = new HanaConnection(dapperContext.hanaConnectionString);
+            try
+            {
+                // 1. Obtener DocEntry de la orden
+                string queryOrden = "SELECT \"DocEntry\" FROM \"ORDR\" WHERE \"DocNum\" = :NroSap";
+                var docEntryOrden = await xCon.QueryFirstOrDefaultAsync<int?>(queryOrden, new { NroSap });
+
+                if (docEntryOrden == null)
+                    return new List<string>();
+
+                int DocEntryOrden = docEntryOrden.Value;
+
+                // 2. Query 1
+                string query1 = $@"
+        SELECT T4.""NumAtCard""
+        FROM ODLN T0
+        INNER JOIN DLN1 T1 ON T1.""DocEntry"" = T0.""DocEntry""
+        INNER JOIN RDR1 T2 ON T2.""DocEntry"" = T1.""BaseEntry"" 
+            AND T2.""ObjType"" = T1.""BaseType""
+            AND T2.""LineNum"" = T1.""BaseLine"" 
+            AND T2.""DocEntry"" = {DocEntryOrden}
+        INNER JOIN INV1 T3 ON T3.""BaseEntry"" = T1.""DocEntry"" 
+            AND T3.""BaseType"" = T1.""ObjType""
+            AND T3.""BaseLine"" = T1.""LineNum""
+        INNER JOIN OINV T4 ON T4.""DocEntry"" = T3.""DocEntry"" 
+            AND T4.""CANCELED"" = 'N' 
+        WHERE T0.""CANCELED"" = 'N'
+            AND T4.""DocEntry"" NOT IN (
+                SELECT DISTINCT R1.""BaseEntry""
+                FROM RIN1 R1
+                INNER JOIN ORIN R0 ON R0.""DocEntry"" = R1.""DocEntry""
+                WHERE R0.""CANCELED"" = 'N'
+                    AND R1.""BaseType"" = '13'
+            )
+        GROUP BY T4.""NumAtCard""";
+
+                var resultado = (await xCon.QueryAsync<string>(query1)).ToList();
+
+                if (resultado.Count > 0)
+                    return resultado;
+
+                // 3. Query 2: 
+                string query2 = $@"
+        SELECT T0.""NumAtCard""
+        FROM OINV T0
+        INNER JOIN INV1 T1 ON T1.""DocEntry"" = T0.""DocEntry""
+        INNER JOIN RDR1 T2 ON T2.""DocEntry"" = T1.""BaseEntry"" 
+            AND T2.""ObjType"" = T1.""BaseType""
+            AND T2.""LineNum"" = T1.""BaseLine"" 
+            AND T2.""DocEntry"" = {DocEntryOrden}
+        WHERE T0.""CANCELED"" = 'N' 
+        GROUP BY T0.""NumAtCard""";
+
+                return (await xCon.QueryAsync<string>(query2)).ToList();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
 
     }
 }

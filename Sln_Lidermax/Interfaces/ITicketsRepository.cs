@@ -20,7 +20,9 @@ namespace Sln_Lidermax.Interfaces
         Task<IPagedList<TicketsModel>> ListadoTicketsRecogidos(FiltrosTicketsModel model);
         Task<List<TicketsModel>> ListadoTicketsRecogidosExcel(FiltrosTicketsModel model);
         Task<(int TotalTickets, int TicketsObtenidos)> ObtenerConteoTickets(int docEntryHojaRuta, string[] estado, SqlConnection con, SqlTransaction tx);
+        Task<List<DetalleTicketModel>> obtenerDet2Ticket(int DocEntry);
         Task<string> ObtenerEstadoTicket(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con, SqlTransaction tx);
+        Task<List<string>> ObtenerFacturasxDocEntry(int NroSap);
         Task<TicketsModel> ObtenerTicket(int docEntryHojaRuta, int linea, int docEntryTicket, SqlConnection con, SqlTransaction tx);
     }
 }
