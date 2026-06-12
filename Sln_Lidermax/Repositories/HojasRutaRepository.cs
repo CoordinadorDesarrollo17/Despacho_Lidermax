@@ -63,14 +63,16 @@ namespace Sln_Lidermax.Repositories
                         T0.Cajas,
                         T1.NombrePer,
                         T1.DocPer,
-                        T1.TelfPer,t5.agencia AS Transportista,t5.EnvioAgencia AS ModoEnvio
+                        T1.TelfPer,t5.agencia AS Transportista,t5.EnvioAgencia AS ModoEnvio,
+                        rfd.Factura AS Factura
                     FROM al.RRU0 T0
-                    LEFT OUTER JOIN al.ORRU r ON r.DocEntry = T0.DocEntry
-                    LEFT OUTER JOIN vt.RTV6 T3 ON T3.DocEntry = T0.DocEntryTicket
-                    LEFT OUTER JOIN vt.RTV3 T4_1 ON T4_1.DocEntry = T0.DocEntryTicket AND T4_1.IdDireccion =1
-                    LEFT OUTER JOIN vt.RTV3 T4_2 ON T4_2.DocEntry = T0.DocEntryTicket AND T4_2.IdDireccion =2
-                    LEFT OUTER JOIN vt.ORTV T5 ON T5.DocEntry = T0.DocEntryTicket
-                    LEFT OUTER JOIN vt.RTV1 T1 ON T1.DocEntry = T0.DocEntryTicket
+                    LEFT JOIN al.ORRU r ON r.DocEntry = T0.DocEntry
+                    LEFT JOIN vt.RTV6 T3 ON T3.DocEntry = T0.DocEntryTicket
+                    LEFT JOIN vt.RTV3 T4_1 ON T4_1.DocEntry = T0.DocEntryTicket AND T4_1.IdDireccion =1
+                    LEFT JOIN vt.RTV3 T4_2 ON T4_2.DocEntry = T0.DocEntryTicket AND T4_2.IdDireccion =2
+                    LEFT JOIN vt.ORTV T5 ON T5.DocEntry = T0.DocEntryTicket
+                    LEFT JOIN vt.RTV1 T1 ON T1.DocEntry = T0.DocEntryTicket
+                    LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryHojaRuta=T0.DocEntry AND rfd.Linea= T0.Linea AND rfd.DocEntryTicket = T0.DocEntryTicket
                     WHERE T0.DocEntry = @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND T5.LugarDestino = 'DOMICILIO' AND T5.EntregaPedido = 'PROVINCIA') )
                     AND T0.Estado <> 'LIBERADO'
                     GROUP BY 
@@ -91,7 +93,7 @@ namespace Sln_Lidermax.Repositories
                         T0.Cajas,
                         T1.NombrePer,
                         T1.DocPer,
-                        T1.TelfPer,t5.agencia,t5.EnvioAgencia, r.TiempoPac
+                        T1.TelfPer,t5.agencia,t5.EnvioAgencia, r.TiempoPac , rfd.Factura
                     ORDER BY T5.Agencia ";  
 
             var result = await xCon.QueryAsync<ReporteHojaRutaModel>(sql, new { DocEntry = docEntryHojaRuta });

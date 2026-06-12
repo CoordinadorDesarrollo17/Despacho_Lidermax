@@ -126,11 +126,12 @@ namespace Sln_Lidermax.Controllers
             ws.Cell(1, 15).Value = "Peso";
             ws.Cell(1, 16).Value = "Transportista";
             ws.Cell(1, 17).Value = "ModoEnvio";
-            ws.Cell(1, 18).Value = "Corte";
-            ws.Cell(1, 19).Value = "Ruta1";
-            ws.Cell(1, 20).Value = "Ruta2";
+            ws.Cell(1, 18).Value = "Factura";
+            ws.Cell(1, 19).Value = "Corte";
+            ws.Cell(1, 20).Value = "Ruta1";
+            ws.Cell(1, 21).Value = "Ruta2";
 
-            ws.Range("A1:T1").Style.Font.Bold = true;
+            ws.Range("A1:U1").Style.Font.Bold = true;
 
             int row = 2;
 
@@ -153,7 +154,7 @@ namespace Sln_Lidermax.Controllers
                 ws.Cell(row, 15).Value = x.Peso;
                 ws.Cell(row, 16).Value = x.Transportista;
                 ws.Cell(row, 17).Value = x.ModoEnvio;
-
+                ws.Cell(row, 18).Value = x.Factura;
                 row++;
             }
 
