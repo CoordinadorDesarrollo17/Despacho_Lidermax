@@ -87,7 +87,7 @@
 </style>
 <table>
     <thead>
-        <tr style="font-size: 16px;">
+        <tr style="font-size: 15px;">
             <th style="vertical-align: middle;" colspan="2">
                 <img src="~/img/logoLidermax2.jpeg" style="width:170px;height:60px;" />
             </th>
@@ -100,6 +100,12 @@
                 @if (!string.IsNullOrWhiteSpace(ViewBag.Placa?.ToString()))
                 {
                     <text>Placa: @ViewBag.Placa</text>
+                    <br />
+                }
+                
+                @if (!string.IsNullOrWhiteSpace(ViewBag.Conductor?.ToString()))
+                {
+                    <text>Conductor: @ViewBag.Conductor</text>
                 }
             </th>
             <th style="vertical-align: middle;" colspan="3">

@@ -90,6 +90,7 @@ namespace Sln_Lidermax.Controllers
             ViewBag.TiempoPac = tiempoPac;
             ViewBag.HoraPac = horaPac;
             ViewBag.Placa = data.FirstOrDefault()?.Placa;
+            ViewBag.Conductor = data.FirstOrDefault()?.Conductor;
 
             return View("PdfHojaRuta", data);
         }

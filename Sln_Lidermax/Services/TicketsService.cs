@@ -195,7 +195,12 @@ namespace Sln_Lidermax.Services
 
                 if (request.Img1 != null && request.Img1.Length > 0)
                 {
-                    string path1 = Path.Combine(rutaBase,$"{request.DocNumTicket}_Comprobante{Path.GetExtension(request.Img1.FileName)}");
+
+                    string nombreBase = $"{request.DocNumTicket}_Comprobante";
+
+                    EliminarArchivosExistentes(rutaBase, nombreBase);
+
+                    string path1 = Path.Combine(rutaBase,$"{nombreBase}{Path.GetExtension(request.Img1.FileName)}");
 
                     await GuardarArchivo(request.Img1, path1);
 
@@ -208,7 +213,12 @@ namespace Sln_Lidermax.Services
 
                 if (request.Img2 != null && request.Img2.Length > 0)
                 {
-                    string path2 = Path.Combine(rutaBase,$"{request.DocNumTicket}_Pedido{Path.GetExtension(request.Img2.FileName)}");
+
+                    string nombreBase = $"{request.DocNumTicket}_Pedido";
+
+                    EliminarArchivosExistentes(rutaBase, nombreBase);
+
+                    string path2 = Path.Combine(rutaBase,$"{nombreBase}{Path.GetExtension(request.Img2.FileName)}");
 
                     await GuardarArchivo(request.Img2, path2);
 
@@ -362,6 +372,19 @@ namespace Sln_Lidermax.Services
 
             if (!File.Exists(path))
                 throw new Exception($"Error guardando archivo: {path}");
+        }
+
+        private void EliminarArchivosExistentes(string rutaBase, string nombreBase)
+        {
+            var archivosExistentes = Directory.GetFiles(rutaBase, $"{nombreBase}.*");
+
+            foreach (var archivo in archivosExistentes)
+            {
+                if (File.Exists(archivo))
+                {
+                    File.Delete(archivo);
+                }
+            }
         }
 
         public async Task<bool> SubirImagenes(SubirImagenesModel request)
