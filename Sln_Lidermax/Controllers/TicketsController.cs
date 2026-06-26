@@ -209,31 +209,32 @@ namespace Sln_Lidermax.Controllers
             // CABECERAS
             ws.Cell(1, 1).Value = "Nro ticket";
             ws.Cell(1, 2).Value = "Guia Remisión";
-            ws.Cell(1, 3).Value = "Cod. Cliente";
-            ws.Cell(1, 4).Value = "Razón Social";
-            ws.Cell(1, 5).Value = "Dirección Envio";
-            ws.Cell(1, 6).Value = "Destino";
-            ws.Cell(1, 7).Value = "Empresa Transporte";
-            ws.Cell(1, 8).Value = "Distrito Transporte";
-            ws.Cell(1, 9).Value = "Modo Envio";
-            ws.Cell(1, 10).Value = "Cajas";
-            ws.Cell(1, 11).Value = "Peso";
-            ws.Cell(1, 12).Value = "Monto Flete";
-            ws.Cell(1, 13).Value = "Contacto";
-            ws.Cell(1, 14).Value = "Telefono";
-            ws.Cell(1, 15).Value = "Estado";
-            ws.Cell(1, 16).Value = "Observacion";
+            ws.Cell(1, 3).Value = "Guia Transportista";
+            ws.Cell(1, 4).Value = "Cod. Cliente";
+            ws.Cell(1, 5).Value = "Razón Social";
+            ws.Cell(1, 6).Value = "Dirección Envio";
+            ws.Cell(1, 7).Value = "Destino";
+            ws.Cell(1, 8).Value = "Empresa Transporte";
+            ws.Cell(1, 9).Value = "Distrito Transporte";
+            ws.Cell(1, 10).Value = "Modo Envio";
+            ws.Cell(1, 11).Value = "Cajas";
+            ws.Cell(1, 12).Value = "Peso";
+            ws.Cell(1, 13).Value = "Monto Flete";
+            ws.Cell(1, 14).Value = "Contacto";
+            ws.Cell(1, 15).Value = "Telefono";
+            ws.Cell(1, 16).Value = "Estado";
+            ws.Cell(1, 17).Value = "Observacion";
        
-            int colCount = 16;
+            int colCount = 17;
 
             // Si no es hoja de ruta, agregamos dos columnas extra
             if (model.esHojaRuta == false)
             {
-                ws.Cell(1, 17).Value = "Placa";
-                ws.Cell(1, 18).Value = "Factura";
-                ws.Cell(1, 19).Value = "Fecha Recojo";
-                ws.Cell(1, 20).Value = "Fecha Entrega";
-                colCount = 20;
+                ws.Cell(1, 18).Value = "Placa";
+                ws.Cell(1, 19).Value = "Factura";
+                ws.Cell(1, 20).Value = "Fecha Recojo";
+                ws.Cell(1, 21).Value = "Fecha Entrega";
+                colCount = 21;
             }
 
             ws.Range(1, 1, 1, colCount).Style.Font.Bold = true;
@@ -244,27 +245,28 @@ namespace Sln_Lidermax.Controllers
             {
                 ws.Cell(row, 1).Value = x.DocNumTicket;
                 ws.Cell(row, 2).Value = x.GuiaRemision?.Replace(Environment.NewLine, " , ").Trim();
-                ws.Cell(row, 3).Value = x.CardCode;
-                ws.Cell(row, 4).Value = x.CardName;
-                ws.Cell(row, 5).Value = x.Direccion1;
-                ws.Cell(row, 6).Value = x.Direccion2;
-                ws.Cell(row, 7).Value = x.Agencia;
-                ws.Cell(row, 8).Value = x.DistritoTransporte;
-                ws.Cell(row, 9).Value = x.ModoEnvio;
-                ws.Cell(row, 10).Value = x.Cajas;
-                ws.Cell(row, 11).Value = x.Peso;
-                ws.Cell(row, 12).Value = x.MontoFlete;
-                ws.Cell(row, 13).Value = x.Contacto;
-                ws.Cell(row, 14).Value = x.Telefono;
-                ws.Cell(row, 15).Value = x.Estado;
-                ws.Cell(row, 16).Value = x.Observacion;
+                ws.Cell(row, 3).Value = x.GuiaTransportista;
+                ws.Cell(row, 4).Value = x.CardCode;
+                ws.Cell(row, 5).Value = x.CardName;
+                ws.Cell(row, 6).Value = x.Direccion1;
+                ws.Cell(row, 7).Value = x.Direccion2;
+                ws.Cell(row, 8).Value = x.Agencia;
+                ws.Cell(row, 9).Value = x.DistritoTransporte;
+                ws.Cell(row, 10).Value = x.ModoEnvio;
+                ws.Cell(row, 11).Value = x.Cajas;
+                ws.Cell(row, 12).Value = x.Peso;
+                ws.Cell(row, 13).Value = x.MontoFlete;
+                ws.Cell(row, 14).Value = x.Contacto;
+                ws.Cell(row, 15).Value = x.Telefono;
+                ws.Cell(row, 16).Value = x.Estado;
+                ws.Cell(row, 17).Value = x.Observacion;
             
                 if (model.esHojaRuta == false)
                 {
-                    ws.Cell(row, 17).Value = x.Placa;
-                    ws.Cell(row, 18).Value = x.Factura;
-                    ws.Cell(row, 19).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 20).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 18).Value = x.Placa;
+                    ws.Cell(row, 19).Value = x.Factura;
+                    ws.Cell(row, 20).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 21).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
                 }
 
                 row++;
