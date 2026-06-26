@@ -11,6 +11,7 @@
                 <th>Nro Ticket</th>
                 <th>Placa</th>
                 <th>Fecha Recojo</th>
+                <th>Hora Pactada</th>
                 <th>Razón Social</th> 
                 <th>Dirección Envío</th>
                 <th>Destino</th>
@@ -32,6 +33,7 @@
                     <td data-label="NroTicket">@u?.DocNumTicket</td>
                     <td data-label="Placa">@u?.Placa</td>
                     <td data-label="FechaRecojo" class="text-end">@u?.FechaRecojo?.ToString("dd/MM/yyyy")</td>
+                    <td data-label="HoraPact.">@u?.HoraPac</td>
                     <td data-label="RazonSocial">@u?.CardName</td>
                     <td data-label="DireccionEnvio">@u?.Direccion1</td>
                     <td data-label="Destino">@u?.Direccion2</td>
