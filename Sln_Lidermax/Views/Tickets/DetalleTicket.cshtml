@@ -121,6 +121,12 @@
                     <input type="text" class="form-control fw-bold" value="@Model.Estado" readonly />
                 </div>
 
+                <!-- Excluido -->
+                <div class="col-md-4">
+                    <label class="form-label">Excluido</label>
+                    <input type="text" class="form-control" value="@(Model.Excluido ? "SI" : "NO")" readonly />
+                </div>
+
                 <div class="col-md-12">
                     <label class="form-label">Observacion</label>
                     <textarea class="form-control"
