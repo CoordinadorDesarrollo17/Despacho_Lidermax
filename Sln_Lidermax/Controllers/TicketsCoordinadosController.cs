@@ -66,10 +66,9 @@ namespace Sln_Lidermax.Controllers
             if (docNum.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
                 return BadRequest();
 
-            //string ruta = Path.Combine(@"\\192.168.1.40", "TicketsEditarPDF");
-            string ruta = Path.Combine("\\\\192.168.1.40\\", "TicketsEditarPDF").Replace("\\", "/");
+            string ruta = Path.Combine("\\\\192.168.1.40\\", "TicketsEditarPDF");
             string fileName = $"{docNum}.pdf";
-            string fullPath = Path.Combine(ruta, fileName);
+            string fullPath = Path.Combine(ruta, fileName).Replace("\\", "/");
 
             bool exists = System.IO.File.Exists(fullPath);
 
