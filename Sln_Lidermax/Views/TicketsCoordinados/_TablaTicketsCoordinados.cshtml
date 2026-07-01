@@ -32,7 +32,10 @@
                         <div class="actions">
                             <button type="button"
                                     class="btn btn-sm btn-info btn-detalle"
-                                    data-detalle="@(u.DetallePedido ?? "")"
+                                    data-docnum="@(u.DocNumTicket)"
+                                    data-detallepedido="@(u.DetallePedido ?? "")"
+                                    data-entregapedido="@(u.EntregaPedido ?? "")"
+                                    data-rangohorario="@(u.RangoHorario ?? "")"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalDetalle">
                                 <i class="bi bi-chat-left-text"></i>

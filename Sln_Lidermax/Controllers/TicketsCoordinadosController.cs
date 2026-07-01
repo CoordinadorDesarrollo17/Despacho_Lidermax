@@ -55,5 +55,36 @@ namespace Sln_Lidermax.Controllers
             }
                
         }
+
+        [HttpGet]
+        public IActionResult DescargarArchivo(string docNum)
+        {
+            if (string.IsNullOrWhiteSpace(docNum))
+                return BadRequest();
+
+            // Evitar caracteres inválidos en el nombre de archivo
+            if (docNum.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                return BadRequest();
+
+            //string ruta = Path.Combine(@"\\192.168.1.40", "TicketsEditarPDF");
+            string ruta = Path.Combine("\\\\192.168.1.40\\", "TicketsEditarPDF").Replace("\\", "/");
+            string fileName = $"{docNum}.pdf";
+            string fullPath = Path.Combine(ruta, fileName);
+
+            bool exists = System.IO.File.Exists(fullPath);
+
+            // Si la petición es AJAX (verificación), devolvemos JSON con existencia
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { exists });
+            }
+
+            // Si no es AJAX, intentamos servir el archivo (navegación/direct download)
+            if (!exists)
+                return NotFound();
+
+            var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return File(stream, "application/pdf", fileName);
+        }
     }
 }

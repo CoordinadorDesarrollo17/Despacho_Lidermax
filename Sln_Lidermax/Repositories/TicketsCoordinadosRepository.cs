@@ -28,7 +28,9 @@ namespace Sln_Lidermax.Repositories
                             tk.CardName AS Socio,
                             rfd.Placa AS Placa,
                             rfd.Conductor AS Conductor,
+                            tk.EntregaPedido AS EntregaPedido,
                             tk.DetallePedido AS DetallePedido,
+                            tk.RangoHorario AS RangoHorario,
                             rfd.DocEntryHojaRuta AS DocEntryHojaRuta,
                             rfd.Linea AS Linea,
                             rfd.DocEntryTicket AS DocEntryTicket,
@@ -37,7 +39,7 @@ namespace Sln_Lidermax.Repositories
                         INNER JOIN al.RRU0 AS tr ON r.DocEntry = tr.DocEntry AND tr.Estado <> 'LIBERADO'
                         LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket 
                         LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryHojaRuta=tr.DocEntry AND rfd.Linea= tr.Linea AND rfd.DocEntryTicket = tr.DocEntryTicket
-                        WHERE (r.TipoRuta = 'VD'  AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA')
+                        WHERE (r.TipoRuta = 'VD'  AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido IN ('PROVINCIA','RECOJO'))
                              AND (rfd.Estado IS NOT NULL AND rfd.Estado <> '' )
                          AND CONCAT(r.DocNum,tk.DocNum,tk.CardName,rfd.Placa,rfd.Conductor) LIKE @Buscar
                         ORDER BY r.DocEntry DESC ";

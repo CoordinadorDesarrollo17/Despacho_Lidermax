@@ -11,7 +11,9 @@
         public string? Socio { get; set; }   
         public string? Placa { get; set; }
         public string? Conductor { get; set; }
+        public string? EntregaPedido { get; set; }  
         public string? DetallePedido { get; set; }
+        public string? RangoHorario { get; set; }
         public string? Estado { get; set; }
     }
 }

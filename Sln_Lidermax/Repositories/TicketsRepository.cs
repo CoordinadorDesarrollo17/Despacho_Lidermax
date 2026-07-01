@@ -97,7 +97,7 @@ namespace Sln_Lidermax.Repositories
                         LEFT JOIN vt.RTV3 AS v3_2 ON v3_2.DocEntry = tk.DocEntry AND v3_2.IdDireccion = 2
                         LEFT JOIN vt.RTV6 AS v6 ON v6.DocEntry = tk.DocEntry 
                         LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryHojaRuta=tr.DocEntry AND rfd.Linea= tr.Linea AND rfd.DocEntryTicket = tr.DocEntryTicket
-                        WHERE tr.DocEntry = @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA') )
+                        WHERE tr.DocEntry = @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido IN ('PROVINCIA','RECOJO') ) )
                           AND tr.Estado <> 'LIBERADO' 
                           AND CONCAT(RIGHT(tr.Guias,13),tk.DistritoEnvio,v1.TelfPer,tk.DocNum,tk.CardCode,tk.CardName,v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,v3_1.Calle,v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tk.Agencia,tk.EnvioAgencia,rfd.Estado,v1.NombrePer) LIKE @Buscar
                         GROUP BY tr.DocEntry,tk.DocEntry,tk.DocNum,tk.CardCode,tk.CardName,

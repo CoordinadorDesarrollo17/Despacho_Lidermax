@@ -62,10 +62,20 @@
             </div>
             <div class="modal-body">
                 <textarea class="form-control"
-                          id="detalle"
-                          rows="4"
+                          id="DetallePedido"
+                          rows="5"
                           maxlength="500"
                           autocomplete="off" readonly></textarea>
+
+                <textarea class="form-control"
+                          id="RangoHorario"
+                          rows="3"
+                          maxlength="100"
+                          autocomplete="off" readonly></textarea>
+            </div>
+            <div class="modal-footer">
+                <a id="btnDescargar" class="btn btn-primary d-none" target="_blank" rel="noopener noreferrer">Descargar archivo</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -279,10 +289,69 @@
             });
         });
 
-                $(document).on("click", ".btn-detalle", function () {
-            let detalle = $(this).data("detalle");
-            $("#detalle").val(detalle);
+       $(document).on("click", ".btn-detalle", function () {
+            let detallePedido = $(this).data("detallepedido") ?? "";
+            let rangoHorario = $(this).data("rangohorario") ?? "";
+            let entregaPedido = ($(this).data("entregapedido") || "").toString().trim().toUpperCase();
+            let docNum = $(this).data("docnum") ;
+
+            // Rellenar valores
+             $("#DetallePedido").val(detallePedido);
+        $("#RangoHorario").val(rangoHorario);
+
+            // Ocultar ambos por defecto
+        $("#DetallePedido, #RangoHorario").addClass("d-none");
+        $("#btnDescargar").addClass("d-none").removeAttr("data-docnum");
+     
+        if (entregaPedido === "PROVINCIA") {
+            $("#DetallePedido").removeClass("d-none");
+            $("#RangoHorario").val("");
+            $("#modalDetalle .modal-title").text("Detalle Pedido");
+        } else if (entregaPedido === "RECOJO") {
+            $("#RangoHorario").removeClass("d-none");
+            $("#DetallePedido").val("");
+            $("#modalDetalle .modal-title").text("Rango de horario");
+
+            if (docNum) {
+                $("#btnDescargar").attr("data-docnum", docNum).removeClass("d-none");
+            }
+        } 
+
         });
 
+        $(document).on("click", "#btnDescargar", function (e) {
+            e.preventDefault();
+            let docNum = $(this).attr("data-docnum") || "";
+            if (!docNum) return;
+
+            const url = '@Url.Action("DescargarArchivo", "TicketsCoordinados")';
+
+            $.ajax({
+                url: url,
+                method: "GET",
+                data: { docNum: docNum },
+                headers: { "X-Requested-With": "XMLHttpRequest" }, 
+                success: function (res) {
+                    if (res && res.exists) {
+                        window.location = `${url}?docNum=${encodeURIComponent(docNum)}`;
+                    } else {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Archivo no encontrado",
+                            text: "No existe un archivo PDF para este documento.",
+                            confirmButtonColor: "#0d6efd"
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Error al verificar/descargar el archivo en el servidor.",
+                        confirmButtonColor: "#0d6efd"
+                    });
+                }
+            });
+        });
     </script>
 }

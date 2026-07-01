@@ -32,7 +32,7 @@ namespace Sln_Lidermax.Repositories
                         FROM al.ORRU AS r
                         INNER JOIN al.RRU0 AS tr ON r.DocEntry = tr.DocEntry AND tr.Estado <> 'LIBERADO'
                         LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket 
-                        WHERE ( (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA') )
+                        WHERE ( (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido IN ('PROVINCIA','RECOJO') ) )
                         AND CONCAT(r.DocNum,r.TipoRuta,CONVERT(VARCHAR(10), r.TiempoPac, 103),r.Estado) LIKE @Buscar
                         GROUP BY r.DocEntry,r.DocNum, r.TipoRuta, r.TiempoPac ,  r.Estado   ,r.Placa
                         ORDER BY r.Estado ASC,r.TiempoPac DESC
@@ -71,7 +71,7 @@ namespace Sln_Lidermax.Repositories
                     LEFT JOIN vt.RTV3 T4_2 ON T4_2.DocEntry = T0.DocEntryTicket AND T4_2.IdDireccion =2
                     LEFT JOIN vt.ORTV T5 ON T5.DocEntry = T0.DocEntryTicket
                     LEFT JOIN vt.RTV1 T1 ON T1.DocEntry = T0.DocEntryTicket     
-                    WHERE T0.DocEntry = @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND T5.LugarDestino = 'DOMICILIO' AND T5.EntregaPedido = 'PROVINCIA') )
+                    WHERE T0.DocEntry = @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND T5.LugarDestino = 'DOMICILIO' AND T5.EntregaPedido IN ('PROVINCIA','RECOJO') ) )
                     AND T0.Estado <> 'LIBERADO'
                     GROUP BY 
                         T0.Socio,
@@ -133,7 +133,7 @@ namespace Sln_Lidermax.Repositories
                             LEFT JOIN vt.RTV3 AS v3_1 ON v3_1.DocEntry = tk.DocEntry AND v3_1.IdDireccion =1
                             LEFT JOIN vt.RTV3 AS v3_2 ON v3_2.DocEntry = tk.DocEntry AND v3_2.IdDireccion =2
                             LEFT JOIN vt.RTV6 AS v6 ON v6.DocEntry = tk.DocEntry 
-                            WHERE tr.DocEntry =  @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA') )
+                            WHERE tr.DocEntry =  @DocEntry AND (  (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido IN ('PROVINCIA','RECOJO') ) )
                             AND tr.Estado <> 'LIBERADO'
                             GROUP BY
                             tr.DocNumTicket,tk.CardName,

@@ -28,7 +28,7 @@ namespace Sln_Lidermax.Repositories
                             LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                             LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
                             LEFT JOIN tmp.registro_fecha_despacho AS rfd ON rfd.DocEntryHojaRuta=tr.DocEntry AND rfd.Linea= tr.Linea AND rfd.DocEntryTicket = tr.DocEntryTicket
-                            WHERE ( (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido = 'PROVINCIA') )                  
+                            WHERE ( (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido IN ('PROVINCIA','RECOJO') ) )                  
                               AND (rfd.Estado IS NOT NULL AND rfd.Estado <> '' )
                               AND tr.Estado <> 'LIBERADO' 
                               AND rfd.Excluido = 0
