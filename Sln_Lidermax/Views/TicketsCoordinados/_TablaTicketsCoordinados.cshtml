@@ -50,7 +50,7 @@
                                     data-docentryticket="@u.DocEntryTicket"   
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalPlacaYConductor"
-                                    @(u?.Estado == "ENTREGADO" || u?.Estado == "DEVOLUCION" ? "disabled" : "") >
+                                    @(u?.Estado == "ENTREGADO" || u?.Estado == "DEVOLUCION" || u?.EntregaPedido == "RECOJO" ? "disabled" : "")>
                                 <i class="bi bi-pencil"></i>
                             </button>
 
