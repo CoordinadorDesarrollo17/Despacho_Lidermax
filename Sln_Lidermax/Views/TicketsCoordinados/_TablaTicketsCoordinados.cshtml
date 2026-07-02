@@ -30,6 +30,20 @@
                    
                     <td data-label="Acciones" class="text-center sticky-actions-td">
                         <div class="actions">
+
+                            @if (u.EntregaPedido == "RECOJO")
+                            {
+                                <button type="button"
+                                        class="btn btn-sm btn-dark btn-entregar"
+                                        data-docentryticket="@u.DocEntryTicket"
+                                        data-docnumticket="@u.DocNumTicket"
+                                        data-docentryhojaruta="@u.DocEntryHojaRuta"
+                                        data-linea="@u.Linea"
+                                        @(u?.Estado == "ENTREGADO" || u?.Estado == "DEVOLUCION" ? "disabled" : "")>
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            }
+                          
                             <button type="button"
                                     class="btn btn-sm btn-info btn-detalle"
                                     data-docnum="@(u.DocNumTicket)"

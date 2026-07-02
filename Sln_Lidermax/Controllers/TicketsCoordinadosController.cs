@@ -8,10 +8,12 @@ namespace Sln_Lidermax.Controllers
     public class TicketsCoordinadosController : Controller
     {
         private readonly ITicketsCoordinadosService ticketsCoordinadosService;
+        private readonly ITicketsService ticketsService;
 
-        public TicketsCoordinadosController(ITicketsCoordinadosService ticketsCoordinadosService )
+        public TicketsCoordinadosController(ITicketsCoordinadosService ticketsCoordinadosService, ITicketsService ticketsService)
         {
             this.ticketsCoordinadosService = ticketsCoordinadosService;
+            this.ticketsService = ticketsService;
         }
         public async Task<IActionResult> ListadoTicketsCoordinados(FiltrosTicketsModel model)
         {
@@ -85,5 +87,33 @@ namespace Sln_Lidermax.Controllers
             var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(stream, "application/pdf", fileName);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> EstadoEntregado([FromBody] TicketSeleccionadoDto model)
+        {
+            try
+            {
+                model.Fecha = DateTime.Now;
+
+                var result = await ticketsService.EntregarTicket(model);
+
+                if (!result) return Json(new { success = false, message = "Error actualizando estado a entregado" });
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Ticket actualizado correctamente."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
     }
 }

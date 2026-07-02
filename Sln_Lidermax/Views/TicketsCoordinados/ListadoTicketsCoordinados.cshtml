@@ -121,12 +121,26 @@
         const cboPageSize = document.getElementById("pageSize");
         const tablaTicketsCoordinados = document.getElementById("tablaTicketsCoordinados");
 
+        let filtros = {
+            buscar: "",
+            pageSize: 10,
+            paginaActual: 1
+        };
+
+         function actualizarFiltros() {
+              filtros.buscar = txtBuscar.value;
+              filtros.pageSize = cboPageSize.value;
+         }
+
         function cargarTabla(page = 1) { //numero de pagina por default
 
+            filtros.paginaActual = page;
+            actualizarFiltros();
+
             const params = new URLSearchParams({ //parametros
-                   "Buscar": txtBuscar.value,
-                   "Paginacion.Page": page,
-                   "Paginacion.PageSize": cboPageSize.value
+                   "Buscar": filtros.buscar,
+                   "Paginacion.Page": filtros.paginaActual,
+                   "Paginacion.PageSize":  filtros.pageSize
              });
 
             let url = `@Url.Action("ListadoTicketsCoordinados")?${params.toString()}`; //accion del controlador , pasamos parametros
@@ -353,5 +367,90 @@
                 }
             });
         });
+
+
+     //ENTREGAR
+        $(document).on("click", ".btn-entregar", function () {
+
+            let model = {
+                DocEntryTicket: $(this).data("docentryticket"),
+                DocNumTicket: $(this).data("docnumticket"),
+                DocEntryHojaRuta: $(this).data("docentryhojaruta"),
+                Linea: $(this).data("linea")
+            };
+
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: `Se marcará como entregado el ticket N° ${model.DocNumTicket}`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Sí, entregar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: '/TicketsCoordinados/EstadoEntregado',
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(model),
+
+                        beforeSend: function () {
+                            Swal.fire({
+                                title: "Procesando...",
+                                text: "Actualizando estado del ticket",
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                        },
+
+                        success: function (resp) {
+
+                            if (resp.success) {
+
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Correcto",
+                                    text: resp.message || "Ticket entregado correctamente"
+                                }).then(() => {
+
+                                    cargarTabla(filtros.paginaActual);
+
+                                });
+
+                            } else {
+
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error",
+                                    text: resp.message || "No se pudo entregar el ticket"
+                                });
+
+                            }
+                        },
+
+                        error: function (xhr) {
+
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error del servidor",
+                                text: "Ocurrió un error al procesar la solicitud"
+                            });
+
+                            console.error(xhr);
+                        }
+                    });
+
+                }
+
+            });
+
+        });
+
+       
     </script>
 }
