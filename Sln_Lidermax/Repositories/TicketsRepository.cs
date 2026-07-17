@@ -50,7 +50,7 @@ namespace Sln_Lidermax.Repositories
                         WHERE ( r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%' )
                           AND tr.Estado <> 'LIBERADO' 
                           AND rfd.Estado <> '' --IN ('RECOGIDO','ENVIADO') 
-                          AND CONCAT(CONVERT(VARCHAR(10), rfd.FechaRecojo, 103),CONVERT(VARCHAR(10), rfd.FechaEntrega, 103),rfd.Estado,tk.DistritoEnvio,tr.Guias,v1.TelfPer,v1.NombrePer,tk.DocNum,tk.CardCode,tk.CardName,v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,v3_1.Calle,v3_2.Departamento, v3_2.Provincia,v3_2.Distrito,tk.Agencia,tk.EnvioAgencia,rfd.EstadoPago) LIKE @Buscar
+                          AND CONCAT(CONVERT(VARCHAR(10), rfd.FechaRecojo, 103),CONVERT(VARCHAR(10), rfd.FechaEntrega, 103),rfd.Estado,tk.DistritoEnvio,tr.Guias,v1.TelfPer,v1.NombrePer,tk.DocNum,tk.CardCode,tk.CardName,v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,v3_1.Calle,v3_2.Departamento, v3_2.Provincia,v3_2.Distrito,tk.Agencia,tk.EnvioAgencia,rfd.EstadoPago,r.Placa , rfd.Factura , rfd.GuiaTransportista) LIKE @Buscar
                         AND (@DocEntry IS NULL OR tk.DocEntry = @DocEntry)
                         AND (@Estado IS NULL OR rfd.Estado = @Estado)
                         AND (@FechaEntrega IS NULL OR CAST(rfd.FechaEntrega AS DATE) = CAST(@FechaEntrega AS DATE))
