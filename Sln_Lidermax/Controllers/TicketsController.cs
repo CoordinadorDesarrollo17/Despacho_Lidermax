@@ -233,8 +233,9 @@ namespace Sln_Lidermax.Controllers
                 ws.Cell(1, 18).Value = "Placa";
                 ws.Cell(1, 19).Value = "Factura";
                 ws.Cell(1, 20).Value = "Fecha Recojo";
-                ws.Cell(1, 21).Value = "Fecha Entrega";
-                colCount = 21;
+                ws.Cell(1, 21).Value = "Hora Pactada";
+                ws.Cell(1, 22).Value = "Fecha Entrega";
+                colCount = 22;
             }
 
             ws.Range(1, 1, 1, colCount).Style.Font.Bold = true;
@@ -266,7 +267,8 @@ namespace Sln_Lidermax.Controllers
                     ws.Cell(row, 18).Value = x.Placa;
                     ws.Cell(row, 19).Value = x.Factura;
                     ws.Cell(row, 20).Value = x.FechaRecojo?.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 21).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 21).Value = x.HoraPac;
+                    ws.Cell(row, 22).Value = x.FechaEntrega?.ToString("dd/MM/yyyy");
                 }
 
                 row++;
