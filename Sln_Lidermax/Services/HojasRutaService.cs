@@ -50,5 +50,10 @@ namespace Sln_Lidermax.Services
         {
            return  await hojasRutaRepository.ListadoTicketsPorHojasRutaPdf(docEntryHojaRuta); 
         }
+
+        public async Task<DireccionProvinciaSuelta_E> ObtenerDireccionProvinciaSuelta(string numAtCard)
+        {
+            return await hojasRutaRepository.ObtenerDireccionProvinciaSuelta(numAtCard);
+        }
     }
 }

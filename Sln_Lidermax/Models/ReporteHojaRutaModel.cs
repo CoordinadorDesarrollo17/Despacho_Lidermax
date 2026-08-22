@@ -36,5 +36,7 @@
         public string DetallePedido { get; set; }
         public string TipoRuta { get; set; }    
 
+        public string Estado2 { get; set; } //Suelto
+
     }
 }

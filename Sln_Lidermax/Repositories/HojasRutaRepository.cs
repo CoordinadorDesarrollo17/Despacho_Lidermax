@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Sap.Data.Hana;
 using Sln_Lidermax.Interfaces;
 using Sln_Lidermax.Models;
+using System;
 using X.PagedList;
 using X.PagedList.Extensions;
 
@@ -28,13 +30,13 @@ namespace Sln_Lidermax.Repositories
                             CONVERT(VARCHAR(10), r.TiempoPac, 103) AS TiempoPac,
                             SUM(tr.Cajas) AS Cajas,
                             r.Estado,r.Placa,
-                            CONVERT(VARCHAR(5), r.TiempoPac, 108) AS HoraPac
+                            CONVERT(VARCHAR(5), r.TiempoPac, 108) AS HoraPac , r.Estado2
                         FROM al.ORRU AS r
                         INNER JOIN al.RRU0 AS tr ON r.DocEntry = tr.DocEntry AND tr.Estado <> 'LIBERADO'
                         LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket 
                         WHERE ( (r.TipoRuta = 'VG' AND r.TransDesc LIKE '%LIDERMAX%') OR (r.TipoRuta='VD' AND tk.LugarDestino = 'DOMICILIO' AND tk.EntregaPedido IN ('PROVINCIA','RECOJO') ) )
                         AND CONCAT(r.DocNum,r.TipoRuta,CONVERT(VARCHAR(10), r.TiempoPac, 103),r.Estado) LIKE @Buscar
-                        GROUP BY r.DocEntry,r.DocNum, r.TipoRuta, r.TiempoPac ,  r.Estado   ,r.Placa
+                        GROUP BY r.DocEntry,r.DocNum, r.TipoRuta, r.TiempoPac ,  r.Estado   ,r.Placa , r.Estado2
                         ORDER BY r.Estado ASC,r.TiempoPac DESC
                     "; 
 
@@ -58,12 +60,12 @@ namespace Sln_Lidermax.Repositories
                         T4_2.Calle AS Calle2,
                         CONCAT(T4_1.Departamento, ', ', T4_1.Provincia, ', ', T4_1.Distrito) Departamento1,
                         CONCAT(T4_2.Departamento, ', ', T4_2.Provincia, ', ', T4_2.Distrito) Departamento2,
-                        SUM(T3.Peso) AS Peso,
+                        CASE WHEN ISNULL(SUM(T3.Peso),0) = 0 THEN T0.Peso ELSE ISNULL(SUM(T3.Peso),0) END  AS peso    , 
                         T0.DocEntryTicket,
                         T0.Cajas,
                         T1.NombrePer,
                         T1.DocPer,
-                        T1.TelfPer,t5.agencia AS Transportista,t5.EnvioAgencia AS ModoEnvio                  
+                        T1.TelfPer,t5.agencia AS Transportista,t5.EnvioAgencia AS ModoEnvio     , r.Estado2             
                     FROM al.RRU0 T0
                     LEFT JOIN al.ORRU r ON r.DocEntry = T0.DocEntry
                     LEFT JOIN vt.RTV6 T3 ON T3.DocEntry = T0.DocEntryTicket
@@ -91,7 +93,7 @@ namespace Sln_Lidermax.Repositories
                         T0.Cajas,
                         T1.NombrePer,
                         T1.DocPer,
-                        T1.TelfPer,t5.agencia,t5.EnvioAgencia, r.TiempoPac 
+                        T1.TelfPer,t5.agencia,t5.EnvioAgencia, r.TiempoPac  , r.Estado2  ,T0.Peso
                     ORDER BY T5.Agencia ";  
 
             var result = await xCon.QueryAsync<ReporteHojaRutaModel>(sql, new { DocEntry = docEntryHojaRuta });
@@ -115,7 +117,9 @@ namespace Sln_Lidermax.Repositories
         {
             using var xCon = new SqlConnection(dapperContext.connectionString);
 
-            var sql = @"SELECT tr.DocNumTicket,tk.CardName,
+            var sql = @"SELECT 
+                           CASE WHEN ISNULL(tr.DocNumTicket,'') = '' THEN tr.Guias ELSE CAST(tr.DocNumTicket AS NVARCHAR(20)) END AS DocNumTicket,
+                           tk.CardName,
                            v1.NombrePer,
 						   v1.DocPer,
 						   v1.TelfPer,
@@ -124,7 +128,8 @@ namespace Sln_Lidermax.Repositories
 						CONCAT_WS(' - ', v3_2.Departamento, v3_2.Provincia, v3_2.Distrito, v3_2.Calle) AS Direccion2,
 							tk.EnvioAgencia AS ModoEnvio,
                             tr.Cajas ,
-                            SUM(v6.Peso) AS peso    , r.Placa       , tk.DetallePedido   , r.TipoRuta   , r.Trans2Desc AS Conductor      
+                            CASE WHEN ISNULL(SUM(v6.Peso),0) = 0 THEN tr.Peso ELSE ISNULL(SUM(v6.Peso),0) END  AS peso    , 
+                            r.Placa       , tk.DetallePedido   , r.TipoRuta   , r.Trans2Desc AS Conductor   , r.Estado2 , tr.Guias
                             FROM al.RRU0 AS tr
                             LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry
                             LEFT JOIN vt.ORTV AS tk ON tk.DocEntry = tr.DocEntryTicket  
@@ -150,7 +155,7 @@ namespace Sln_Lidermax.Repositories
                             tr.Cajas,
 							v1.NombrePer,
 						    v1.DocPer,
-						    v1.TelfPer , r.Placa  , tk.DetallePedido    , r.TipoRuta   , r.Trans2Desc
+						    v1.TelfPer , r.Placa  , tk.DetallePedido    , r.TipoRuta   , r.Trans2Desc , r.Estado2 , tr.Guias , tr.Peso
                             ORDER BY tk.Agencia ";
 
 
@@ -160,5 +165,49 @@ namespace Sln_Lidermax.Repositories
 
         }
 
+
+        public async Task<DireccionProvinciaSuelta_E> ObtenerDireccionProvinciaSuelta(string numAtCard)
+        {
+            using var xCon = new HanaConnection(dapperContext.hanaConnectionString);
+
+            try
+            {
+                string query = $@"
+            SELECT
+                T0.""CardCode"",
+                T0.""CardName"",
+
+                T1.""County""  AS ""Departamento"",
+                T1.""City""    AS ""Provincia"",
+                T1.""Block""   AS ""Distrito"",    
+                T0.""Address2"" AS ""DireccionEnvio"",
+
+                T1.""County"" || ' - ' || T1.""City"" || ' - ' || T1.""Block"" || ' - ' || T0.""Address2"" AS ""Direccion1"",
+
+                T0.""SlpCode"",
+                T2.""SlpName"" AS ""Vendedor"",
+ 
+                T0.""U_SYP_MDNT"" AS ""NombreTransportista"",
+                T0.""U_BPP_NUMBUL"" AS ""NroBultos"",
+                T0.""U_CFR_WHS_NET"" AS ""CodigoAlmacen""
+            FROM ODLN T0
+            LEFT JOIN CRD1 T1 
+                ON T0.""CardCode"" = T1.""CardCode""
+            LEFT JOIN OSLP T2 
+                ON T0.""SlpCode"" = T2.""SlpCode""
+            WHERE T0.""NumAtCard"" = :numAtCard";
+
+                var resultado = await xCon.QueryFirstOrDefaultAsync<DireccionProvinciaSuelta_E>(
+                    query,
+                    new { numAtCard }
+                );
+
+                return resultado;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
     }
 }

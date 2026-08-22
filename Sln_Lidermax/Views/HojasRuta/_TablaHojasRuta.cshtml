@@ -60,13 +60,18 @@
 
                     <td data-label="Acciones" class="text-center">
                         <div class="actions">
-                        <a asp-controller="Tickets"
-                           asp-action="ListadoTickets"
-                           asp-route-docEntryHojaRuta="@u?.DocEntry"
-                           asp-route-docNumHojaRuta="@u?.DocNum"
-                           class="btn btn-warning btn-sm">
-                            <i class="bi bi-eye"></i>
-                        </a>
+
+                            @if(u?.Estado2 != "SUELTO")
+                            {
+                                <a asp-controller="Tickets"
+                                   asp-action="ListadoTickets"
+                                   asp-route-docEntryHojaRuta="@u?.DocEntry"
+                                   asp-route-docNumHojaRuta="@u?.DocNum"
+                                   class="btn btn-warning btn-sm">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            }
+                       
                             <a asp-controller="HojasRuta"
                                asp-action="ExportarExcelPorHojaRuta"
                                asp-route-docEntryHojaRuta="@u?.DocEntry"

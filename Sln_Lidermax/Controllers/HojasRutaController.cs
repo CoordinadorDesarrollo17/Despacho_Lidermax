@@ -86,6 +86,19 @@ namespace Sln_Lidermax.Controllers
         {
             var data = await hojasRutaService.ListadoTicketsPorHojasRutaPdf(docEntryHojaRuta);
 
+            foreach (var item in data)
+            {
+                if(item.Estado2 == "SUELTO")
+                {
+                    var datosGuia = await hojasRutaService.ObtenerDireccionProvinciaSuelta(item.Guias);
+                    item.CardName = datosGuia.CardName;
+                    item.Direccion1 = datosGuia.Direccion1;
+                    item.Vendedor = datosGuia.Vendedor;
+                    item.Transportista = datosGuia.NombreTransportista;
+                    item.Almacen = datosGuia.CodigoAlmacen;
+                }
+            }
+
             ViewBag.DocNum = docNumHojaRuta;
             ViewBag.TiempoPac = tiempoPac;
             ViewBag.HoraPac = horaPac;
@@ -104,6 +117,18 @@ namespace Sln_Lidermax.Controllers
                 {
                     item.Guias = item.Guias.Replace("\r\n", ",");
                 }
+
+                if (item.Estado2 == "SUELTO")
+                {
+                    var datosGuia = await hojasRutaService.ObtenerDireccionProvinciaSuelta(item.Guias);
+                    item.CardName = datosGuia.CardName;
+                    item.Departamento1 = datosGuia.Departamento + ", " + datosGuia.Provincia + ", " +  datosGuia.Distrito;
+                    item.Vendedor = datosGuia.Vendedor;
+                    item.Transportista = datosGuia.NombreTransportista;
+                    item.Almacen = datosGuia.CodigoAlmacen;
+                    item.Calle1 = datosGuia.DireccionEnvio;
+                }
+
             }
 
             using var workbook = new XLWorkbook();
