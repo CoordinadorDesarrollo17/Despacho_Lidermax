@@ -332,11 +332,17 @@ namespace Sln_Lidermax.Services
                     resultTicketEnviado = await ticketsRepository.ActualizarEstadoEnviado(request.DocEntryHojaRuta, request.Linea, request.DocEntryTicket, con, tx);
                 }
 
+                bool resultPersonaRegistro = true;  
+                if(request.NombreCompleto != null && request.Dni != null)
+                {
+                    resultPersonaRegistro =  await ticketsRepository.ActualizarPersonaRegistro(request, con, tx);
+                }
+
                 // =========================================
                 // VALIDAR RESULTADO
                 // =========================================
 
-                bool resultado = resultEstadoPago && resultMonto && resultFactura && resultTicketEnviado;
+                bool resultado = resultEstadoPago && resultMonto && resultFactura && resultTicketEnviado && resultPersonaRegistro;
 
                 if (!resultado)
                 {

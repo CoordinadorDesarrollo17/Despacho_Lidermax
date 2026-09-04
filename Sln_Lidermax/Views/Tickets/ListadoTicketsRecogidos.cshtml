@@ -232,7 +232,20 @@
                     </div>
                 </div>
 
-       
+                <div class="card mb-3 d-none" id="divPersonaRegistro">
+                    <div class="card-header fw-bold">Persona de registro</div>
+                      <div class="card-body">
+                          <div class="mb-3">
+                            <label for="NombreCompleto" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="NombreCompleto" autocomplete="off" placeholder="Ingrese nombre completo..." />
+                          </div>
+                        <div class="mb-3">
+                            <label for="Dni" class="form-label">DNI</label>
+                            <input type="text" class="form-control" id="Dni" autocomplete="off" placeholder="Ingrese numero DNI..." />
+                        </div>
+                      </div>
+                </div>
+
             </div>
 
             <div class="modal-footer">
@@ -395,11 +408,15 @@
 
             idRolSeleccionado  = $(this).data("idrol");
 
+            let nombreCompleto =  $(this).data("nombrecompleto");
+            let dni = $(this).data("dni");
+
              if (estado === "ENTREGADO" && idRolSeleccionado != 73 ) { //73 operario lidermax
                      $("#btnActualizar").addClass("d-none");
                      $("#btnRegistrarImagen").addClass("d-none");
                      $("#divPago").addClass("d-none");
                      $("#divSubirImagenes").addClass("d-none");
+                     $("#divPersonaRegistro").addClass("d-none");
              }
              else{
                         $("#btnActualizar").removeClass("d-none");
@@ -410,7 +427,12 @@
                         actualizarEstadoPago(estadoPago);
                         $("#MontoFlete").val(montoFlete);
                         $("#NumFactura").val(factura);
-             }           
+
+                       $("#divPersonaRegistro").removeClass("d-none"); //
+                       $("#NombreCompleto").val(nombreCompleto);
+                       $("#Dni").val(dni);
+
+                }           
                     
         });
 
@@ -971,11 +993,32 @@
                let estadoPago = $("#estadoPago").val();
                let montoFlete = $("#MontoFlete").val();
 
+               let nombreCompleto = $("#NombreCompleto").val();
+               let dni = $("#Dni").val();
+
                 if (!estadoPago) {
                    Swal.fire({
                        icon: "warning",
                        title: "Dato requerido",
                        text: "Debe seleccionar un estado de pago"
+                   });
+                   return;
+               }
+
+               if (!nombreCompleto) {
+                   Swal.fire({
+                       icon: "warning",
+                       title: "Dato requerido",
+                       text: "Debe ingresar su nombre completo"
+                   });
+                   return;
+               }
+               
+                if (!dni) {
+                   Swal.fire({
+                       icon: "warning",
+                       title: "Dato requerido",
+                       text: "Debe ingresar su dni"
                    });
                    return;
                }
@@ -995,6 +1038,9 @@
                 if (img2) formData.append("Img2", img2);
                 // if (imgPago) formData.append("ImgPago", imgPago);
                 formData.append("Factura",factura);
+
+                formData.append("NombreCompleto",nombreCompleto);
+                formData.append("Dni",dni);
 
                $.ajax({
                    url: '/Tickets/ActualizarDatos',

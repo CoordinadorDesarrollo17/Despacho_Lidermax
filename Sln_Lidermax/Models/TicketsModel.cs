@@ -43,5 +43,8 @@
         public string? EntregaPedido { get; set; }
 
         public string? HoraPac { get; set; }
+
+        public string? NombreCompleto { get; set; }
+        public string? Dni { get; set; }
     }
 }

@@ -16,5 +16,8 @@
         public string? Observacion { get; set; }
         public double? MontoFlete { get; set; }
         public string? Factura { get; set; }    
+
+        public string? NombreCompleto { get; set; }
+        public string? Dni { get; set; }
     }
 }

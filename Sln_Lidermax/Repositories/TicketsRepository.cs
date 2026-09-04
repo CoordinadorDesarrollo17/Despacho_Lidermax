@@ -38,7 +38,7 @@ namespace Sln_Lidermax.Repositories
                                tk.Agencia, tk.EnvioAgencia AS ModoEnvio, tk.Cajas, SUM(v6.Peso) AS Peso,
                                rfd.FechaRecojo, rfd.FechaDespacho, rfd.Estado, v1.NombrePer AS Contacto, v1.TelfPer AS Telefono,
                                tk.DistritoEnvio AS DistritoTransporte, tr.Guias AS GuiaRemision, rfd.GuiaTransportista, rfd.FechaDevolucion, rfd.FechaEntrega, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago, rfd.IdRol , r.Placa , rfd.Factura , rfd.GuiaTransportista,
-                               CONVERT(VARCHAR(5), r.TiempoPac, 108) AS HoraPac
+                               CONVERT(VARCHAR(5), r.TiempoPac, 108) AS HoraPac , rfd.NombreCompleto, rfd.Dni
                         FROM al.RRU0 AS tr 
                         LEFT JOIN al.ORRU AS r ON r.DocEntry = tr.DocEntry 
                         LEFT JOIN vt.ORTV AS tk ON tr.DocEntryTicket = tk.DocEntry 
@@ -61,7 +61,7 @@ namespace Sln_Lidermax.Repositories
                                  rfd.FechaRecojo,rfd.FechaDespacho,rfd.Estado, v1.NombrePer,v1.TelfPer,
                                  v3_1.Departamento,v3_1.Provincia,v3_1.Distrito,tk.DistritoEnvio,
                                  v3_2.Departamento,v3_2.Provincia,v3_2.Distrito,tr.Guias,rfd.GuiaTransportista, rfd.FechaDevolucion,rfd.FechaEntrega,tr.Linea, rfd.Observacion , rfd.Excluido , rfd.MontoFlete, rfd.EstadoPago,  rfd.IdRol , r.Placa , rfd.Factura, rfd.GuiaTransportista,
-                                    r.TiempoPac
+                                    r.TiempoPac , rfd.NombreCompleto, rfd.Dni
                         ORDER BY FechaRecojo DESC
                     "; // tk.EnvioAgencia IN ('Agencia de transporte','Domicilio del Cliente') 
 
@@ -404,6 +404,19 @@ namespace Sln_Lidermax.Repositories
                 throw new Exception(e.Message);
             }
         }
+
+
+        public async Task<bool> ActualizarPersonaRegistro(SubirImagenesModel request, SqlConnection con, SqlTransaction tx)
+        {
+            var sql = @" UPDATE [tmp].[registro_fecha_despacho]
+                SET  NombreCompleto = @NombreCompleto , Dni = @Dni
+                WHERE DocEntryHojaRuta = @DocEntryHojaRuta AND Linea = @Linea AND DocEntryTicket = @DocEntryTicket";
+
+            var result = await con.ExecuteAsync(sql, new { request.DocEntryHojaRuta, request.Linea, request.DocEntryTicket, request.NombreCompleto, request.Dni }, tx);
+
+            return result > 0;
+        }
+
 
     }
 }

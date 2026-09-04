@@ -100,8 +100,6 @@ namespace Sln_Lidermax.Repositories
             var result = await con.ExecuteAsync(sql, new { request.DocEntryHojaRuta, request.Linea, request.DocEntryTicket, request.Factura }, tx);
 
             return result > 0;
-        }
-
-
+        }       
     }
 }
