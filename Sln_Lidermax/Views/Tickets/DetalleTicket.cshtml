@@ -127,6 +127,16 @@
                     <input type="text" class="form-control" value="@(Model.Excluido ? "SI" : "NO")" readonly />
                 </div>
 
+                <div class="col-md-4">
+                    <label class="form-label">Persona de registro</label>
+                    <input type="text" class="form-control" value="@Model.NombreCompleto" readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Dni</label>
+                    <input type="text" class="form-control" value="@Model.Dni" readonly />
+                </div>
+
                 <div class="col-md-12">
                     <label class="form-label">Observacion</label>
                     <textarea class="form-control"
