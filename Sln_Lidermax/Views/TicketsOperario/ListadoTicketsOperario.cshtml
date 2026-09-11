@@ -121,15 +121,30 @@
                         </div>
 
 
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button class="btn btn-dark" id="btnConfirmarEntregaFinal">ENTREGAR</button>
-                    </div>
-
+                    </div>             
                 </div>
+
+                <div class="card mb-3" id="divPersonaRegistro">
+                    <div class="card-header fw-bold">Persona de registro</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="NombreCompleto" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="NombreCompleto" autocomplete="off" placeholder="Ingrese nombre completo..." />
+                        </div>
+                        <div class="mb-3">
+                            <label for="Dni" class="form-label">DNI</label>
+                            <input type="text" class="form-control" id="Dni" autocomplete="off" placeholder="Ingrese numero DNI..." />
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button class="btn btn-dark" id="btnConfirmarEntregaFinal">ENTREGAR</button>
+            </div>
+
         </div>
 
     </div>
@@ -354,6 +369,10 @@
             let estadoPago = $("#estadoPago").val();
             let observacion = $("#observacion").val();
             let montoFlete = $("#MontoFlete").val();
+
+            let nombreCompleto = $("#NombreCompleto").val();
+            let dni = $("#Dni").val();
+
             // ================= VALIDACIONES =================
 
             // IMÁGENES
@@ -375,6 +394,26 @@
                 });
                 return;
             }
+
+            //Persona
+            if (!nombreCompleto) {
+                   Swal.fire({
+                       icon: "warning",
+                       title: "Dato requerido",
+                       text: "Debe ingresar su nombre completo"
+                   });
+                   return;
+               }
+
+            if (!dni) {
+                   Swal.fire({
+                       icon: "warning",
+                       title: "Dato requerido",
+                       text: "Debe ingresar su dni"
+                   });
+                   return;
+            }
+
 
             // if (estadoPago === "PAGADO" && !imgPago) {
             //     Swal.fire({
@@ -432,6 +471,10 @@
 
             // Observacion
             formData.append("Observacion", observacion);
+
+            //Persona
+             formData.append("NombreCompleto",nombreCompleto);
+             formData.append("Dni",dni);
 
             // ================= AJAX UNIFICADO =================
 

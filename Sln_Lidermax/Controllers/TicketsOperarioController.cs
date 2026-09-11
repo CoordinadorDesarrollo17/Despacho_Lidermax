@@ -91,7 +91,6 @@ namespace Sln_Lidermax.Controllers
                 var result4 = await ticketsOperarioService.RegistrarEstadoPago(request);                  
                 var result5 = await ticketsService.EntregarTicket(model);
 
-
                 if (!result1) return Json(new { success = false, message = "Error transportista" });
                 if (!result2) return Json(new { success = false, message = "Error observacion" });
                 if (!result3) return Json(new { success = false, message = "Error imágenes" });

@@ -10,11 +10,13 @@ namespace Sln_Lidermax.Services
     {
         private readonly ITicketsOperarioRepository ticketsOperarioRepository;
         private readonly DapperContext dapperContext;
+        private readonly ITicketsRepository ticketsRepository;
 
-        public TicketsOperarioService(ITicketsOperarioRepository ticketsOperarioRepository , DapperContext dapperContext)
+        public TicketsOperarioService(ITicketsOperarioRepository ticketsOperarioRepository , DapperContext dapperContext, ITicketsRepository ticketsRepository)
         {
             this.ticketsOperarioRepository = ticketsOperarioRepository;
             this.dapperContext = dapperContext;
+            this.ticketsRepository = ticketsRepository;
         }
 
         public async Task<IPagedList<TicketsModel>> ListadoTicketsOperario(FiltrosTicketsModel model)
@@ -40,10 +42,11 @@ namespace Sln_Lidermax.Services
                 var resultTicketEnviado = await ticketsOperarioRepository.ActualizarEstadoPago(request, con, tx);
                 var resultMontoFlete = await ticketsOperarioRepository.ActualizarMontoFlete(request, con, tx);
                 var resultFactura = await ticketsOperarioRepository.ActualizarFactura(request, con, tx);
+                var resultPersona = await ticketsRepository.ActualizarPersonaRegistro(request, con, tx);
 
                 tx.Commit();
 
-                return resultTicketEnviado && resultMontoFlete && resultFactura;
+                return resultTicketEnviado && resultMontoFlete && resultFactura && resultPersona;
             }
             catch
             {
